@@ -125,15 +125,23 @@ void without_plus(t_env *env, char *arg)
     found = find_in_env(env, key, '=');
     if (found)
     {
-        equal = strchr(found->line, '=');
-        if (equal && strchr(arg, '='))
+        char *value = strchr(arg, '=');
+        equal = strchr(arg, '=');
+        if (equal)
         {
             free(found->line);
             found->line = strdup(arg);
             if (found->value)
-            free(found->value);
-            found->value = strdup(equal + 1);
+                free(found->value);
+            found->value = strdup(value + 1);
+            printf("HERE\n");
         }
+        // else if (!equal && strchr(arg, '='))
+        // {
+        //     if (found->value)
+        //     free(found->value);
+        //     found->value = strdup(equal + 1);
+        // }
     }
     else
     {
@@ -157,10 +165,12 @@ void with_plus(t_env *env, char *arg)
         found->value = small_check(found->value);
         equal = strchr(found->line, '=');
         char *value = strchr(arg, '=');
-        if (equal && value)
+        if (value)
         {
             if (found->value)
                 found->value = ft_join(found->value, value + 1);
+            else
+                found->value = strdup(value + 1);
             free(found->line);
             found->line = ft_join(key, "=");
             found->line = ft_join(found->line, found->value);
