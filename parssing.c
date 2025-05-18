@@ -237,33 +237,33 @@ char *get_input(void)
     return input;
 }
 
-char    *ft_strdup(char *src)
-{
-    char    *dest;
-    int        i;
+// char    *ft_strdup(char *src)
+// {
+//     char    *dest;
+//     int        i;
 
-    i = 0;
-    while (src[i])
-        i++;
-    dest = (char *)malloc(sizeof(char) * (i + 1));
-    i = 0;
-    while (src[i])
-    {
-       dest[i] = src[i];
-       i++;
-    }
-    dest[i] = '\0';
-    return (dest);
-}
-int ft_strcmp(const char *s1, const char *s2)
-{
+//     i = 0;
+//     while (src[i])
+//         i++;
+//     dest = (char *)malloc(sizeof(char) * (i + 1));
+//     i = 0;
+//     while (src[i])
+//     {
+//        dest[i] = src[i];
+//        i++;
+//     }
+//     dest[i] = '\0';
+//     return (dest);
+// }
+// int ft_strcmp(const char *s1, const char *s2)
+// {
 
-    while (*s1 && (*s1 == *s2)) {
-        s1++;
-        s2++;
-    }
-    return (unsigned char)(*s1) - (unsigned char)(*s2);
-}
+//     while (*s1 && (*s1 == *s2)) {
+//         s1++;
+//         s2++;
+//     }
+//     return (unsigned char)(*s1) - (unsigned char)(*s2);
+// }
 /*  Counts the number of arguments in the `tokens` array starting from the `start` index
  stopping at operators ('|', '<', '>') or the end of the array */
 int count_args(char **tokens, int start)
@@ -323,7 +323,6 @@ t_command *parse_tokens(char **tokens)
             head = node;
         else
             current->next = node;
-
         current = node;
     }
 
@@ -334,10 +333,40 @@ t_command *parse_tokens(char **tokens)
 including the command, its arguments, input/output redirections, and whether the input 
  redirection is a heredoc or normal file */
 
+// void print_commands(t_command *cmd)
+// {
+//     while (cmd)
+//     {
+//         printf("cmd: %s\n", cmd->cmd);
+//         for (int i = 0; cmd->args[i]; i++)
+//             printf("  arg[%d]: %s\n", i, cmd->args[i]);
+
+//         if (cmd->infile)
+//         {
+//             if (cmd->heredoc)
+//                 printf("  infile: %s (heredoc)\n", cmd->infile);
+//             else
+//                 printf("  infile: %s (normal)\n", cmd->infile);
+//         }
+
+//         if (cmd->outfile)
+//         {
+//             if (cmd->append)
+//                 printf("  outfile: %s (append)\n", cmd->outfile);
+//             else
+//                 printf("  outfile: %s (truncate)\n", cmd->outfile);
+//         }
+//         printf("#####################################################\n");
+//         cmd = cmd->next;
+//     }
+// }
+
 void print_commands(t_command *cmd)
 {
+    int cmd_num = 0;
     while (cmd)
     {
+        printf("------------- Command #%d -------------\n", cmd_num++);
         printf("cmd: %s\n", cmd->cmd);
         for (int i = 0; cmd->args[i]; i++)
             printf("  arg[%d]: %s\n", i, cmd->args[i]);
@@ -361,6 +390,7 @@ void print_commands(t_command *cmd)
         cmd = cmd->next;
     }
 }
+
 // Frees the memory allocated for the array of `tokens` and each of its elements 
 
 void free_tokens(char **tokens)
@@ -397,12 +427,14 @@ void free_commands(t_command *cmd)
    /*                
      --> int main for TESTING input && lexing && syntax error <-- 
 	                                                              */
-int main(void)
+int main(int ac, char **av, char **envp)
 {
     char *input;
     char **tokens;
     t_command *cmds;
+    t_env *env;
 
+    copy_env(envp, &env);
     while (1)
     {
         input = get_input();
@@ -413,7 +445,6 @@ int main(void)
             free(input);
             continue;
         }
-
         tokens = lexer(input);
         if (!tokens)
         {
@@ -432,12 +463,16 @@ int main(void)
         if (cmds)
         {
             print_commands(cmds);
+            if (is_builtins(cmds->args))
+                builtins(env, cmds->args);
+            else
+                execution(env, cmds);
+            // else
+            //     printf("minishell: %s: command not found\n", cmds->cmd);
             free_commands(cmds);
         }
-
         free_tokens(tokens); 
         free(input);
     }
-
     return 0;
 }

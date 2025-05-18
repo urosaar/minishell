@@ -1,23 +1,22 @@
-CC = cc
-CFLAGS = -Wall -Wextra -Werror
-SRC = parssing.c
-OBJ = $(SRC:.c=.o)
 NAME = minishell
-HEADERS = minishell.h
-MFLAGS = -lreadline
+CC = cc
+CFLAG = -Wall -Werror -Wextra
+SRC =   builtins_utils.c echo.c env.c  pwd.c exit.c cd.c split.c unset.c export.c utils.c parssing.c builtins.c exec.c #main.c
+OBJ = $(SRC:.c=.o)
+HEAD = fractol.h
+
+%.o: %.c $(HEAD)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) -o $(NAME) $(OBJ) $(MFLAGS)
-
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAG) $(OBJ) -lreadline -o $(NAME)
 
 clean:
-	rm -f $(OBJ)
+	$(RM) $(OBJ)
 
 fclean: clean
-	rm -f $(NAME)
+	$(RM) $(NAME) 
 
-re: fclean all
+re: fclean all  
