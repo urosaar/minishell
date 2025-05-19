@@ -114,7 +114,7 @@ int is_valid_identifier(char *str)
     return (1);
 }
 
-void without_plus(t_env *env, char *arg)
+void without_plus(t_env **env, char *arg)
 {
     char *key;
     t_env *new;
@@ -122,7 +122,7 @@ void without_plus(t_env *env, char *arg)
     char *equal;
     
     key = key_full(arg, '=');
-    found = find_in_env(env, key, '=');
+    found = find_in_env(*env, key, '=');
     if (found)
     {
         char *value = strchr(arg, '=');
@@ -134,7 +134,6 @@ void without_plus(t_env *env, char *arg)
             if (found->value)
                 free(found->value);
             found->value = strdup(value + 1);
-            printf("HERE\n");
         }
         // else if (!equal && strchr(arg, '='))
         // {
@@ -146,12 +145,12 @@ void without_plus(t_env *env, char *arg)
     else
     {
         new = ft_newnode(strdup(arg), '=');
-        ft_lstadd_back(&env, new);
+        ft_lstadd_back(env, new);
     }
     free(key);
 }
 
-void with_plus(t_env *env, char *arg)
+void with_plus(t_env **env, char *arg)
 {
     char *key;
     t_env *new;
@@ -159,7 +158,7 @@ void with_plus(t_env *env, char *arg)
     char *equal;
 
     key = key_full(arg, '+');
-    found = find_in_env(env, key, '+');
+    found = find_in_env(*env, key, '+');
     if (found)
     {
         found->value = small_check(found->value);
@@ -179,7 +178,7 @@ void with_plus(t_env *env, char *arg)
     else
     {
         new = ft_newnode(strdup(arg), '+');
-        ft_lstadd_back(&env, new);
+        ft_lstadd_back(env, new);
     }
     free(key);
 }
@@ -218,9 +217,11 @@ void ft_export(t_env **env, char **arg)
         if (!is_valid_identifier(arg[i]))
             printf("export: `%s': not a valid identifier\n", arg[i]);
         else if (is_valid_identifier(arg[i]) == 1)
-            without_plus(*env, arg[i]);
+        {
+            without_plus(env, arg[i]);
+        }
         else
-            with_plus(*env, arg[i]);
+            with_plus(env, arg[i]);
         i++;
     }
 }

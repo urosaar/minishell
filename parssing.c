@@ -332,35 +332,6 @@ t_command *parse_tokens(char **tokens)
  Iterates through a linked list of `t_command` structs and prints their information, 
 including the command, its arguments, input/output redirections, and whether the input 
  redirection is a heredoc or normal file */
-
-// void print_commands(t_command *cmd)
-// {
-//     while (cmd)
-//     {
-//         printf("cmd: %s\n", cmd->cmd);
-//         for (int i = 0; cmd->args[i]; i++)
-//             printf("  arg[%d]: %s\n", i, cmd->args[i]);
-
-//         if (cmd->infile)
-//         {
-//             if (cmd->heredoc)
-//                 printf("  infile: %s (heredoc)\n", cmd->infile);
-//             else
-//                 printf("  infile: %s (normal)\n", cmd->infile);
-//         }
-
-//         if (cmd->outfile)
-//         {
-//             if (cmd->append)
-//                 printf("  outfile: %s (append)\n", cmd->outfile);
-//             else
-//                 printf("  outfile: %s (truncate)\n", cmd->outfile);
-//         }
-//         printf("#####################################################\n");
-//         cmd = cmd->next;
-//     }
-// }
-
 void print_commands(t_command *cmd)
 {
     int cmd_num = 0;
@@ -462,9 +433,9 @@ int main(int ac, char **av, char **envp)
         cmds = parse_tokens(tokens);
         if (cmds)
         {
-            print_commands(cmds);
+            // print_commands(cmds);
             if (is_builtins(cmds->args))
-                builtins(env, cmds->args);
+                builtins(&env, cmds->args);
             else
                 execution(env, cmds);
             // else

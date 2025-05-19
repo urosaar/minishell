@@ -31,7 +31,7 @@ typedef struct s_command
 } t_command;
 
 //parssing
-void    builtins(t_env *env, char **args);
+void    builtins(t_env **env, char **args);
 int     is_builtins(char **args);
 
 
@@ -43,7 +43,7 @@ void	ft_echo(char **splited);
 void	ft_pwd(void);
 void	ft_cd(t_env **env, char **splited);
 void	ft_exit(t_env *env, char **arg);
-void	ft_env(t_env *env);
+void	ft_env(t_env **env);
 void	ft_unset(t_env **env,char **arg);
 void	ft_export(t_env **env, char **arg);
 

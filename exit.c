@@ -18,7 +18,8 @@ void check_error(t_env *env, char *arg)
 {
     printf("exit\n");
     printf("minishell: exit: %s: numeric argument required\n", arg);
-    free_env(env);
+    // if(env)
+        free_env(env);
     exit(2);
 }
 long ft_atoi(t_env *env, char *arg)
@@ -85,8 +86,7 @@ void ft_exit(t_env *env, char **arg)
         flag = 1;
         printf("exit\n");
         printf("minishell: exit: too many arguments\n");
-        free_env(env);
-        exit(1);
+        return;
     }
     else if (arg[1] && arg[2] && !is_nbr(arg[1]))
         check_error(env, arg[1]);

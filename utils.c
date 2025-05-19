@@ -29,7 +29,10 @@ t_env	*ft_newnode(char *line, char c)
 t_env	*ft_lstlast(t_env *env)
 {
 	if (!env)
+	{
+		printf("HELLO\n");
 		return (0);
+	}
 	while (env && env->next)
 	{
 		env = env->next;

@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-void ft_env(t_env *env)
+void ft_env(t_env **env)
 {
     t_env *tmp;
 
-    tmp = env;
+    tmp = *env;
     while (tmp)
     {
         if (strchr(tmp->line, '='))

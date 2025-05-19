@@ -224,7 +224,7 @@ void execution(t_env *env, t_command *cmds)
                 d = NULL;
                 i++;
             }
-            if (!flag)
+            if (!flag || !path)
                 printf("minishell: %s: command not found\n", cmds->cmd);
         }
         else
