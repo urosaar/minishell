@@ -32,29 +32,24 @@ char *substr(const char *src, int start, int end)
     return (s);
 }
 
-/* Extracts a quoted token *including* its delimiters.
-   On input "... 'foo bar' baz", calling this when i points at the single quote
-   will return the string "'foo bar'" (with both quotes), advancing *i past it. */
+/* Extracts content between quotes (single or double) */
 char *extract_quoted(const char *input, int *i)
 {
-    char quote = input[*i];    // either ' or "
-    int start = *i;            // include this in the result
-    (*i)++;                    // skip opening delimiter
-
-    // find the matching closing quote
+    char quote = input[(*i)++];
+    int start = *i;
+    
     while (input[*i] && input[*i] != quote)
         (*i)++;
-    if (input[*i] != quote)
-    {
+        
+    if (input[*i] != quote) {
         printf("minishell: syntax error: unterminated quoted string\n");
         return NULL;
     }
-    (*i)++;  // include the closing delimiter
-
-    // return substring [start, *i)
-    return substr(input, start, *i);
+    
+    char *token = substr(input, start, *i);
+    (*i)++;
+    return token;
 }
-
 
 /* Extracts operators (can be 1 or 2 chars like >, >>, <, <<) */
 char *extract_operator(const char *input, int *i)
@@ -242,160 +237,33 @@ char *get_input(void)
     return input;
 }
 
-char    *ft_strdup(char *src)
-{
-    char    *dest;
-    int        i;
+// char    *ft_strdup(char *src)
+// {
+//     char    *dest;
+//     int        i;
 
-    i = 0;
-    while (src[i])
-        i++;
-    dest = (char *)malloc(sizeof(char) * (i + 1));
-    i = 0;
-    while (src[i])
-    {
-       dest[i] = src[i];
-       i++;
-    }
-    dest[i] = '\0';
-    return (dest);
-}
-int ft_strcmp(const char *s1, const char *s2)
-{
+//     i = 0;
+//     while (src[i])
+//         i++;
+//     dest = (char *)malloc(sizeof(char) * (i + 1));
+//     i = 0;
+//     while (src[i])
+//     {
+//        dest[i] = src[i];
+//        i++;
+//     }
+//     dest[i] = '\0';
+//     return (dest);
+// }
+// int ft_strcmp(const char *s1, const char *s2)
+// {
 
-    while (*s1 && (*s1 == *s2)) {
-        s1++;
-        s2++;
-    }
-    return (unsigned char)(*s1) - (unsigned char)(*s2);
-}
-
-size_t ft_strlen(const char *str)
-{
-    size_t i = 0;
-    while(str[i])
-    {
-        i++;
-    }
-    return(i);
-}
-char *expand_variables(const char *input)
-{
-    char *result = malloc(1);
-    if (!result) return NULL;
-    int res_len = 0;
-    int i = 0;
-    int in_single_quote = 0;
-    int in_double_quote = 0;
-
-    result[0] = '\0';
-
-    while (input[i])
-    {
-        if (input[i] == '\'' && !in_double_quote)
-        {
-            in_single_quote = !in_single_quote;
-            char *new_result = malloc(res_len + 2);
-            if (!new_result)
-            { 
-                free(result);
-                return NULL;
-            }
-            int j = 0;
-            while (j < res_len)
-            {
-                new_result[j] = result[j];
-                j++;
-            }
-            new_result[res_len++] = input[i++];
-            new_result[res_len] = '\0';
-            free(result);
-            result = new_result;
-            continue;
-        }
-        else if (input[i] == '"' && !in_single_quote)
-        {
-            in_double_quote = !in_double_quote;
-            char *new_result = malloc(res_len + 2);
-            if (!new_result)
-            {
-                free(result);
-                return NULL;
-            }
-            int j = 0;
-            while (j < res_len)
-            {
-                new_result[j] = result[j];
-                j++;
-            }
-            new_result[res_len++] = input[i++];
-            new_result[res_len] = '\0';
-            free(result);
-            result = new_result;
-            continue;
-        }
-        else if (input[i] == '$' && !in_single_quote)
-        {
-            i++;
-            int var_start = i;
-            while ((input[i] >= 'A' && input[i] <= 'Z') ||
-                   (input[i] >= 'a' && input[i] <= 'z') ||
-                   (input[i] >= '0' && input[i] <= '9') ||
-                   input[i] == '_')
-                i++;
-            int var_len = i - var_start;
-            char *var_name = substr(input, var_start, var_start + var_len);
-            char *env_val = getenv(var_name);
-            free(var_name);
-            if (!env_val)
-                env_val = "";
-            size_t env_len = ft_strlen(env_val);
-            char *new_result = malloc(res_len + env_len + 1);
-            if (!new_result)
-            {
-                free(result);
-                return NULL;
-            }
-            int j = 0;
-            while (j < res_len)
-            {
-                new_result[j] = result[j];
-                j++;
-            }
-            size_t k = 0;
-            while (k < env_len)
-            {
-                new_result[res_len + k] = env_val[k];
-                k++;
-            }
-            res_len += env_len;
-            new_result[res_len] = '\0';
-            free(result);
-            result = new_result;
-        }
-        else
-        {
-            char *new_result = malloc(res_len + 2);
-            if (!new_result)
-            {
-                free(result);
-                return NULL;
-            }
-            int j = 0;
-            while (j < res_len)
-            {
-                new_result[j] = result[j];
-                j++;
-            }
-            new_result[res_len++] = input[i++];
-            new_result[res_len] = '\0';
-            free(result);
-            result = new_result;
-        }
-    }
-
-    return result;
-}
+//     while (*s1 && (*s1 == *s2)) {
+//         s1++;
+//         s2++;
+//     }
+//     return (unsigned char)(*s1) - (unsigned char)(*s2);
+// }
 /*  Counts the number of arguments in the `tokens` array starting from the `start` index
  stopping at operators ('|', '<', '>') or the end of the array */
 int count_args(char **tokens, int start)
@@ -412,40 +280,25 @@ int count_args(char **tokens, int start)
 /*Converts the `tokens` array into a linked list of `t_command` structs 
  where each command holds arguments, input/output redirections, and possible pipe connections*/
 
-/* Parses tokens into t_command structs, expanding variables,
-   then stripping outer quotes so execution sees unquoted text. */
 t_command *parse_tokens(char **tokens)
 {
     int i = 0;
-    t_command *head = NULL, *current = NULL;
+    t_command *head = NULL;
+    t_command *current = NULL;
 
     while (tokens[i])
     {
         t_command *node = calloc(1, sizeof(t_command));
         int argc = count_args(tokens, i);
-        node->args = malloc(sizeof(char*) * (argc + 1));
+        node->args = malloc(sizeof(char *) * (argc + 1));
         int j = 0;
-        while (tokens[i] &&
-               tokens[i][0] != '<' &&
-               tokens[i][0] != '>' &&
-               tokens[i][0] != '|')
+        while (tokens[i] && tokens[i][0] != '<' && tokens[i][0] != '>' && tokens[i][0] != '|')
         {
-            char *expanded = expand_variables(tokens[i]);
-            int len = ft_strlen(expanded);
-            if (len >= 2 && 
-               ((expanded[0] == '\'' && expanded[len-1] == '\'') ||
-                (expanded[0] == '"'  && expanded[len-1] == '"')))
-            {
-                char *stripped = substr(expanded, 1, len-1);
-                free(expanded);
-                expanded = stripped;
-            }
-
-            node->args[j++] = expanded;
+            node->args[j++] = ft_strdup(tokens[i]);
             i++;
         }
         node->args[j] = NULL;
-        node->cmd = node->args[0];
+        node->cmd = node->args[0]; 
         while (tokens[i] && tokens[i][0] != '|')
         {
             if (!ft_strcmp(tokens[i], "<"))
@@ -475,12 +328,10 @@ t_command *parse_tokens(char **tokens)
 
     return head;
 }
-
 /*this just for test
  Iterates through a linked list of `t_command` structs and prints their information, 
 including the command, its arguments, input/output redirections, and whether the input 
  redirection is a heredoc or normal file */
-
 void print_commands(t_command *cmd)
 {
     int cmd_num = 0;
@@ -510,6 +361,7 @@ void print_commands(t_command *cmd)
         cmd = cmd->next;
     }
 }
+
 // Frees the memory allocated for the array of `tokens` and each of its elements 
 
 void free_tokens(char **tokens)
@@ -543,66 +395,18 @@ void free_commands(t_command *cmd)
         cmd = next;
     }
 }
-void execute_pipeline(t_command *cmds)
-{
-    int pipe_fd[2];
-    int prev_fd = -1;
-    pid_t pid;
-    t_command *curr = cmds;
-
-    while (curr)
-    {
-        if (curr->next)
-            pipe(pipe_fd);
-
-        pid = fork();
-        if (pid == 0)
-        {
-            if (prev_fd != -1)
-            {
-                dup2(prev_fd, 0); 
-                close(prev_fd);
-            }
-
-            if (curr->next)
-            {
-                dup2(pipe_fd[1], 1); 
-                close(pipe_fd[0]);
-                close(pipe_fd[1]);
-            }
-
-            execvp(curr->cmd, curr->args);
-            perror("execvp"); 
-            exit(1);
-        }
-        else if (pid < 0)
-        {
-            perror("fork");
-            return;
-        }
-        if (prev_fd != -1)
-            close(prev_fd);
-
-        if (curr->next)
-        {
-            close(pipe_fd[1]); 
-            prev_fd = pipe_fd[0]; 
-        }
-
-        curr = curr->next;
-    }
-    while (wait(NULL) > 0);
-}
    /*                
-     --> int main for TESTING input && lexing && syntax error && parsing  <-- 
+     --> int main for TESTING input && lexing && syntax error <-- 
 	                                                              */
-                                                              
-int main(void)
+int main(int ac, char **av, char **envp)
 {
     char *input;
     char **tokens;
     t_command *cmds;
+    t_env *env;
+    char *prev_pwd = NULL;
 
+    copy_env(envp, &env);
     while (1)
     {
         input = get_input();
@@ -613,7 +417,6 @@ int main(void)
             free(input);
             continue;
         }
-
         tokens = lexer(input);
         if (!tokens)
         {
@@ -632,13 +435,15 @@ int main(void)
         if (cmds)
         {
             // print_commands(cmds);
-            execute_pipeline(cmds);
+            check_for_pwd(&prev_pwd);
+            if (is_builtins(cmds->args))
+                builtins(&env, cmds->args, prev_pwd);
+            else
+                execution(env, cmds);
             free_commands(cmds);
         }
-
         free_tokens(tokens); 
         free(input);
     }
-
     return 0;
 }
