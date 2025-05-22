@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 // void execution(t_env *env, t_command *cmds)
 // {
@@ -98,20 +98,72 @@
 //     }
 // }
 
-void exec_with_pipe(t_env *env, t_command *cmds)
+// void exec_with_pipe(t_env *env, t_command *cmds)
+// {
+//     int i;
+//     int exec;
+//     int fd[2];
+//     t_env *tmp;
+//     char **path;
+//     char *s;
+//     char *d;
+
+//     tmp = env;
+//     close(fd[0]);
+//     dup2(fd[1], STDOUT_FILENO);
+//     close(fd[1]);
+//     while (tmp)
+//     {
+//         if (!strcmp(tmp->key, "PATH"))
+//             path = ft_split(tmp->value, ':');
+//         tmp = tmp->next;
+//     }
+//     i = 0;
+//     while (path && path[i])
+//     {
+//         s = ft_join("/", cmds->cmd);
+//         d = ft_join(path[i], s);
+//         if (access(d, X_OK) == 0)
+//         {
+//             if (execve(d, cmds->args, NULL) == -1)
+//             {
+//                 printf("could not find program to execute\n");
+//                 exit(2);
+//             }
+//             free_array(path);
+//         }
+//         free(s);
+//         free(d);
+//         s = NULL;
+//         d = NULL;
+//         i++;
+//     }
+//     if (exec == -1)
+//     {
+//         printf("could not find program to execute\n");
+//         exit(2);
+//     }
+// }
+
+char *check_if_exist(t_env *env, t_command *cmds)
 {
-    int i;
-    int exec;
-    int fd[2];
+    char **path = NULL;
+    char **args;
     t_env *tmp;
-    char **path;
     char *s;
     char *d;
+    int i;
+    int flag;
 
+    args = cmds->args;
     tmp = env;
-    close(fd[0]);
-    dup2(fd[1], STDOUT_FILENO);
-    close(fd[1]);
+    if (access(cmds->cmd, X_OK) == 0)
+        return (cmds->cmd);
+    else if (access(cmds->cmd, X_OK) == -1 && strchr(cmds->cmd, '/'))
+    {
+        printf("minishell: %s: No such file or directory\n", cmds->cmd);
+        return (NULL);
+    }
     while (tmp)
     {
         if (!strcmp(tmp->key, "PATH"))
@@ -124,25 +176,15 @@ void exec_with_pipe(t_env *env, t_command *cmds)
         s = ft_join("/", cmds->cmd);
         d = ft_join(path[i], s);
         if (access(d, X_OK) == 0)
-        {
-            if (execve(d, cmds->args, NULL) == -1)
-            {
-                printf("could not find program to execute\n");
-                exit(2);
-            }
-            free_array(path);
-        }
+            return (d);
         free(s);
         free(d);
         s = NULL;
         d = NULL;
         i++;
     }
-    if (exec == -1)
-    {
-        printf("could not find program to execute\n");
-        exit(2);
-    }
+    if (!path || !path[i])
+        return (ft_strdup(cmds->cmd));
 }
 
 int ft_size_node(t_command *cmds)
@@ -163,73 +205,37 @@ int ft_size_node(t_command *cmds)
 void execution(t_env *env, t_command *cmds)
 {
     int fd[2];
-    int exec;
     int pid;
     int i;
-    int flag = 1;
     char **path = NULL;
-    char **args;
-    t_env *tmp;
-    char *s;
     char *d;
-    // int fd;
 
-    args = cmds->args;
     pipe(fd);
-    pid = fork();
-    tmp = env;
-    if (!pid == -1) 
-        return ;
-    if (pid == 0)
+    d = check_if_exist(env, cmds);
+    if (d)
     {
-        // fd = open("test.txt", O_CREAT | O_WRONLY, 0777);
-        // if (fd == -1)
-        //     exit(2);
-        //int file = dup2(fd, 1);
-        // char *argv[] = {"ls", NULL};
-        // close(fd[0]);
-        // dup2(fd[1], STDOUT_FILENO);
-        // close(fd[1]);
-        // // write(2, argv[0], 50);
-        // write (2, "\n", 1);
-        // exec = execve("/bin/ls", argv, NULL);
-        // execlp("ls", "ls", NULL);
-        if (ft_size_node(cmds) == 1)
+        pid = fork();
+        if (pid == -1) 
+            return ;
+        if (pid == 0)
         {
-            while (tmp)
+            if (ft_size_node(cmds) == 1)
             {
-                if (!strcmp(tmp->key, "PATH"))
-                    path = ft_split(tmp->value, ':');
-                tmp = tmp->next;
-            }
-            i = 0;
-            while (path && path[i])
-            {
-                s = ft_join("/", cmds->cmd);
-                d = ft_join(path[i], s);
-                if (access(d, X_OK) == 0)
-                {
-                    if (execve(d, cmds->args, NULL) == -1)
+                if (execve(d, cmds->args, NULL) == -1)
                     {
-                        printf("could not find program to execute\n");
+                        printf("minishell: %s: command not found\n", cmds->cmd);
                         exit(2);
                     }
-                    free_array(path);
-                }
-                else
-                    flag = 0;
-                free(s);
-                free(d);
-                s = NULL;
-                d = NULL;
-                i++;
+                free_array(path);
             }
-            if (!flag || !path)
-                printf("minishell: %s: command not found\n", cmds->cmd);
+            else
+                printf("HERE\n");
         }
         else
-            printf("HERE\n");
+            waitpid(pid, NULL, 0);
     }
+    else
+        return;
     // else
     // {
     //     if (fork() == 0)
@@ -247,6 +253,4 @@ void execution(t_env *env, t_command *cmds)
     //         wait(NULL);
     //     }
     // } 
-    else
-        waitpid(pid, NULL, 0);
 }

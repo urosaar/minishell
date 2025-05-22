@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void swap_line(t_env **head)
 {
@@ -88,6 +88,7 @@ t_env *find_in_env(t_env *env, char *key, char c)
 {
     while (env)
     {
+        
         if (env->key && strcmp(env->key, key) == 0)
             return (env);
         env = env->next;
@@ -125,6 +126,8 @@ void without_plus(t_env **env, char *arg)
     found = find_in_env(*env, key, '=');
     if (found)
     {
+        if (!strcmp(found->key, "_"))
+            return;
         char *value = strchr(arg, '=');
         equal = strchr(arg, '=');
         if (equal)
@@ -134,6 +137,7 @@ void without_plus(t_env **env, char *arg)
             if (found->value)
                 free(found->value);
             found->value = strdup(value + 1);
+            printf("HERE\n");
         }
         // else if (!equal && strchr(arg, '='))
         // {
@@ -161,6 +165,8 @@ void with_plus(t_env **env, char *arg)
     found = find_in_env(*env, key, '+');
     if (found)
     {
+        if (!strcmp(found->key, "_"))
+            return;
         found->value = small_check(found->value);
         equal = strchr(found->line, '=');
         char *value = strchr(arg, '=');

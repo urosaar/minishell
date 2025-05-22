@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void check_option(char **splited, int *flag, int *t)
 {

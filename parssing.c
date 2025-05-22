@@ -395,6 +395,57 @@ void free_commands(t_command *cmd)
         cmd = next;
     }
 }
+
+void execute_pipeline(t_command *cmds)
+{
+    int pipe_fd[2];
+    int prev_fd = -1;
+    pid_t pid;
+    t_command *curr = cmds;
+
+    while (curr)
+    {
+        if (curr->next)
+            pipe(pipe_fd);
+
+        pid = fork();
+        if (pid == 0)
+        {
+            if (prev_fd != -1)
+            {
+                dup2(prev_fd, 0); 
+                close(prev_fd);
+            }
+
+            if (curr->next)
+            {
+                dup2(pipe_fd[1], 1); 
+                close(pipe_fd[0]);
+                close(pipe_fd[1]);
+            }
+
+            execvp(curr->cmd, curr->args);
+            perror("execvp"); 
+            exit(1);
+        }
+        else if (pid < 0)
+        {
+            perror("fork");
+            return;
+        }
+        if (prev_fd != -1)
+            close(prev_fd);
+
+        if (curr->next)
+        {
+            close(pipe_fd[1]); 
+            prev_fd = pipe_fd[0]; 
+        }
+
+        curr = curr->next;
+    }
+    while (wait(NULL) > 0);
+}
    /*                
      --> int main for TESTING input && lexing && syntax error <-- 
 	                                                              */
@@ -404,6 +455,7 @@ int main(int ac, char **av, char **envp)
     char **tokens;
     t_command *cmds;
     t_env *env;
+    char *prev_pwd = NULL;
 
     copy_env(envp, &env);
     while (1)
@@ -434,12 +486,12 @@ int main(int ac, char **av, char **envp)
         if (cmds)
         {
             // print_commands(cmds);
+            check_for_pwd(&prev_pwd);
             if (is_builtins(cmds->args))
-                builtins(&env, cmds->args);
+                builtins(&env, cmds->args, prev_pwd);
             else
                 execution(env, cmds);
-            // else
-            //     printf("minishell: %s: command not found\n", cmds->cmd);
+            // execute_pipeline(cmds);
             free_commands(cmds);
         }
         free_tokens(tokens); 

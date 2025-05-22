@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void ft_unset(t_env **env, char **arg)
 {
@@ -30,6 +30,7 @@ void ft_unset(t_env **env, char **arg)
                 free(node->key);
                 free(node->value);
                 free(node);
+                printf("HERE\n");
                 break;
             }
             prev = node;

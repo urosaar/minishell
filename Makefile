@@ -1,7 +1,7 @@
 NAME = minishell
 CC = cc
 CFLAG = -Wall -Werror -Wextra
-SRC =   builtins_utils.c echo.c env.c  pwd.c exit.c cd.c split.c unset.c export.c utils.c parssing.c builtins.c exec.c #main.c
+SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c  ./builtins/pwd.c ./builtins/exit.c ./builtins/cd.c ./builtins/split.c ./builtins/unset.c ./builtins/export.c ./builtins/utils.c ./builtins/exec.c ./builtins/builtins.c parssing.c #main.c
 OBJ = $(SRC:.c=.o)
 HEAD = fractol.h
 

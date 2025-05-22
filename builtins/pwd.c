@@ -1,13 +1,16 @@
-#include "minishell.h"
+#include "../minishell.h"
 
-void ft_pwd(void)
+void ft_pwd(t_env *env, char *prev_pwd)
 {
+    t_env *node;
     char *pwd;
     int i = 0;
 
+    pwd = NULL;
+    node = env;
     pwd = getcwd(NULL,0);
     if (!pwd)
-        return;
+        pwd = strdup(prev_pwd);
     while (pwd[i])
         i++;
     write(1, pwd, i);

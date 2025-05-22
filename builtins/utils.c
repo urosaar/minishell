@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 t_env	*ft_newnode(char *line, char c)
 {

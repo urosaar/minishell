@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 void copy_env(char **envp, t_env **env) 
 {
@@ -42,4 +42,16 @@ void free_env(t_env *env)
         free(env);
         env = tmp;
     }
+}
+
+void check_for_pwd(char **prev_pwd)
+{
+    char *pwd;
+
+    pwd = getcwd(NULL, 0);
+    int i = chdir(pwd);
+    if (!i)
+        *prev_pwd = strdup(pwd);
+    if (i == -1)
+        return;
 }
