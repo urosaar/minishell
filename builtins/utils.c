@@ -54,15 +54,15 @@ void	ft_lstadd_back(t_env **env, t_env *new)
 	last = ft_lstlast(*env);
 	last->next = new;
 }
-int	ft_strlen(char *s)
-{
-	int	i;
+// int	ft_strlen(char *s)
+// {
+// 	int	i;
 
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
-}
+// 	i = 0;
+// 	while (s[i])
+// 		i++;
+// 	return (i);
+// }
 
 void ft_putstr_fd(char *s, int fd)
 {
@@ -78,20 +78,20 @@ void ft_putstr_fd(char *s, int fd)
 	}
 }
 
-int ft_strcmp(char *s1, char *s2)
-{
-	int i = 0;
+// int ft_strcmp(char *s1, char *s2)
+// {
+// 	int i = 0;
 
-	if (!s1 && !s2)
-		return 0;
-	while (s1[i] || s2[i])
-	{
-		if (s1[i] != s2[i])
-			return (s1[i] - s2[i]);
-		i++;
-	}
-	return (s1[i] - s2[i]);
-}
+// 	if (!s1 && !s2)
+// 		return 0;
+// 	while (s1[i] || s2[i])
+// 	{
+// 		if (s1[i] != s2[i])
+// 			return (s1[i] - s2[i]);
+// 		i++;
+// 	}
+// 	return (s1[i] - s2[i]);
+// }
 
 char *ft_strchr(char *s, int c)
 {

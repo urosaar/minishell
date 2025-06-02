@@ -28,7 +28,7 @@ void replace(t_env *env, char *path, char *oldpath)
     }
 }
 
-void ft_cd(t_env **env, char **arg)
+void ft_cd(t_env **env, char **arg, char *prev_pwd)
 {
     int i;
     t_env *node;
@@ -37,7 +37,9 @@ void ft_cd(t_env **env, char **arg)
 
     path = NULL;
     node = *env;
-    oldpath = getcwd(NULL, 0);
+    oldpath = getcwd(NULL, 0);    
+    if (!oldpath)
+        oldpath = strdup(prev_pwd);
     if (!arg[1] || (!strcmp(arg[1], "~")  && !arg[2]))
     {
         while (node)

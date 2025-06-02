@@ -1,17 +1,17 @@
 #include "../minishell.h"
 
-void check_option(char **splited, int *flag, int *t)
+void check_option(char **args, int *flag, int *t)
 {
     int i = 1;
     int j = 0;
     
-    while (splited[i] && splited[i][j] && splited[i][j] == '-')
+    while (args[i] && args[i][j] && args[i][j] == '-')
     {
-        while (splited[i][++j])
+        while (args[i][++j])
         {
-            if (splited[i][j] == 'n')
+            if (args[i][j] == 'n')
             {
-                if (splited[i][j + 1] == '\0')
+                if (args[i][j + 1] == '\0')
                 {
                     (*t)++;
                     *flag = 0;
@@ -20,23 +20,23 @@ void check_option(char **splited, int *flag, int *t)
             else
                 return;
         } 
-        if (!splited[i][j] && splited[i][j - 1] == '-')
+        if (!args[i][j] && args[i][j - 1] == '-')
             return;
         j = 0;
         i++;
     }
 }
 
-void ft_echo(char **splited)
+void ft_echo(char **args)
 {
     int i = 1;
     int flag = 1;
 
-    check_option(splited, &flag, &i);
-    while (splited[i])
+    check_option(args, &flag, &i);
+    while (args[i])
     {
-        write(1, splited[i], ft_strlen(splited[i]));
-        if (splited[i + 1])
+        write(1, args[i], ft_strlen(args[i]));
+        if (args[i + 1])
             write(1, " ", 1);
         i++;
     }

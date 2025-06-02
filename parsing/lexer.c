@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 char *extract_quoted(const char *input, int *i)
 {

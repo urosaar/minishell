@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 int check_consecutive_operators(char **tokens)
 {

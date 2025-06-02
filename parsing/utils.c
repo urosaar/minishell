@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../minishell.h"
 
 size_t ft_strlen(const char *str)
 {
@@ -8,21 +8,21 @@ size_t ft_strlen(const char *str)
     return (i);
 }
 
-char *ft_strdup(const char *src)
-{
-    size_t len = ft_strlen(src);
-    char *dup = malloc(len + 1);
-    if (!dup)
-        return (NULL);
+// char *ft_strdup(const char *src)
+// {
+//     size_t len = ft_strlen(src);
+//     char *dup = malloc(len + 1);
+//     if (!dup)
+//         return (NULL);
 
-    size_t i = 0;
-    while (i <= len)
-    {
-        dup[i] = src[i];
-        i++;
-    }
-    return (dup);
-}
+//     size_t i = 0;
+//     while (i <= len)
+//     {
+//         dup[i] = src[i];
+//         i++;
+//     }
+//     return (dup);
+// }
 
 
 int ft_strcmp(const char *s1, const char *s2)

@@ -7,7 +7,7 @@ void builtins(t_env **env, char **args, char *prev_pwd)
     else if (*args && !ft_strcmp(*args, "pwd"))
         ft_pwd(*env, prev_pwd);
     else if (*args && !ft_strcmp(*args, "cd"))
-        ft_cd(env, args);
+        ft_cd(env, args, prev_pwd);
     else if (*args && !ft_strcmp(*args, "exit"))
         ft_exit(*env, args);
     else if (*args && !ft_strcmp(*args, "env"))

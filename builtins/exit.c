@@ -51,10 +51,10 @@ long ft_atoi(t_env *env, char *arg)
             if ((r < oldnbr && sign > 0) || (r < oldnbr && sign < 0))
                 check_error(env, arg);
         }
-        return (r * sign);
     }
     else
         check_error(env, arg);
+    return (r * sign);
 }
 
 void ft_check_arg(t_env *env, char *arg)
