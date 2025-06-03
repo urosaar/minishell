@@ -39,7 +39,6 @@ t_env	*ft_lstlast(t_env *env)
 	}
 	return (env);
 }
-
 void	ft_lstadd_back(t_env **env, t_env *new)
 {
 	t_env	*last;
@@ -64,9 +63,9 @@ void	ft_lstadd_back(t_env **env, t_env *new)
 // 	return (i);
 // }
 
-void ft_putstr_fd(char *s, int fd)
+void	ft_putstr_fd(char *s, int fd)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!s)
@@ -93,9 +92,9 @@ void ft_putstr_fd(char *s, int fd)
 // 	return (s1[i] - s2[i]);
 // }
 
-char *ft_strchr(char *s, int c)
+char	*ft_strchr(char *s, int c)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s[i])
@@ -106,11 +105,10 @@ char *ft_strchr(char *s, int c)
 	}
 	return (NULL);
 }
-
 char	*ft_strdup(char *src)
 {
-	int		i;
 	char	*dest;
+	int		i;
 
 	i = 0;
 	if (!src)

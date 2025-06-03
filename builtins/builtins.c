@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void builtins(t_env **env, char **args, char *prev_pwd)
+void    builtins(t_env **env, char **args, char *prev_pwd)
 {
     if (*args && !ft_strcmp(*args, "echo"))
         ft_echo(args);
