@@ -82,7 +82,8 @@ char    *expand_variables(const char *input);
 char    *strip_quotes(const char *str);
 char    *get_input(void);
 int     is_only_whitespace(const char *input);
-
+void	*ft_calloc(size_t count, size_t size);
+void	*ft_memcpy(void *dst, const void *src, size_t n);
 /* Memory */
 void    free_tokens(char **tokens);
 void    free_commands(t_command *cmd);
