@@ -69,3 +69,17 @@ int is_only_whitespace(const char *input)
     }
     return (1);
 }
+void *ft_calloc(size_t count, size_t size)
+{
+    void *ptr = malloc(count * size);
+    if (!ptr)
+        return (NULL);
+    size_t total_size = count * size;
+    size_t i = 0;
+    while (i < total_size)
+    {
+        ((unsigned char *)ptr)[i] = 0;
+        i++;
+    }
+    return (ptr);
+}
