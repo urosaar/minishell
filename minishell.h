@@ -41,16 +41,17 @@ typedef struct s_env
 	struct s_env *next;
 }	t_env;
 
-typedef struct s_command
-{
-    char *cmd;              // command name
-    char **args;            // arguments (including cmd)
-    char *infile;           // input redirection: < or <<
-    char *outfile;          // output redirection: > or >>
-    int append;             // 1 if >>
-    int heredoc;            // 1 if <<
-    struct s_command *next; // next command in pipeline
-} t_command;
+typedef struct s_command {
+    char            *cmd;       // Command name (e.g. "ls")
+    char            **args;     // NULL-terminated array of arguments
+    char            *infile;    // Filename for '<' or heredoc delimiter for '<<'
+    char            *outfile;   // Filename for '>' or '>>'
+    t_redirection   *redirections;  //  Linked list of redirections (if you later want to support multiple redirections)
+    int              append;    // 1 if “>>”, 0 if “>”
+    int              heredoc;   // 1 if “<<”
+    struct s_command *next;     // Next command in a pipeline
+}   t_command;
+
 
 /* Function prototypes */
 /* Lexer */
