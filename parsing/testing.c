@@ -9,35 +9,34 @@ void free_tokens(char **tokens)
 }
 void print_commands(t_command *cmd)
 {
-	int idx = 0;
-	while (cmd)
-	{
-		printf("------- Command #%d -------\n", idx++);
-		printf("cmd: %s\n", cmd->cmd);
+    int idx = 0;
+    while (cmd)
+    {
+        printf("------- Command #%d -------\n", idx++);
+        printf("cmd: %s\n", cmd->cmd);
+        for (int i = 0; cmd->args[i]; i++)
+            printf("  arg[%d]: %s\n", i, cmd->args[i]);
 
-		int i = 0;
-		while (cmd->args[i])
-		{
-			printf("  arg[%d]: %s\n", i, cmd->args[i]);
-			i++;
-		}
+        t_redirection *redir = cmd->redirections;
+        while (redir)
+        {
+            char *type_str = NULL;
+            if (redir->type == TOKEN_REDIRECT_IN)
+                type_str = "redirect_in (<)";
+            else if (redir->type == TOKEN_HEREDOC)
+                type_str = "heredoc (<<)";
+            else if (redir->type == TOKEN_REDIRECT_OUT)
+                type_str = "redirect_out (>)";
+            else if (redir->type == TOKEN_REDIRECT_APPEND)
+                type_str = "redirect_append (>>)";
+            else
+                type_str = "unknown";
 
-		if (cmd->infile)
-		{
-			if (cmd->heredoc)
-				printf("  infile (heredoc): %s\n", cmd->infile);
-			else
-				printf("  infile: %s\n", cmd->infile);
-		}
-		if (cmd->outfile)
-		{
-			if (cmd->append)
-				printf("  outfile (append): %s\n", cmd->outfile);
-			else
-				printf("  outfile (truncate): %s\n", cmd->outfile);
-		}
-		cmd = cmd->next;
-	}
+            printf("  redirection: %s, filename: %s\n", type_str, redir->filename);
+            redir = redir->next;
+        }
+        cmd = cmd->next;
+    }
 }
 
 void free_commands(t_command *cmd)
