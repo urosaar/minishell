@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
+/*   Updated: 2025/06/09 17:15:35 by skhallou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 char	**build_env_array(t_env *env)
@@ -86,7 +98,7 @@ int	ft_size_node(t_command *cmds)
 	}
 	return (i);
 }
-void is_outfile(char *d, t_command *curr)
+void redirect_output(char *d, t_command *curr)
 {
 	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_TRUNC, 0777);
 	if (d || is_builtins(curr->args))
@@ -96,7 +108,7 @@ void is_outfile(char *d, t_command *curr)
 	}
 }
 
-void is_infile(char *d, t_command *curr)
+void  redirect_input(char *d, t_command *curr)
 {
 	int f = open(curr->redirections->filename, O_RDWR, 0777);
 	if (f == -1)
@@ -111,7 +123,7 @@ void is_infile(char *d, t_command *curr)
 	}
 }
 
-void is_append(char *d, t_command *curr)
+void append_mode(char *d, t_command *curr)
 {
 	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_APPEND, 0777); 
 	if (d || is_builtins(curr->args))
@@ -161,11 +173,11 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 			while (curr->redirections)
 			{
 				if (curr->redirections->filename && curr->redirections->type == 3)
-					is_outfile(d, curr);
+					redirect_output(d, curr);
 				if (curr->redirections->filename && curr->redirections->type == 4)
-					is_append(d, curr);
+					append_mode(d, curr);
 				if (curr->redirections->filename && curr->redirections->type == 2)
-					is_infile(d, curr);
+					redirect_input(d, curr);
 				curr->redirections = curr->redirections->next;
 			}
 			if (is_builtins(curr->args))
