@@ -99,6 +99,11 @@ int main(int ac, char **av, char **envp)
 		}
 
 		cmds = parse_tokens(tokens);
+		// while (cmds->redirections)
+		// {
+		// 	printf(">>>>FILENAME = %s\n", cmds->redirections->filename);
+		// 	cmds->redirections = cmds->redirections->next;
+		// }
 		if (cmds)
 		{
 			// print_commands(cmds);

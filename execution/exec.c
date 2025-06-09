@@ -86,6 +86,40 @@ int	ft_size_node(t_command *cmds)
 	}
 	return (i);
 }
+void is_outfile(char *d, t_command *curr)
+{
+	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_TRUNC, 0777);
+	if (d || is_builtins(curr->args))
+	{
+		dup2(f, STDOUT_FILENO);
+		close(f);
+	}
+}
+
+void is_infile(char *d, t_command *curr)
+{
+	int f = open(curr->redirections->filename, O_RDWR, 0777);
+	if (f == -1)
+	{
+		printf("minishell: %s: No such file or directory\n", curr->redirections->filename);
+		return;
+	}
+	if (d || is_builtins(curr->args))
+	{
+		dup2(f, STDIN_FILENO);
+		close(f);
+	}
+}
+
+void is_append(char *d, t_command *curr)
+{
+	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_APPEND, 0777); 
+	if (d || is_builtins(curr->args))
+	{
+		dup2(f, STDOUT_FILENO);
+		close(f);
+	}
+}
 
 void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 {
@@ -93,11 +127,12 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 	char		*d;
 	char		**envp;
 	int			pipe_fd[2];
-	int			prev_fd = -1;
+	int			prev_fd;
 	pid_t		pid;
 
 	curr = cmds;
-	if (is_builtins(curr->args) && !curr->next && !curr->outfile && !curr->infile)
+	prev_fd = -1;
+	if (is_builtins(curr->args) && !curr->next && !curr->redirections)
 	{
 		builtins(&env, curr->args, prev_pwd);
 		return;
@@ -105,10 +140,7 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 	while (curr)
 	{
 		if (curr->next && pipe(pipe_fd) == -1)
-		{
-			perror("pipe");
 			return;
-		}
 		pid = fork();
 		if (pid == -1)
 			return;
@@ -126,40 +158,16 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 				close(pipe_fd[1]);
 			}
 			d = check_if_exist(env, curr);
-//redirection-----------------------------------------------------------------------------
-			if (curr->outfile && !curr->append)
+			while (curr->redirections)
 			{
-				int f = open(curr->outfile, O_CREAT | O_RDWR | O_TRUNC, 0777); 
-				if (d || is_builtins(curr->args))
-				{
-					dup2(f, STDOUT_FILENO);
-					close(f);
-				}
+				if (curr->redirections->filename && curr->redirections->type == 3)
+					is_outfile(d, curr);
+				if (curr->redirections->filename && curr->redirections->type == 4)
+					is_append(d, curr);
+				if (curr->redirections->filename && curr->redirections->type == 2)
+					is_infile(d, curr);
+				curr->redirections = curr->redirections->next;
 			}
-			if (curr->outfile && curr->append)
-			{
-				int f = open(curr->outfile, O_CREAT | O_RDWR | O_APPEND, 0777); 
-				if (d || is_builtins(curr->args))
-				{
-					dup2(f, STDOUT_FILENO);
-					close(f);
-				}
-			}
-			if (curr->infile && !curr->heredoc)
-			{
-				int f = open(curr->infile, O_RDWR, 0777);
-				if (f == -1)
-				{
-					printf("minishell: %s: No such file or directory\n", curr->infile);
-					return;
-				}
-				if (d || is_builtins(curr->args))
-				{
-					dup2(f, STDIN_FILENO);
-					close(f);
-				}
-			}
-//redirection-----------------------------------------------------------------------------
 			if (is_builtins(curr->args))
 			{
 				builtins(&env, curr->args, prev_pwd);
@@ -175,10 +183,8 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 			if (execve(d, curr->args, envp) == -1)
 				exit(2);
 		}
-
 		if (prev_fd != -1)
 			close(prev_fd);
-
 		if (curr->next)
 		{
 			close(pipe_fd[1]);
