@@ -13,7 +13,7 @@ HEAD = fractol.h
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAG) $(OBJ) -lreadline -o $(NAME)
+	$(CC) $(CFLAG) $(OBJ) -lreadline -lncurses -o $(NAME)
 
 clean:
 	$(RM) $(OBJ)

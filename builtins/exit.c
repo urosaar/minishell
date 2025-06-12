@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:14:53 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/12 18:48:05 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,26 @@ void	check_error(t_env *env, char *arg)
 		free_env(env);
 	exit(2);
 }
+long	calcul(t_env *env, char *arg, int sign)
+{
+	long long	oldnbr;
+	long long	r;
+	int	i;
+
+	i = 0;
+	r = 0;
+	while (arg[i] && arg[i] >= '0' && arg[i] <= '9')
+	{
+		oldnbr = r;
+		r = r * 10 + (arg[i++] - '0');
+		if ((r < oldnbr && sign > 0) || (r < oldnbr && sign < 0))
+			check_error(env, arg);
+	}
+	return (r);
+}
 long	ft_atoi(t_env *env, char *arg)
 {
 	long long	r;
-	long long	oldnbr;
 	int			i;
 	int			sign;
 
@@ -50,20 +66,11 @@ long	ft_atoi(t_env *env, char *arg)
 		i++;
 	if (arg[i] == '+' || arg[i] == '-')
 	{
-		if (arg[i] == '-')
+		if (arg[i++] == '-')
 			sign *= -1;
-		i++;
 	}
 	if (is_nbr(&arg[i]))
-	{
-		while (arg[i] && arg[i] >= '0' && arg[i] <= '9')
-		{
-			oldnbr = r;
-			r = r * 10 + (arg[i++] - '0');
-			if ((r < oldnbr && sign > 0) || (r < oldnbr && sign < 0))
-				check_error(env, arg);
-		}
-	}
+		r = calcul(env, &arg[i], sign);
 	else
 		check_error(env, arg);
 	return (r * sign);

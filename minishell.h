@@ -8,6 +8,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <stdint.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -92,7 +93,7 @@ void    free_commands(t_command *cmd);
 void    print_commands(t_command *cmd);
 
 /* Execution */
-void execution(t_env *env, t_command *cmds, char *prev_pwd);
+void execution(t_env **env, t_command *cmds, char *prev_pwd);
 
 /* Builtins */
 char	**ft_split(char *s, char c);

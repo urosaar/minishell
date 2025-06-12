@@ -6,26 +6,26 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:15:35 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/12 15:42:40 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	**build_env_array(t_env *env)
+char	**build_env_array(t_env **env)
 {
 	int		count = 0;
 	t_env	*tmp;
 
 	count = 0;
-	tmp = env;
+	tmp = *env;
 	while (tmp)
 	{
 		count++;
 		tmp = tmp->next;
 	}
 	char **envp = malloc((count + 1) * sizeof(char *));
-	tmp = env;
+	tmp = *env;
 	int i = 0;
 	while (tmp)
 	{
@@ -108,19 +108,20 @@ void redirect_output(char *d, t_command *curr)
 	}
 }
 
-void  redirect_input(char *d, t_command *curr)
+int  redirect_input(char *d, t_command *curr)
 {
 	int f = open(curr->redirections->filename, O_RDWR, 0777);
 	if (f == -1)
 	{
 		printf("minishell: %s: No such file or directory\n", curr->redirections->filename);
-		return;
+		return (0);
 	}
 	if (d || is_builtins(curr->args))
 	{
 		dup2(f, STDIN_FILENO);
 		close(f);
 	}
+	return (1);
 }
 
 void append_mode(char *d, t_command *curr)
@@ -133,7 +134,7 @@ void append_mode(char *d, t_command *curr)
 	}
 }
 
-void	execution(t_env *env, t_command *cmds, char *prev_pwd)
+void	execution(t_env **env, t_command *cmds, char *prev_pwd)
 {
 	t_command	*curr;
 	char		*d;
@@ -146,7 +147,7 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 	prev_fd = -1;
 	if (is_builtins(curr->args) && !curr->next && !curr->redirections)
 	{
-		builtins(&env, curr->args, prev_pwd);
+		builtins(env, curr->args, prev_pwd);
 		return;
 	}
 	while (curr)
@@ -169,7 +170,7 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 				dup2(pipe_fd[1], STDOUT_FILENO);
 				close(pipe_fd[1]);
 			}
-			d = check_if_exist(env, curr);
+			d = check_if_exist(*env, curr);
 			while (curr->redirections)
 			{
 				if (curr->redirections->filename && curr->redirections->type == 3)
@@ -177,12 +178,15 @@ void	execution(t_env *env, t_command *cmds, char *prev_pwd)
 				if (curr->redirections->filename && curr->redirections->type == 4)
 					append_mode(d, curr);
 				if (curr->redirections->filename && curr->redirections->type == 2)
-					redirect_input(d, curr);
+				{
+					if (!redirect_input(d, curr))
+						return;
+				}
 				curr->redirections = curr->redirections->next;
 			}
 			if (is_builtins(curr->args))
 			{
-				builtins(&env, curr->args, prev_pwd);
+				builtins(env, curr->args, prev_pwd);
 				exit(0);
 			}
 			if (!d)
