@@ -61,14 +61,14 @@ void free_commands(t_command *cmd)
 		cmd = next;
 	}
 }
-// void handler(int signal)
-// {
+void handler(int signal)
+{
 
-// 	write(1, "\n", 1);
-// 	rl_on_new_line();
-// 	rl_replace_line("", 0);
-// 	rl_redisplay();
-// }
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
 
 
 int main(int ac, char **av, char **envp)
@@ -80,7 +80,7 @@ int main(int ac, char **av, char **envp)
 
 	char *prev_pwd = NULL;
 	copy_env(envp, &env);
-	// signal(SIGINT, &handler);
+	signal(SIGINT, &handler);
 	while (1)
 	{
 		raw = get_input();

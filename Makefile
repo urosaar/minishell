@@ -1,19 +1,21 @@
 NAME = minishell
 CC = cc
 CFLAG = -Wall -Werror -Wextra
+READLINE_INC = -I$(shell brew --prefix readline)/include
+READLINE_LIB = -L$(shell brew --prefix readline)/lib -lreadline
 SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c  ./builtins/pwd.c ./builtins/exit.c ./builtins/cd.c\
 		./builtins/split.c ./builtins/unset.c ./builtins/export.c ./builtins/utils.c ./execution/exec.c\
 		./builtins/builtins.c ./parsing/lexer.c ./parsing/parser.c ./parsing/shell_utils.c ./parsing/syntax.c ./parsing/testing.c ./parsing/utils.c
 OBJ = $(SRC:.c=.o)
 HEAD = fractol.h
 
-%.o: %.c $(HEAD)
-	$(CC) $(CFLAGS) -c $< -o $@
-
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAG) $(OBJ) -lreadline -lncurses -o $(NAME)
+	$(CC) $(OBJ) $(FLAGS) -o $(NAME) $(READLINE_LIB)
+
+%.o: %.c minishell.h Makefile
+	$(CC) $(FLAGS) $(READLINE_INC) -c $< -o $@
 
 clean:
 	$(RM) $(OBJ)
@@ -21,4 +23,6 @@ clean:
 fclean: clean
 	$(RM) $(NAME) 
 
-re: fclean all  
+re: fclean all 
+# .PHONY: 
+# .SILENT:
