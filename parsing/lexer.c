@@ -1,20 +1,20 @@
 #include "../minishell.h"
 
-char *extract_quoted(const char *input, int *i)
-{
-    char quote = input[*i];
-    int start = *i;
-    (*i)++;
-    while (input[*i] && input[*i] != quote)
-        (*i)++;
-    if (input[*i] != quote)
-    {
-        printf("minishell: syntax error: unterminated quoted string\n");
-        return (NULL);
-    }
-    (*i)++;
-    return (substr(input, start, *i));
-}
+// char *extract_quoted(const char *input, int *i)
+// {
+//     char quote = input[*i];
+//     int start = *i;
+//     (*i)++;
+//     while (input[*i] && input[*i] != quote)
+//         (*i)++;
+//     if (input[*i] != quote)
+//     {
+//         printf("minishell: syntax error: unterminated quoted string\n");
+//         return (NULL);
+//     }
+//     (*i)++;
+//     return (substr(input, start, *i));
+// }
 
 char *extract_operator(const char *input, int *i)
 {
@@ -114,19 +114,7 @@ char **lexer(const char *input)
         if (!input[i])
             break;
 
-        if (input[i] == '\'' || input[i] == '"')
-        {
-            tokens[j] = extract_quoted(input, &i);
-            if (!tokens[j])
-            {
-                while (j > 0)
-                    free(tokens[--j]);
-                free(tokens);
-                return (NULL);
-            }
-            j++;
-        }
-        else if (is_operator(input[i]))
+      if (is_operator(input[i]))
         {
             tokens[j++] = extract_operator(input, &i);
         }
