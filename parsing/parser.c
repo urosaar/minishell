@@ -62,7 +62,9 @@ t_command *parse_tokens(char **tokens)
                 redir = ft_calloc(1, sizeof(t_redirection));
                 redir->type = TOKEN_HEREDOC;
                 redir->filename = strip_quotes(tokens[i]);
-            }
+                cmd->heredoc = 1;
+                cmd->infile = ft_strdup(redir->filename);        
+             }
             else if (ft_strcmp(tokens[i], ">") == 0 && tokens[i + 1])
             {
                 i++;
