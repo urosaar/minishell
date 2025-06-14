@@ -12,6 +12,8 @@
 #include <sys/wait.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <stdbool.h>
+#define HEREDOC_MAX_LINES 1000
 
 typedef enum e_token_type {
     TOKEN_WORD,
@@ -58,7 +60,7 @@ typedef struct s_command {
 /* Lexer */
 char    **lexer(const char *input);
 int     count_tokens(const char *input);
-char    *extract_quoted(const char *input, int *i);
+// char    *extract_quoted(const char *input, int *i);
 char    *extract_operator(const char *input, int *i);
 char    *extract_word(const char *input, int *i);
 

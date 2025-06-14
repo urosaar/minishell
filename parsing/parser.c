@@ -58,13 +58,19 @@ t_command *parse_tokens(char **tokens)
             }
             else if (ft_strcmp(tokens[i], "<<") == 0 && tokens[i + 1])
             {
+                 if (!tokens[i + 1])
+                {
+                    fprintf(stderr, "minishell: syntax error near unexpected token `newline`\n");
+                    free(cmd);
+                    return NULL;
+                }
                 i++;
                 redir = ft_calloc(1, sizeof(t_redirection));
                 redir->type = TOKEN_HEREDOC;
                 redir->filename = strip_quotes(tokens[i]);
                 cmd->heredoc = 1;
                 cmd->infile = ft_strdup(redir->filename);        
-             }
+         }
             else if (ft_strcmp(tokens[i], ">") == 0 && tokens[i + 1])
             {
                 i++;
