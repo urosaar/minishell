@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:22 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:46:34 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/15 20:14:04 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	ft_cd(t_env **env, char **arg, char *prev_pwd)
 	oldpath = getcwd(NULL, 0);
 	if (!oldpath)
 		oldpath = strdup(prev_pwd);
-	if (!arg[1] || (!strcmp(arg[1], "~")  && !arg[2]))
+	if (!arg[1] || !strcmp(arg[1], "~"))
 		i = change_to_home(*env, path, i);
 	else
 		i = chdir(arg[1]);

@@ -6,11 +6,31 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:15:58 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/15 18:37:30 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	if_envp_empty(t_env **env)
+{
+	t_env	*node;
+	char	*node1;
+	char	*node2;
+	char	*node3;
+	char	*node4;
+
+	printf("HEREEE\n");
+	node1 = "PWD=/mnt/homes/skhallou/Desktop/minishell";
+	node2 = "SHLVL=1";
+	node3 = "_=/usr/bin/env";
+	node4 = "PATH=/mnt/homes/skhallou/goinfre/homebrew/bin:/mnt/homes/skhallou/goinfre/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands";
+	node = ft_newnode(strdup(node1), '=');
+	node->next = ft_newnode(strdup(node2), '=');
+	node->next->next = ft_newnode(strdup(node3), '=');
+	node->next->next->next = ft_newnode(strdup(node4), '=');
+	ft_lstadd_back(env, node);
+}
 
 void	copy_env(char **envp, t_env **env) 
 {
@@ -23,6 +43,10 @@ void	copy_env(char **envp, t_env **env)
 		new_node = ft_newnode(strdup(envp[i]), '=');
 		ft_lstadd_back(env, new_node);
 		i++;
+	}
+	if (!*envp)
+	{
+		if_envp_empty(env);
 	}
 }
 
