@@ -97,6 +97,9 @@ void    print_commands(t_command *cmd);
 /* Execution */
 void execution(t_env **env, t_command *cmds, char *prev_pwd);
 
+/*Signals*/
+void	handler(int signal);
+
 /* Builtins */
 char	**ft_split(char *s, char c);
 void	ft_echo(char **arg);

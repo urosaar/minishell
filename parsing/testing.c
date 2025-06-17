@@ -51,6 +51,7 @@ void free_commands(t_command *cmd)
 		while (cmd->args[i])
 			free(cmd->args[i++]);
 		free(cmd->args);
+		cmd->args = NULL;
 		if (cmd->infile)
 			free(cmd->infile);
 		if (cmd->outfile)
@@ -61,19 +62,28 @@ void free_commands(t_command *cmd)
 		cmd = next;
 	}
 }
-void handler(int signal)
+void	handler_eof(t_command *cmds, t_env *env)
 {
-	if (signal  == SIGINT) // ctrl + c
-	{
-		write(1, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-	else if (signal == SIGQUIT) /* [ctrl + \] */
-		return ;
+	if (cmds)
+		free_commands(cmds);
+	if (env)
+		free_env(env);
+	printf("exit\n");
+	exit(0);
+}
+void	handler(int signal)
+{
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
+void signals()
+{
+	signal(SIGINT, handler);
+	signal(SIGQUIT, SIG_IGN); /* [ctrl + \] */
+}
 
 int main(int ac, char **av, char **envp)
 {
@@ -82,16 +92,20 @@ int main(int ac, char **av, char **envp)
 	t_command	*cmds;
 	t_env		*env;
 
+	if (av[1])
+	{
+		printf("minishell: %s: No such file or directory\n", av[1]);
+		return (1);
+	}
+	
 	char *prev_pwd = NULL;
 	copy_env(envp, &env);
-	signal(SIGINT, &handler); 
-	signal(SIGQUIT, SIG_IGN); // ignore the sigquit signale
+	signals();
 	while (1)
 	{
 		raw = get_input();
 		if (!raw)
-			break;
-
+			handler_eof(cmds, env);
 		if (is_only_whitespace(raw))
 		{
 			free(raw);
@@ -128,9 +142,10 @@ int main(int ac, char **av, char **envp)
 			check_for_pwd(&prev_pwd);
 			execution(&env, cmds, prev_pwd);
 			free_commands(cmds);
+			cmds = NULL;
 		}
-
 		free_tokens(tokens);
 	}
+	free_env(env);
 }
 

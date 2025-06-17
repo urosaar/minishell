@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/15 23:27:57 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/17 21:42:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -190,6 +190,11 @@ int redirect_input(char *d, t_command *curr)
 	close(f);
 	return (1);
 }
+void handler_heredoc()
+{
+	write(1, "\n", 1);
+	exit(130);
+}
 
 int handle_heredoc(t_command *cmd)
 {
@@ -206,6 +211,7 @@ int handle_heredoc(t_command *cmd)
 
 	if (pid == 0)
 	{
+		signal(SIGINT, handler_heredoc);
 		close(pipefd[0]);
 		while (1)
 		{
@@ -236,6 +242,7 @@ int handle_heredoc(t_command *cmd)
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
+			printf("HEREEE\n");
 			close(pipefd[0]);
 			return (-1);
 		}
