@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/15 20:04:10 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/15 23:27:57 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,7 +150,7 @@ int redirect_output(char *d, t_command *curr)
 
 int append_mode(char *d, t_command *curr)
 {
-	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_APPEND, 0777);
+	int f = open(curr->redirections->filename, O_CREAT | O_RDONLY | O_APPEND, 0777);
 	if (f == -1)
 	{
 		perror("minishell: append_mode");
@@ -171,12 +171,13 @@ int append_mode(char *d, t_command *curr)
 
 int redirect_input(char *d, t_command *curr)
 {
-	int f = open(curr->redirections->filename, O_RDWR, 0777);
+	int f = open(curr->redirections->filename, O_RDONLY, 0777);
 	if (f == -1)
 	{
 		fprintf(stderr, "minishell: %s: No such file or directory\n", curr->redirections->filename);
 		return (0);
 	}
+
 	if (d || is_builtins(curr->args))
 	{
 		if (dup2(f, STDIN_FILENO) == -1)

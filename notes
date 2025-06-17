@@ -1,0 +1,3 @@
+
+heredoc ctr +c quit heredoc
+ls | > out  no return

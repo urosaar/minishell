@@ -1,113 +1,128 @@
 #include "../minishell.h"
 
-int count_args(char **tokens, int start)
+// Refactored parse_tokens: handle redirections and args in one pass per command
+static bool is_redir_token(const char *tok)
+{
+    return (ft_strcmp(tok, "<") == 0
+         || ft_strcmp(tok, "<<") == 0
+         || ft_strcmp(tok, ">") == 0
+         || ft_strcmp(tok, ">>") == 0);
+}
+
+// Count actual arguments (non-redir) between start and next pipe or end
+static int count_actual_args(char **tokens, int start)
 {
     int count = 0;
-    while (tokens[start]
-        && tokens[start][0] != '|'
-        && tokens[start][0] != '<'
-        && tokens[start][0] != '>')
+    int j = start;
+    while (tokens[j] && tokens[j][0] != '|')
     {
-        count++;
-        start++;
+        if (is_redir_token(tokens[j]))
+            j += 2; 
+        else
+        {
+            count++;
+            j++;
+        }
     }
-    return (count);
+    return count;
+}
+ // Parse a single command from tokens, handling redirections and args
+static t_command *parse_one_command(char **tokens, int *idx)
+{
+    t_command    *cmd = ft_calloc(1, sizeof(t_command));
+    int           argc;
+    int           arg_i = 0;
+    t_redirection *last_redir = NULL;
+
+    if (!cmd)
+        return NULL;
+
+    argc = count_actual_args(tokens, *idx);
+    cmd->args = malloc(sizeof(char *) * (argc + 1));
+    if (!cmd->args)
+        return NULL;
+
+    while (tokens[*idx] && tokens[*idx][0] != '|')
+    {
+        if (is_redir_token(tokens[*idx]))
+        {
+            t_redirection *redir = ft_calloc(1, sizeof(t_redirection));
+            char           *filename;
+            if (!redir)
+                return NULL;
+            if (ft_strcmp(tokens[*idx], "<") == 0)
+                redir->type = TOKEN_REDIRECT_IN;
+            else if (ft_strcmp(tokens[*idx], "<<") == 0)
+                redir->type = TOKEN_HEREDOC;
+            else if (ft_strcmp(tokens[*idx], ">") == 0)
+                redir->type = TOKEN_REDIRECT_OUT;
+            else 
+                redir->type = TOKEN_REDIRECT_APPEND;
+            (*idx)++;
+            if (!tokens[*idx])
+                return NULL;  
+
+            filename = strip_quotes(tokens[*idx]);
+            redir->filename = filename;
+
+            if (redir->type == TOKEN_REDIRECT_IN)
+            {
+                cmd->infile = ft_strdup(filename);
+            }
+            else if (redir->type == TOKEN_HEREDOC)
+            {
+                cmd->heredoc = 1;
+                cmd->infile = ft_strdup(filename);
+            }
+            else if (redir->type == TOKEN_REDIRECT_OUT)
+            {
+                cmd->outfile = ft_strdup(filename);
+                cmd->append = 0;
+            }
+            else 
+            {
+                cmd->outfile = ft_strdup(filename);
+                cmd->append = 1;
+            }
+            if (!cmd->redirections)
+                cmd->redirections = redir;
+            else
+                last_redir->next = redir;
+            last_redir = redir;
+            (*idx)++;
+        }
+        else
+        {
+            cmd->args[arg_i++] = strip_quotes(tokens[*idx]);
+            (*idx)++;
+        }
+    }
+
+    cmd->args[arg_i] = NULL;
+    if (cmd->args[0])
+        cmd->cmd = ft_strdup(cmd->args[0]);
+
+    return cmd;
 }
 t_command *parse_tokens(char **tokens)
 {
-    t_command   *head = NULL;
-    t_command   *current = NULL;
-    int         i = 0;
+    t_command *head = NULL;
+    t_command *current = NULL;
+    int i = 0;
 
     while (tokens[i])
     {
-        t_command *cmd = ft_calloc(1, sizeof(t_command));
+        t_command *cmd = parse_one_command(tokens, &i);
         if (!cmd)
-            return (NULL);
-
-        int argc = count_args(tokens, i);
-        cmd->args = malloc(sizeof(char *) * (argc + 1));
-        if (!cmd->args)
-            return (NULL);
-
-        int j = 0;
-        while (tokens[i]
-            && tokens[i][0] != '|'
-            && tokens[i][0] != '<'
-            && tokens[i][0] != '>')
-        {
-            char *stripped = strip_quotes(tokens[i]);
-            cmd->args[j++] = stripped;
-            i++;
-        }
-        cmd->args[j] = NULL;
-
-        if (cmd->args[0])
-            cmd->cmd = ft_strdup(cmd->args[0]);
-
-        t_redirection *last_redir = NULL;
-        while (tokens[i] && tokens[i][0] != '|')
-        {
-            t_redirection *redir = NULL;
-            if (ft_strcmp(tokens[i], "<") == 0 && tokens[i + 1])
-            {
-                i++;
-                redir = ft_calloc(1, sizeof(t_redirection));
-                redir->type = TOKEN_REDIRECT_IN;
-                redir->filename = strip_quotes(tokens[i]);
-            }
-            else if (ft_strcmp(tokens[i], "<<") == 0 && tokens[i + 1])
-            {
-                 if (!tokens[i + 1])
-                {
-                    fprintf(stderr, "minishell: syntax error near unexpected token `newline`\n");
-                    free(cmd);
-                    return NULL;
-                }
-                i++;
-                redir = ft_calloc(1, sizeof(t_redirection));
-                redir->type = TOKEN_HEREDOC;
-                redir->filename = strip_quotes(tokens[i]);
-                cmd->heredoc = 1;
-                cmd->infile = ft_strdup(redir->filename);        
-         }
-            else if (ft_strcmp(tokens[i], ">") == 0 && tokens[i + 1])
-            {
-                i++;
-                redir = ft_calloc(1, sizeof(t_redirection));
-                redir->type = TOKEN_REDIRECT_OUT;
-                redir->filename = strip_quotes(tokens[i]);
-            }
-            else if (ft_strcmp(tokens[i], ">>") == 0 && tokens[i + 1])
-            {
-                i++;
-                redir = ft_calloc(1, sizeof(t_redirection));
-                redir->type = TOKEN_REDIRECT_APPEND;
-                redir->filename = strip_quotes(tokens[i]);
-            }
-            else
-            {
-                i++;
-            }
-
-            if (redir)
-            {
-                if (!cmd->redirections)
-                    cmd->redirections = redir;
-                else
-                    last_redir->next = redir;
-                last_redir = redir;
-            }
-        }
+            return NULL;
         if (!head)
             head = cmd;
         else
             current->next = cmd;
         current = cmd;
-
         if (tokens[i] && tokens[i][0] == '|')
             i++;
     }
-
-    return (head);
+    return head;
 }
+

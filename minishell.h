@@ -69,7 +69,7 @@ t_command   *parse_tokens(char **tokens);
 int         count_args(char **tokens, int start);
 
 /* Syntax Check */
-int check_syntax_errors(char **tokens);
+int check_syntax_errors(char *line,char **tokens);
 int check_consecutive_operators(char **tokens);
 int check_redirection_without_filename(char **tokens);
 int check_invalid_pipe_placement(char **tokens);

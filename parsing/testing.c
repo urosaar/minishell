@@ -1,6 +1,5 @@
 #include "../minishell.h"
 
-
 void free_tokens(char **tokens)
 {
 	int i = 0;
@@ -64,11 +63,15 @@ void free_commands(t_command *cmd)
 }
 void handler(int signal)
 {
-
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+	if (signal  == SIGINT) // ctrl + c
+	{
+		write(1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	else if (signal == SIGQUIT) /* [ctrl + \] */
+		return ;
 }
 
 
@@ -81,12 +84,14 @@ int main(int ac, char **av, char **envp)
 
 	char *prev_pwd = NULL;
 	copy_env(envp, &env);
-	signal(SIGINT, &handler);
+	signal(SIGINT, &handler); 
+	signal(SIGQUIT, SIG_IGN); // ignore the sigquit signale
 	while (1)
 	{
 		raw = get_input();
 		if (!raw)
 			break;
+
 		if (is_only_whitespace(raw))
 		{
 			free(raw);
@@ -94,25 +99,32 @@ int main(int ac, char **av, char **envp)
 		}
 
 		char *expanded = expand_variables(raw);
-		free(raw);
 		if (!expanded)
+		{
+			free(raw);
 			continue;
+		}
 
 		tokens = lexer(expanded);
-		free(expanded);
 		if (!tokens)
-			continue;
-
-		if (check_syntax_errors(tokens))
 		{
+			free(raw);
+			free(expanded);
+			continue;
+		}
+		if (check_syntax_errors(raw, tokens))
+		{
+			free(raw);
+			free(expanded);
 			free_tokens(tokens);
 			continue;
 		}
+		free(raw);
+		free(expanded);
 
 		cmds = parse_tokens(tokens);
 		if (cmds)
 		{
-			// print_commands(cmds);
 			check_for_pwd(&prev_pwd);
 			execution(&env, cmds, prev_pwd);
 			free_commands(cmds);
@@ -120,6 +132,5 @@ int main(int ac, char **av, char **envp)
 
 		free_tokens(tokens);
 	}
-	free_env(env);
-	return (0);
 }
+
