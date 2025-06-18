@@ -1,4 +1,4 @@
 
 heredoc ctr +c quit heredoc
 ls | > out  no return
-< infile grep hello | tr 'a-z' 'A-Z' | cat > outfile
+< infile grep hello | tr 'a-z' 'A-Z' | cat > outfile : done

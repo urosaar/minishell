@@ -60,7 +60,7 @@ int check_invalid_pipe_placement(char **tokens)
 
 int check_unclosed_quotes(const char *line)
 {
-    int i = 0;
+    int  i = 0;
     char q;
 
     while (line[i])
@@ -75,12 +75,14 @@ int check_unclosed_quotes(const char *line)
                 printf("minishell: syntax error: unexpected EOF while looking for matching `%c'\n", q);
                 return (1);
             }
+            i++;
         }
         else
             i++;
     }
     return (0);
 }
+
 
 int check_syntax_errors(char *line, char **tokens)
 {

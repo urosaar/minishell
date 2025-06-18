@@ -91,7 +91,7 @@ int main(int ac, char **av, char **envp)
 	char		**tokens;
 	t_command	*cmds;
 	t_env		*env;
-
+	int last_status = 0; // not works yet :)
 	if (av[1])
 	{
 		printf("minishell: %s: No such file or directory\n", av[1]);
@@ -111,8 +111,15 @@ int main(int ac, char **av, char **envp)
 			free(raw);
 			continue;
 		}
+		if(check_unclosed_quotes(raw))
+		{
+			printf("minishell: syntax error: unclosed quotes\n");
+			free(raw);
+			continue;
+		}
 
-		char *expanded = expand_variables(raw);
+		char *expanded = expand_variables(raw, last_status);
+
 		if (!expanded)
 		{
 			free(raw);

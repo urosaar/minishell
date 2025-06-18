@@ -1,6 +1,5 @@
 #include "../minishell.h"
 
-
 char *get_input(void)
 {
     char *line = readline("minishell> ");
@@ -35,128 +34,135 @@ char *strip_quotes(const char *str)
     out[j] = '\0';
     return (out);
 }
-char *expand_variables(const char *input)
-{
-    char *result = malloc(1);
-    int   in_single = 0, in_double = 0;
-    int   i = 0, rlen = 0;
-
-    if (!result)
-        return (NULL);
-    result[0] = '\0';
-
-    while (input[i])
-    {
-        if (input[i] == '\'' && !in_double)
-        {
-            in_single = !in_single;
-            char *tmp = malloc(rlen + 2);
-            if (!tmp) { free(result); return (NULL); }
-
-            int j = 0;
-            while (j < rlen)
-            {
-                tmp[j] = result[j];
-                j++;
-            }
-
-            tmp[rlen] = input[i];
-            rlen++;
-            i++;
-            tmp[rlen] = '\0';
-            free(result);
-            result = tmp;
-        }
-        else if (input[i] == '"' && !in_single)
-        {
-            in_double = !in_double;
-            char *tmp = malloc(rlen + 2);
-            if (!tmp) { free(result); return (NULL); }
-
-            int j = 0;
-            while (j < rlen)
-            {
-                tmp[j] = result[j];
-                j++;
-            }
-
-            tmp[rlen] = input[i];
-            rlen++;
-            i++;
-            tmp[rlen] = '\0';
-            free(result);
-            result = tmp;
-        }
-        else if (input[i] == '$' && !in_single)
-        {
-            i++;
-            int var_start = i;
-
-            while ((input[i] >= 'A' && input[i] <= 'Z')
-                || (input[i] >= 'a' && input[i] <= 'z')
-                || (input[i] >= '0' && input[i] <= '9')
-                || input[i] == '_')
-            {
-                i++;
-            }
-
-            int var_len = i - var_start;
-            char *var_name = substr(input, var_start, var_start + var_len);
-            char *env = getenv(var_name);
-
-            int elen;
-            if (env)
-                elen = (int)ft_strlen(env);
-            else
-                elen = 0;
-
-            free(var_name);
-
-            char *tmp = malloc(rlen + elen + 1);
-            if (!tmp) { free(result); return (NULL); }
-
-            int j = 0;
-            while (j < rlen)
-            {
-                tmp[j] = result[j];
-                j++;
-            }
-
-            if (env)
-            {
-                int k = 0;
-                while (k < elen)
-                {
-                    tmp[rlen + k] = env[k];
-                    k++;
-                }
-            }
-
-            rlen += elen;
-            tmp[rlen] = '\0';
-            free(result);
-            result = tmp;
-        }
-        else
-        {
-            char *tmp = malloc(rlen + 2);
-            if (!tmp) { free(result); return (NULL); }
-
-            int j = 0;
-            while (j < rlen)
-            {
-                tmp[j] = result[j];
-                j++;
-            }
-
-            tmp[rlen] = input[i];
-            rlen++;
-            i++;
-            tmp[rlen] = '\0';
-            free(result);
-            result = tmp;
-        }
+static char *append_char(char *result, int *rlen, char c)
+ {
+    char *tmp = malloc(*rlen + 2);
+    if (!tmp) {
+        free(result);
+        return NULL;
     }
-    return (result);
+    memcpy(tmp, result, *rlen);
+    tmp[*rlen] = c;
+    (*rlen)++;
+    tmp[*rlen] = '\0';
+    free(result);
+    return tmp;
+}
+static int	ft_numlen(int n)
+{
+	int	len = 0;
+
+	if (n <= 0)
+		len++;
+	while (n)
+	{
+		n /= 10;
+		len++;
+	}
+	return (len);
 }
 
+char	*ft_itoa(int n)
+{
+	char	*str;
+	int		len;
+	long	num;
+
+	num = n;
+	len = ft_numlen(n);
+	str = malloc(len + 1);
+	if (!str)
+		return (NULL);
+	str[len--] = '\0';
+	if (num == 0)
+		str[0] = '0';
+	if (num < 0)
+	{
+		str[0] = '-';
+		num = -num;
+	}
+	while (num)
+	{
+		str[len--] = '0' + (num % 10);
+		num /= 10;
+	}
+	return (str);
+}
+
+char *expand_variables(const char *input, int last_status) {
+    char *result = malloc(1);
+    if (!result) return NULL;
+    result[0] = '\0';
+
+    int in_single = 0, in_double = 0;
+    int i = 0, rlen = 0;
+
+    while (input[i]) {
+        if (input[i] == '\'' && !in_double) {
+            in_single = !in_single;
+            result = append_char(result, &rlen, input[i++]);
+        }
+        else if (input[i] == '"' && !in_single) {
+            in_double = !in_double;
+            result = append_char(result, &rlen, input[i++]);
+        }
+        else if (input[i] == '$' && !in_single) {
+            i++;  
+
+            if (input[i] == '?') {
+                char *num = ft_itoa(last_status);
+                if (!num)
+                    return (free(result), NULL);
+
+                int addlen = strlen(num);
+                char *tmp = malloc(rlen + addlen + 1);
+                if (!tmp)
+                    return (free(result), free(num), NULL);
+
+                memcpy(tmp,        result, rlen);
+                memcpy(tmp + rlen, num,    addlen);
+                rlen += addlen;
+                tmp[rlen] = '\0';
+
+                free(result);
+                free(num);
+                result = tmp;
+                i++;  // skip '?'
+                continue;
+            }
+            int start = i;
+            while (isalnum((unsigned char)input[i]) || input[i] == '_')
+                i++;
+            int varlen = i - start;
+
+            if (varlen > 0) {
+                char *var = strndup(input + start, varlen);
+                char *val = getenv(var);
+                free(var);
+
+                if (val) {
+                    int vlen = strlen(val);
+                    char *tmp = malloc(rlen + vlen + 1);
+                    if (!tmp)
+                        return (free(result), NULL);
+
+                    memcpy(tmp,        result, rlen);
+                    memcpy(tmp + rlen, val,    vlen);
+                    rlen += vlen;
+                    tmp[rlen] = '\0';
+
+                    free(result);
+                    result = tmp;
+                }
+            }
+        }
+        else {
+            result = append_char(result, &rlen, input[i++]);
+        }
+
+        if (!result)
+            return NULL;
+    }
+
+    return result;
+}

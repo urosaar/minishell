@@ -73,6 +73,7 @@ int check_syntax_errors(char *line,char **tokens);
 int check_consecutive_operators(char **tokens);
 int check_redirection_without_filename(char **tokens);
 int check_invalid_pipe_placement(char **tokens);
+int check_unclosed_quotes(const char *line);
 
 /* Utils */
 size_t  ft_strlen(const char *str);
@@ -81,7 +82,7 @@ int     ft_strcmp(const char *s1, const char *s2);
 int     is_space(char c);
 int     is_operator(char c);
 char    *substr(const char *src, int start, int end);
-char    *expand_variables(const char *input);
+char    *expand_variables(const char *input, int last_status);
 char    *strip_quotes(const char *str);
 char    *get_input(void);
 int     is_only_whitespace(const char *input);
