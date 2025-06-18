@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/15 18:37:30 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:35:32 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ t_env	*copy_for_expo(t_env *env)
 	copy = NULL;
 	while (env)
 	{
-		tmp = ft_newnode(strdup(env->line), '=');
+		tmp = ft_newnode((env->line), '=');
 		ft_lstadd_back(&copy, tmp);
 		env = env->next;
 	}

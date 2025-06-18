@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/17 21:42:02 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/18 13:01:40 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,10 +239,11 @@ int handle_heredoc(t_command *cmd)
 	{
 		int status;
 		close(pipefd[1]);
+		signal(SIGINT, SIG_IGN);
 		waitpid(pid, &status, 0);
+		signal(SIGINT, handler_heredoc);
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
-			printf("HEREEE\n");
 			close(pipefd[0]);
 			return (-1);
 		}

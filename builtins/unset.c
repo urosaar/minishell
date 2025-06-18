@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:18 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 18:11:14 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/18 19:39:39 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ void    ft_unset(t_env **env, char **arg)
 				free(node->key);
 				free(node->value);
 				free(node);
-				printf("HERE\n");
 				break;
 			}
 			prev = node;

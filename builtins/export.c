@@ -6,35 +6,41 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:15:06 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/18 17:33:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+static void	swap_nodes(t_env *a, t_env *b)
+{
+	char	*tmp_key;
+	char	*tmp_value;
+	char	*tmp_line;
+
+	tmp_key = a->key;
+	a->key = b->key;
+	b->key = tmp_key;
+	tmp_value = a->line;
+	a->line = b->line;
+	b->line = tmp_value;
+	tmp_line = a->value;
+	a->value = b->value;
+	b->value = tmp_line;
+}
+
 void	swap_line(t_env **head)
 {
-	t_env	*node;
-	char	*tmp_key;
-	char	*tmp_line;
-	char	*tmp_value;
+	t_env *node;
 
 	if (!head || !*head)
 		return;
 	node = *head;
-	while (node && node->next) 
+	while (node && node->next)
 	{
-		if (node->key && strcmp(node->key, node->next->key) > 0) 
+		if (node->key && strcmp(node->key, node->next->key) > 0)
 		{
-			tmp_key = node->key;
-			tmp_line = node->line;
-			tmp_value = node->value;
-			node->key = node->next->key;
-			node->line = node->next->line;
-			node->value = node->next->value;
-			node->next->key = tmp_key;
-			node->next->line = tmp_line;
-			node->next->value = tmp_value;
+			swap_nodes(node, node->next);
 			node = *head;
 		}
 		else
@@ -82,20 +88,15 @@ char	*check_for_quote(char *value)
 		return (NULL);
 	while (value[i])
 	{
-		if (value[i] == '"')
-			i++;
 		if ( value[i] && value[i] != '"')
-		{
-			d[j] = value[i];
-			j++;
-		}
+			d[j++] = value[i];
 		i++;
 	}
 	d[j] = '\0';
 	return (free(value), d);
 }
 
-t_env	*find_in_env(t_env *env, char *key, char c)
+t_env	*find_in_env(t_env *env, char *key)
 {
 	while (env)
 	{
@@ -148,9 +149,21 @@ void	remove_if(t_env *env)
 			free(node->value);
 			return;
 		}
-		prev = node;
+		prev = node;		
 		node = node->next;
 	}
+}
+
+void	update_found_node(t_env *found, char *arg)
+{
+	char *value;
+
+	value = strchr(arg, '=');
+	free(found->line);
+	found->line = strdup(arg);
+	if (found->value)
+		free(found->value);
+	found->value = strdup(value + 1);
 }
 
 void	without_plus(t_env **env, char *arg)
@@ -158,34 +171,19 @@ void	without_plus(t_env **env, char *arg)
 	t_env	*new;
 	t_env	*found;
 	char	*key;
-	char	*equal;
 
 	key = key_full(arg, '=');
-	found = find_in_env(*env, key, '=');
+	found = find_in_env(*env, key);
 	if (found)
 	{
 		if (!strcmp(found->key, "_"))
 		{
-			remove_if(found);
-			return;
+			remove_if(*env);
+			free(key);
+			return ;
 		}
-		char *value = strchr(arg, '=');
-		equal = strchr(arg, '=');
-		if (equal)
-		{
-			free(found->line);
-			found->line = strdup(arg);
-			if (found->value)
-				free(found->value);
-			found->value = strdup(value + 1);
-			printf("HERE\n");
-		}
-		// else if (!equal && strchr(arg, '='))
-		// {
-		//     if (found->value)
-		//     free(found->value);
-		//     found->value = strdup(equal + 1);
-		// }
+		if (strchr(arg, '='))
+			update_found_node(found, arg);
 	}
 	else if (!found && strcmp(key, "_"))
 	{
@@ -194,36 +192,34 @@ void	without_plus(t_env **env, char *arg)
 	}
 	free(key);
 }
+void	append_to_found(t_env *found, char *key, char *value)
+{
+	if (found->value)
+		found->value = ft_join(found->value, value);
+	else
+		found->value = strdup(value);
+	free(found->line);
+	found->line = ft_join(key, "=");
+	found->line = ft_join(found->line, found->value);
+}
 
 void	with_plus(t_env **env, char *arg)
 {
 	t_env	*new;
 	t_env	*found;
 	char	*key;
-	char	*equal;
+	char	*value;
 
 	key = key_full(arg, '+');
-	found = find_in_env(*env, key, '+');
+	found = find_in_env(*env, key);
 	if (found)
 	{
 		if (!strcmp(found->key, "_"))
-		{            
-			remove_if(found);
-			return;
-		}
+			return(remove_if(*env), free(key));
 		found->value = check_for_quote(found->value);
-		equal = strchr(found->line, '=');
-		char *value = strchr(arg, '=');
+		value = strchr(arg, '=');
 		if (value)
-		{
-			if (found->value)
-				found->value = ft_join(found->value, value + 1);
-			else
-				found->value = strdup(value + 1);
-			free(found->line);
-			found->line = ft_join(key, "=");
-			found->line = ft_join(found->line, found->value);
-		}
+			append_to_found(found, key, value + 1);
 	}
 	else if (!found && strcmp(key, "_"))
 	{
@@ -232,39 +228,45 @@ void	with_plus(t_env **env, char *arg)
 	}
 	free(key);
 }
+void sort_and_print(t_env **env)
+{	
+	t_env	*copy;
+	t_env	*tmp;
 
+	copy = copy_for_expo(*env);
+	swap_line(&copy);
+	tmp = copy;
+	while (tmp)
+	{
+		printf("declare -x %s", tmp->key);
+		if (tmp->value)
+		{
+			tmp->value = check_for_quote(tmp->value);
+				printf("=\"%s\"", tmp->value);
+		}
+		printf("\n");
+		tmp = tmp->next;
+	}
+	free_env(copy);
+}
 
 void	ft_export(t_env **env, char **arg)
 {
 	t_env	*copy;
 	t_env	*tmp;
-	int	i;
+	int		valid;
+	int		i;
 
 	i = 1;
 	if (!arg[1])
 	{
-		copy = copy_for_expo(*env);
-		swap_line(&copy);
-		tmp = copy;
-		while (tmp)
-		{
-			printf("declare -x %s", tmp->key);
-			if (tmp->value)
-			{
-				tmp->value = check_for_quote(tmp->value);
-					printf("=\"%s\"", tmp->value);
-				// else
-				//     printf("=%s", tmp->value);
-			}
-			printf("\n");
-			tmp = tmp->next;
-		}
-		free_env(copy);
+		sort_and_print(env);
 		return;
 	}
 	while (arg[i])
 	{
-		if (!is_valid_identifier(arg[i]))
+		valid = is_valid_identifier(arg[i]);
+		if (!valid)
 			printf("export: `%s': not a valid identifier\n", arg[i]);
 		else if (is_valid_identifier(arg[i]) == 1)
 		{
