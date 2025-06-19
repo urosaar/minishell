@@ -88,8 +88,23 @@ char	*ft_itoa(int n)
 	}
 	return (str);
 }
+char *ft_getenv(const char *name, t_env *env)
+{
+    int i = 0;
+    size_t len;
 
-char *expand_variables(const char *input, int last_status) {
+    if (!name || !env)
+        return NULL;
+    while (env != NULL)
+    {
+        if (!strcmp(env->key, name))
+            return (env->value);
+        env = env->next;
+    }
+    return NULL;
+}
+
+char *expand_variables(const char *input, int last_status, t_env **env) {
     char *result = malloc(1);
     if (!result) return NULL;
     result[0] = '\0';
@@ -137,7 +152,7 @@ char *expand_variables(const char *input, int last_status) {
 
             if (varlen > 0) {
                 char *var = strndup(input + start, varlen);
-                char *val = getenv(var);
+                char *val = ft_getenv(var, *env);
                 free(var);
 
                 if (val) {

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/18 13:01:40 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/19 12:24:07 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,10 +211,10 @@ int handle_heredoc(t_command *cmd)
 
 	if (pid == 0)
 	{
-		signal(SIGINT, handler_heredoc);
 		close(pipefd[0]);
 		while (1)
 		{
+			signal(SIGINT, handler_heredoc);
 			line = readline("> ");
 			if (!line || ft_strcmp(line, cmd->infile) == 0)
 				break;
@@ -241,7 +241,6 @@ int handle_heredoc(t_command *cmd)
 		close(pipefd[1]);
 		signal(SIGINT, SIG_IGN);
 		waitpid(pid, &status, 0);
-		signal(SIGINT, handler_heredoc);
 		if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 		{
 			close(pipefd[0]);

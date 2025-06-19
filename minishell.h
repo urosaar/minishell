@@ -82,7 +82,7 @@ int     ft_strcmp(const char *s1, const char *s2);
 int     is_space(char c);
 int     is_operator(char c);
 char    *substr(const char *src, int start, int end);
-char    *expand_variables(const char *input, int last_status);
+char    *expand_variables(const char *input, int last_status, t_env **env);
 char    *strip_quotes(const char *str);
 char    *get_input(void);
 int     is_only_whitespace(const char *input);

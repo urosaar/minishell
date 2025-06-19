@@ -85,6 +85,16 @@ void signals()
 	signal(SIGQUIT, SIG_IGN); /* [ctrl + \] */
 }
 
+void leak_fd(void)
+{
+	int fd = 3;
+	while (fd < OPEN_MAX)
+	{
+		close(fd);
+		fd++;
+	}
+}
+
 int main(int ac, char **av, char **envp)
 {
 	char		*raw;
@@ -118,7 +128,7 @@ int main(int ac, char **av, char **envp)
 			continue;
 		}
 
-		char *expanded = expand_variables(raw, last_status);
+		char *expanded = expand_variables(raw, last_status, &env);
 
 		if (!expanded)
 		{
