@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/19 12:24:07 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/19 19:53:27 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,26 +46,49 @@ void	free_envp(char **envp)
 		free(envp[i++]);
 	free(envp);
 }
+char	*ft_check1(char *cmd)
+{
+	if (!cmd)
+		return (NULL);
+	if (access(cmd, X_OK) == 0)
+		return ft_strdup(cmd);
+	if (strchr(cmd, '/'))
+		printf("minishell: %s: No such file or directory\n", cmd);
+	return (NULL);
+}
+char	*ft_check2(char **path, char *cmd)
+{
+	char	*s;
+	char	*d;
+	int		i;
+
+	i = 0;
+	while (path[i] && cmd)
+	{
+		s = ft_join("/", cmd);
+		d = ft_join(path[i], s);
+		free(s);
+		if (access(d, X_OK) == 0)
+		{
+			free_array(path);
+			return (d);
+		}
+		free(d);
+		i++;
+	}
+	return (NULL);
+}
 
 
 char	*check_if_exist(t_env *env, t_command *cmds)
 {
 	char	**path;
+	char	*d;
 	t_env	*tmp;
-	int		i;
 
-	i = 0;
 	path = NULL;
 	tmp = env;
-	if (!cmds->cmd)
-		return (NULL);
-	if (access(cmds->cmd, X_OK) == 0)
-		return ft_strdup(cmds->cmd);
-	if (strchr(cmds->cmd, '/'))
-	{
-		printf("minishell: %s: No such file or directory\n", cmds->cmd);
-		return (NULL);
-	}
+	ft_check1(cmds->cmd);
 	while (tmp)
 	{
 		if (!strcmp(tmp->key, "PATH"))
@@ -77,21 +100,10 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 	}
 	if (!path)
 		return (NULL);
-	while (path[i])
-	{
-		char *s = ft_join("/", cmds->cmd);
-		char *d = ft_join(path[i], s);
-		free(s);
-		if (access(d, X_OK) == 0)
-		{
-			free_array(path);
-			return d;
-		}
-		free(d);
-		i++;
-	}
-	free_array(path);
-	return (NULL);
+	d = ft_check2(path, cmds->cmd);
+	if (d)
+		return (d);
+	return (free_array(path), NULL);
 }
 // int	check_redirections(t_command *cmd)
 // {
@@ -112,21 +124,6 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 // 	return (1);
 // }
 
-
-int	ft_size_node(t_command *cmds)
-{
-	t_command	*tmp;
-	int			i;
-
-	i = 0;
-	tmp = cmds;
-	while (tmp)
-	{
-		i++;
-		tmp = tmp->next;
-	}
-	return (i);
-}
 int redirect_output(char *d, t_command *curr)
 {
 	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_TRUNC, 0777);
@@ -177,7 +174,6 @@ int redirect_input(char *d, t_command *curr)
 		fprintf(stderr, "minishell: %s: No such file or directory\n", curr->redirections->filename);
 		return (0);
 	}
-
 	if (d || is_builtins(curr->args))
 	{
 		if (dup2(f, STDIN_FILENO) == -1)
@@ -263,6 +259,24 @@ void perror_and_exit(const char *msg)
 	perror(msg);
 	exit(1);
 }
+
+void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
+{
+	if (prev_fd != -1)
+	{
+		if (dup2(prev_fd, STDIN_FILENO) == -1)
+			perror_and_exit("minishell: dup2");
+		close(prev_fd);
+	}
+	if (curr)
+	{
+		close(pipe_fd[0]);
+		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+			perror_and_exit("minishell: dup2");
+		close(pipe_fd[1]);
+	}
+}
+
 void execution(t_env **env, t_command *cmds, char *prev_pwd)
 {
 	t_command *curr     = cmds;
@@ -277,16 +291,10 @@ void execution(t_env **env, t_command *cmds, char *prev_pwd)
 	if (is_builtins(curr->args) && !curr->next && !curr->redirections)
 	{
 		builtins(env, curr->args, prev_pwd);
-		return;
+		return ;
 	}
-
 	while (curr)
 	{
-		// if (!check_redirections(curr))
-		// {
-		// 	error = true;
-		// 	break;
-		// }
 		if (curr->next && pipe(pipe_fd) == -1)
 		{
 			perror("minishell: pipe");
@@ -300,22 +308,10 @@ void execution(t_env **env, t_command *cmds, char *prev_pwd)
 			error = true;
 			exit(1);
 		}
-
 		if (pid == 0)
 		{
-			if (prev_fd != -1)
-			{
-				if (dup2(prev_fd, STDIN_FILENO) == -1)
-					perror_and_exit("minishell: dup2");
-				close(prev_fd);
-			}
-			if (curr->next)
-			{
-				close(pipe_fd[0]);
-				if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-					perror_and_exit("minishell: dup2");
-				close(pipe_fd[1]);
-			}
+			if (curr->next || prev_fd != -1)
+				dup_if_there_is_pipe(curr->next, pipe_fd, prev_fd);
 			d = check_if_exist(*env, curr);
 			r = curr->redirections;
 			while (r)
