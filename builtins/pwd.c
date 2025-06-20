@@ -6,13 +6,13 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:10 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:15:11 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 14:57:43 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_pwd(t_env *env, char *prev_pwd)
+int	ft_pwd(t_env *env, char *prev_pwd)
 {
 	t_env	*node;
 	char	*pwd;
@@ -28,5 +28,6 @@ void	ft_pwd(t_env *env, char *prev_pwd)
 		i++;
 	write(1, pwd, i);
 	write(1, "\n", 1);
+	return (0);
 }
 

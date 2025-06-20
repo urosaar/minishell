@@ -16,24 +16,24 @@
 #define HEREDOC_MAX_LINES 1000
 
 typedef enum e_token_type {
-    TOKEN_WORD,
-    TOKEN_PIPE,
-    TOKEN_REDIRECT_IN,
-    TOKEN_REDIRECT_OUT,
-    TOKEN_REDIRECT_APPEND,
-    TOKEN_HEREDOC
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIRECT_IN,
+	TOKEN_REDIRECT_OUT,
+	TOKEN_REDIRECT_APPEND,
+	TOKEN_HEREDOC
 }   t_token_type;
 
 typedef struct s_token {
-    t_token_type      type;
-    char             *value;
-    struct s_token   *next;
+	t_token_type      type;
+	char             *value;
+	struct s_token   *next;
 }   t_token;
 
 typedef struct s_redirection {
-    int                  type;
-    char                *filename;
-    struct s_redirection *next;
+	int                  type;
+	char                *filename;
+	struct s_redirection *next;
 }   t_redirection;
 
 typedef struct s_env
@@ -45,14 +45,14 @@ typedef struct s_env
 }	t_env;
 
 typedef struct s_command {
-    char            *cmd;       // Command name (e.g. "ls")
-    char            **args;     // NULL-terminated array of arguments
-    char            *infile;    // Filename for '<' or heredoc delimiter for '<<'
-    char            *outfile;   // Filename for '>' or '>>'
-    t_redirection   *redirections;  //  Linked list of redirections (if you later want to support multiple redirections)
-    int              append;    // 1 if “>>”, 0 if “>”
-    int              heredoc;   // 1 if “<<”
-    struct s_command *next;     // Next command in a pipeline
+	char            *cmd;       // Command name (e.g. "ls")
+	char            **args;     // NULL-terminated array of arguments
+	char            *infile;    // Filename for '<' or heredoc delimiter for '<<'
+	char            *outfile;   // Filename for '>' or '>>'
+	t_redirection   *redirections;  //  Linked list of redirections (if you later want to support multiple redirections)
+	int              append;    // 1 if “>>”, 0 if “>”
+	int              heredoc;   // 1 if “<<”
+	struct s_command *next;     // Next command in a pipeline
 }   t_command;
 
 
@@ -96,22 +96,22 @@ void    free_commands(t_command *cmd);
 void    print_commands(t_command *cmd);
 
 /* Execution */
-void execution(t_env **env, t_command *cmds, char *prev_pwd);
+void execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status);
 
 /*Signals*/
 void	handler(int signal);
 
 /* Builtins */
 char	**ft_split(char *s, char c);
-void	ft_echo(char **arg);
-void	ft_pwd(t_env *env, char *prev_pwd);
-void    ft_cd(t_env **env, char **arg, char *prev_pwd);
 void	ft_exit(t_env *env, char **arg);
-void	ft_env(t_env **env);
-void	ft_unset(t_env **env,char **arg);
-void	ft_export(t_env **env, char **arg);
-void    builtins(t_env **env, char **args, char *prev_pwd);
-int     is_builtins(char **args);
+int		ft_echo(char **arg);
+int		ft_pwd(t_env *env, char *prev_pwd);
+int		ft_cd(t_env **env, char **arg, char *prev_pwd);
+int		ft_env(t_env **env, char **arg);
+int		ft_unset(t_env **env,char **arg);
+int		ft_export(t_env **env, char **arg);
+int		builtins(t_env **env, char **args, char *prev_pwd);
+int		is_builtins(char **args);
 
 /* Builtins utils */
 void	copy_env(char **envp, t_env **env);

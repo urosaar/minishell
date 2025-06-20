@@ -6,25 +6,28 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:18 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/18 19:39:39 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 15:19:49 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void    ft_unset(t_env **env, char **arg)
+int	ft_unset(t_env **env, char **arg)
 {
 	t_env	*node;
 	t_env	*prev;
 	t_env	*tmp;
 	int		i;
+	int		flag;
 
 	i = 1;
+	flag = 1;
 	while (arg[i])
 	{
 		if (!is_valid_identifier(arg[i]))
 		{
 			printf("unset: `%s': not a valid identifier\n", arg[i]);
+			flag = 0;
 			i++;
 			continue;
 		}
@@ -50,4 +53,7 @@ void    ft_unset(t_env **env, char **arg)
 		}
 		i++;
 	}
+	if (!flag)
+		return (1);
+	return (0);
 }

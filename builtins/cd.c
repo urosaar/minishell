@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:22 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/19 15:19:40 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 15:22:09 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	change_to_home(t_env *env, char *path, int i)
 	return (i);
 }
 
-void	ft_cd(t_env **env, char **arg, char *prev_pwd)
+int	ft_cd(t_env **env, char **arg, char *prev_pwd)
 {
 	char	*oldpath;
 	char	*path;
@@ -77,15 +77,18 @@ void	ft_cd(t_env **env, char **arg, char *prev_pwd)
 		i = change_to_home(*env, path, i);
 	else
 		i = chdir(arg[1]);
-	if (i == -1)
+	printf("I = %d\n", i);
+	if (i == -1 || i == -2)
 	{
-		if (arg[1])
-			printf("bash: cd: %s: No such file or directory\n", arg[1]);
-		return;
+		if (arg[1] && i == -1)
+			printf("minishell: cd: %s: No such file or directory\n", arg[1]);
+		return (1);
 	}
 	path = getcwd(NULL, 0);
+	printf("PATH = %d\n", path);
 	if (!path)
-		return;
+		return (1);
 	replace(*env, path, oldpath);
 	free(oldpath);
+	return (0);
 }

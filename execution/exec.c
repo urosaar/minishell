@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/19 19:53:27 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 16:19:04 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,6 +259,33 @@ void perror_and_exit(const char *msg)
 	perror(msg);
 	exit(1);
 }
+void	redirection(t_command *curr, t_redirection *r, char *d)
+{
+	while (r)
+	{
+		if (r->type == TOKEN_HEREDOC)
+		{
+			if (handle_heredoc(curr) == -1)
+				exit(1);
+		}
+		else if (r->type == TOKEN_REDIRECT_IN)
+		{
+			if (!redirect_input(d, curr))
+				exit(1);
+		}
+		else if (r->type == TOKEN_REDIRECT_OUT)
+		{
+			if (!redirect_output(d, curr))
+				exit(1);
+		}
+		else if (r->type == TOKEN_REDIRECT_APPEND)
+		{
+			if (!append_mode(d, curr))
+				exit(1);
+		}
+		r = r->next;
+	}
+}
 
 void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 {
@@ -277,7 +304,7 @@ void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 	}
 }
 
-void execution(t_env **env, t_command *cmds, char *prev_pwd)
+void	execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
 {
 	t_command *curr     = cmds;
 	t_redirection	*r;
@@ -290,7 +317,7 @@ void execution(t_env **env, t_command *cmds, char *prev_pwd)
 
 	if (is_builtins(curr->args) && !curr->next && !curr->redirections)
 	{
-		builtins(env, curr->args, prev_pwd);
+		*last_status = builtins(env, curr->args, prev_pwd);
 		return ;
 	}
 	while (curr)
@@ -314,33 +341,34 @@ void execution(t_env **env, t_command *cmds, char *prev_pwd)
 				dup_if_there_is_pipe(curr->next, pipe_fd, prev_fd);
 			d = check_if_exist(*env, curr);
 			r = curr->redirections;
-			while (r)
-			{
-				if (r->type == TOKEN_HEREDOC)
-				{
-					if (handle_heredoc(curr) == -1)
-						exit(1);
-				}
-				else if (r->type == TOKEN_REDIRECT_IN)
-				{
-					if (!redirect_input(d, curr))
-						exit(1);
-				}
-				else if (r->type == TOKEN_REDIRECT_OUT)
-				{
-					if (!redirect_output(d, curr))
-						exit(1);
-				}
-				else if (r->type == TOKEN_REDIRECT_APPEND)
-				{
-					if (!append_mode(d, curr))
-						exit(1);
-				}
-				r = r->next;
-			}
+			redirection(curr, r, d);
+			// while (r)
+			// {
+			// 	if (r->type == TOKEN_HEREDOC)
+			// 	{
+			// 		if (handle_heredoc(curr) == -1)
+			// 			exit(1);
+			// 	}
+			// 	else if (r->type == TOKEN_REDIRECT_IN)
+			// 	{
+			// 		if (!redirect_input(d, curr))
+			// 			exit(1);
+			// 	}
+			// 	else if (r->type == TOKEN_REDIRECT_OUT)
+			// 	{
+			// 		if (!redirect_output(d, curr))
+			// 			exit(1);
+			// 	}
+			// 	else if (r->type == TOKEN_REDIRECT_APPEND)
+			// 	{
+			// 		if (!append_mode(d, curr))
+			// 			exit(1);
+			// 	}
+			// 	r = r->next;
+			// }
 			if (is_builtins(curr->args))
 			{
-				builtins(env, curr->args, prev_pwd);
+				*last_status = builtins(env, curr->args, prev_pwd);
 				exit(0);
 			}
 			if (!d)

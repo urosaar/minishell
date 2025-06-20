@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/19 15:19:52 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 14:37:08 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,30 +250,33 @@ void sort_and_print(t_env **env)
 	free_env(copy);
 }
 
-void	ft_export(t_env **env, char **arg)
+int	ft_export(t_env **env, char **arg)
 {
 	t_env	*copy;
 	t_env	*tmp;
 	int		valid;
 	int		i;
+	int		flag;
 
 	i = 1;
+	flag = 1;
 	if (!arg[1])
-	{
-		sort_and_print(env);
-		return;
-	}
+		return (sort_and_print(env), 0);
 	while (arg[i])
 	{
 		valid = is_valid_identifier(arg[i]);
 		if (!valid)
-			printf("export: `%s': not a valid identifier\n", arg[i]);
-		else if (is_valid_identifier(arg[i]) == 1)
 		{
-			without_plus(env, arg[i]);
+			printf("export: `%s': not a valid identifier\n", arg[i]);
+			flag = 0;
 		}
+		else if (is_valid_identifier(arg[i]) == 1)
+			without_plus(env, arg[i]);
 		else
 			with_plus(env, arg[i]);
 		i++;
 	}
+	if (!flag)
+		return (1);
+	return (0);
 }
