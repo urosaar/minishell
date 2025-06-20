@@ -111,7 +111,6 @@ char *expand_variables(const char *input, int last_status, t_env **env) {
 
     int in_single = 0, in_double = 0;
     int i = 0, rlen = 0;
-
     while (input[i]) {
         if (input[i] == '\'' && !in_double) {
             in_single = !in_single;

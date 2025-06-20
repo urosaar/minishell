@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:18 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 15:19:49 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:02:07 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,13 @@ int	ft_unset(t_env **env, char **arg)
 	t_env	*prev;
 	t_env	*tmp;
 	int		i;
-	int		flag;
 
 	i = 1;
-	flag = 1;
 	while (arg[i])
 	{
 		if (!is_valid_identifier(arg[i]))
 		{
 			printf("unset: `%s': not a valid identifier\n", arg[i]);
-			flag = 0;
 			i++;
 			continue;
 		}
@@ -53,7 +50,5 @@ int	ft_unset(t_env **env, char **arg)
 		}
 		i++;
 	}
-	if (!flag)
-		return (1);
 	return (0);
 }

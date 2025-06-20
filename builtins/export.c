@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 14:37:08 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 19:51:55 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,7 +267,7 @@ int	ft_export(t_env **env, char **arg)
 		valid = is_valid_identifier(arg[i]);
 		if (!valid)
 		{
-			printf("export: `%s': not a valid identifier\n", arg[i]);
+			fprintf(stderr, "export: `%s': not a valid identifier\n", arg[i]);
 			flag = 0;
 		}
 		else if (is_valid_identifier(arg[i]) == 1)

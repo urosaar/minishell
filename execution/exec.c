@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 16:19:04 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 20:49:16 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ int redirect_input(char *d, t_command *curr)
 	if (f == -1)
 	{
 		fprintf(stderr, "minishell: %s: No such file or directory\n", curr->redirections->filename);
-		return (0);
+		return (1);
 	}
 	if (d || is_builtins(curr->args))
 	{
@@ -180,11 +180,11 @@ int redirect_input(char *d, t_command *curr)
 		{
 			perror("minishell: dup2");
 			close(f);
-			return (0);
+			return (1);
 		}
 	}
 	close(f);
-	return (1);
+	return (0);
 }
 void handler_heredoc()
 {
@@ -259,31 +259,49 @@ void perror_and_exit(const char *msg)
 	perror(msg);
 	exit(1);
 }
-void	redirection(t_command *curr, t_redirection *r, char *d)
+// void	redirection(t_command *curr, char *d)
+// {
+// 	while (curr->redirections)
+// 	{
+// 		if (curr->redirections->type == TOKEN_HEREDOC)
+// 		{
+// 			if (handle_heredoc(curr) == -1)
+// 				exit(1);
+// 		}
+// 		else if (curr->redirections->type == TOKEN_REDIRECT_IN)
+// 		{
+// 			if (!redirect_input(d, curr))
+// 				exit(1);
+// 		}
+// 		else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
+// 		{
+// 			if (!redirect_output(d, curr))
+// 				exit(1);
+// 		}
+// 		else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
+// 		{
+// 			if (!append_mode(d, curr))
+// 				exit(1);
+// 		}
+// 		curr->redirections = curr->redirections->next;
+// 	}
+// }
+void	ft_execve(t_command *curr, t_env **env, char *d)
 {
-	while (r)
+	char	**envp;
+
+	if (!d)
 	{
-		if (r->type == TOKEN_HEREDOC)
-		{
-			if (handle_heredoc(curr) == -1)
-				exit(1);
-		}
-		else if (r->type == TOKEN_REDIRECT_IN)
-		{
-			if (!redirect_input(d, curr))
-				exit(1);
-		}
-		else if (r->type == TOKEN_REDIRECT_OUT)
-		{
-			if (!redirect_output(d, curr))
-				exit(1);
-		}
-		else if (r->type == TOKEN_REDIRECT_APPEND)
-		{
-			if (!append_mode(d, curr))
-				exit(1);
-		}
-		r = r->next;
+		if (!strchr(curr->cmd, '/'))
+			fprintf(stderr, "minishell: %s: command not found\n", curr->cmd);
+		exit(127);
+	}
+	envp = build_env_array(env);
+	if (execve(d, curr->args, envp) == -1)
+	{
+		free_envp(envp);
+		perror("minishell: execve");
+		exit(1);
 	}
 }
 
@@ -341,49 +359,54 @@ void	execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
 				dup_if_there_is_pipe(curr->next, pipe_fd, prev_fd);
 			d = check_if_exist(*env, curr);
 			r = curr->redirections;
-			redirection(curr, r, d);
-			// while (r)
-			// {
-			// 	if (r->type == TOKEN_HEREDOC)
-			// 	{
-			// 		if (handle_heredoc(curr) == -1)
-			// 			exit(1);
-			// 	}
-			// 	else if (r->type == TOKEN_REDIRECT_IN)
-			// 	{
-			// 		if (!redirect_input(d, curr))
-			// 			exit(1);
-			// 	}
-			// 	else if (r->type == TOKEN_REDIRECT_OUT)
-			// 	{
-			// 		if (!redirect_output(d, curr))
-			// 			exit(1);
-			// 	}
-			// 	else if (r->type == TOKEN_REDIRECT_APPEND)
-			// 	{
-			// 		if (!append_mode(d, curr))
-			// 			exit(1);
-			// 	}
-			// 	r = r->next;
-			// }
+			// redirection(curr, d);
+			while (curr->redirections)
+			{
+				if (curr->redirections->type == TOKEN_HEREDOC)
+				{
+					if (handle_heredoc(curr) == -1)
+						exit(1);
+				}
+				else if (curr->redirections->type == TOKEN_REDIRECT_IN)
+				{
+					*last_status = redirect_input(d, curr);
+					if (*last_status == 1)
+					{
+						printf("HII\n");
+						exit(1);
+					}
+				}
+				else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
+				{
+					if (!redirect_output(d, curr))
+						exit(1);
+				}
+				else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
+				{
+					if (!append_mode(d, curr))
+						exit(1);
+				}
+				curr->redirections = curr->redirections->next;
+			}
 			if (is_builtins(curr->args))
 			{
 				*last_status = builtins(env, curr->args, prev_pwd);
 				exit(0);
 			}
-			if (!d)
-			{
-				if (!strchr(curr->cmd, '/'))
-					fprintf(stderr, "minishell: %s: command not found\n", curr->cmd);
-				exit(127);
-			}
-			envp = build_env_array(env);
-			if (execve(d, curr->args, envp) == -1)
-			{
-				free_envp(envp);
-				perror("minishell: execve");
-				exit(1);
-			}
+			ft_execve(curr, env, d);
+			// if (!d)
+			// {
+			// 	if (!strchr(curr->cmd, '/'))
+			// 		fprintf(stderr, "minishell: %s: command not found\n", curr->cmd);
+			// 	exit(127);
+			// }
+			// envp = build_env_array(env);
+			// if (execve(d, curr->args, envp) == -1)
+			// {
+			// 	free_envp(envp);
+			// 	perror("minishell: execve");
+			// 	exit(1);
+			// }
 		}
 		close_fd(prev_fd);
 		if (curr->next)

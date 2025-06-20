@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:22 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 15:22:09 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/20 16:56:51 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	ft_cd(t_env **env, char **arg, char *prev_pwd)
 		return (1);
 	}
 	path = getcwd(NULL, 0);
-	printf("PATH = %d\n", path);
+	printf("PATH = %s\n", path);
 	if (!path)
 		return (1);
 	replace(*env, path, oldpath);
