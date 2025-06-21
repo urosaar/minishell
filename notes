@@ -1,5 +1,5 @@
 
 heredoc ctr +c quit heredoc : need fix
+heredoc need fix for exit status
 ls | > out  no return
 < infile grep hello | tr 'a-z' 'A-Z' | cat > outfile : done
-redirections need fix for exit status

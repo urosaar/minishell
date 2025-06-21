@@ -15,7 +15,9 @@
 #include <stdbool.h>
 #define HEREDOC_MAX_LINES 1000
 
-typedef enum e_token_type {
+
+typedef enum e_token_type
+{
 	TOKEN_WORD,
 	TOKEN_PIPE,
 	TOKEN_REDIRECT_IN,
@@ -24,13 +26,15 @@ typedef enum e_token_type {
 	TOKEN_HEREDOC
 }   t_token_type;
 
-typedef struct s_token {
+typedef struct s_token
+{
 	t_token_type      type;
 	char             *value;
 	struct s_token   *next;
 }   t_token;
 
-typedef struct s_redirection {
+typedef struct s_redirection
+{
 	int                  type;
 	char                *filename;
 	struct s_redirection *next;

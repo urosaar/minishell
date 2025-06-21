@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 20:49:16 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:15:22 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ int redirect_input(char *d, t_command *curr)
 	if (f == -1)
 	{
 		fprintf(stderr, "minishell: %s: No such file or directory\n", curr->redirections->filename);
-		return (1);
+		return (0);
 	}
 	if (d || is_builtins(curr->args))
 	{
@@ -180,11 +180,11 @@ int redirect_input(char *d, t_command *curr)
 		{
 			perror("minishell: dup2");
 			close(f);
-			return (1);
+			return (0);
 		}
 	}
 	close(f);
-	return (0);
+	return (1);
 }
 void handler_heredoc()
 {
@@ -259,33 +259,33 @@ void perror_and_exit(const char *msg)
 	perror(msg);
 	exit(1);
 }
-// void	redirection(t_command *curr, char *d)
-// {
-// 	while (curr->redirections)
-// 	{
-// 		if (curr->redirections->type == TOKEN_HEREDOC)
-// 		{
-// 			if (handle_heredoc(curr) == -1)
-// 				exit(1);
-// 		}
-// 		else if (curr->redirections->type == TOKEN_REDIRECT_IN)
-// 		{
-// 			if (!redirect_input(d, curr))
-// 				exit(1);
-// 		}
-// 		else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
-// 		{
-// 			if (!redirect_output(d, curr))
-// 				exit(1);
-// 		}
-// 		else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
-// 		{
-// 			if (!append_mode(d, curr))
-// 				exit(1);
-// 		}
-// 		curr->redirections = curr->redirections->next;
-// 	}
-// }
+void	redirection(t_command *curr, char *d)
+{
+	while (curr->redirections)
+	{
+		if (curr->redirections->type == TOKEN_HEREDOC)
+		{
+			if (handle_heredoc(curr) == -1)
+				exit(1);
+		}
+		else if (curr->redirections->type == TOKEN_REDIRECT_IN)
+		{
+			if (!redirect_input(d, curr))
+				exit(1);
+		}
+		else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
+		{
+			if (!redirect_output(d, curr))
+				exit(1);
+		}
+		else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
+		{
+			if (!append_mode(d, curr))
+				exit(1);
+		}
+		curr->redirections = curr->redirections->next;
+	}
+}
 void	ft_execve(t_command *curr, t_env **env, char *d)
 {
 	char	**envp;
@@ -325,12 +325,9 @@ void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 void	execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
 {
 	t_command *curr     = cmds;
-	t_redirection	*r;
 	char			*d;
-	char			**envp;
 	int				pipe_fd[2];
 	int				prev_fd    = -1;
-	bool			error      = false;
 	pid_t			pid;
 
 	if (is_builtins(curr->args) && !curr->next && !curr->redirections)
@@ -343,14 +340,12 @@ void	execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
 		if (curr->next && pipe(pipe_fd) == -1)
 		{
 			perror("minishell: pipe");
-			error = true;
 			break;
 		}
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("minishell: fork");
-			error = true;
 			exit(1);
 		}
 		if (pid == 0)
@@ -358,55 +353,16 @@ void	execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
 			if (curr->next || prev_fd != -1)
 				dup_if_there_is_pipe(curr->next, pipe_fd, prev_fd);
 			d = check_if_exist(*env, curr);
-			r = curr->redirections;
-			// redirection(curr, d);
-			while (curr->redirections)
-			{
-				if (curr->redirections->type == TOKEN_HEREDOC)
-				{
-					if (handle_heredoc(curr) == -1)
-						exit(1);
-				}
-				else if (curr->redirections->type == TOKEN_REDIRECT_IN)
-				{
-					*last_status = redirect_input(d, curr);
-					if (*last_status == 1)
-					{
-						printf("HII\n");
-						exit(1);
-					}
-				}
-				else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
-				{
-					if (!redirect_output(d, curr))
-						exit(1);
-				}
-				else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
-				{
-					if (!append_mode(d, curr))
-						exit(1);
-				}
-				curr->redirections = curr->redirections->next;
-			}
+			redirection(curr, d);
 			if (is_builtins(curr->args))
 			{
 				*last_status = builtins(env, curr->args, prev_pwd);
-				exit(0);
+				if (*last_status == 1)	
+					exit(1);
+				else
+					exit(0);
 			}
 			ft_execve(curr, env, d);
-			// if (!d)
-			// {
-			// 	if (!strchr(curr->cmd, '/'))
-			// 		fprintf(stderr, "minishell: %s: command not found\n", curr->cmd);
-			// 	exit(127);
-			// }
-			// envp = build_env_array(env);
-			// if (execve(d, curr->args, envp) == -1)
-			// {
-			// 	free_envp(envp);
-			// 	perror("minishell: execve");
-			// 	exit(1);
-			// }
 		}
 		close_fd(prev_fd);
 		if (curr->next)
@@ -417,5 +373,12 @@ void	execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
 		curr = curr->next;
 	}
 	close_fd(prev_fd);
-	while (wait(NULL) > 0);
+	int status;
+	while (wait(&status) > 0)
+	{
+		if (WIFEXITED(status))
+			*last_status = WEXITSTATUS(status); 
+	}
+	printf("LAST_STATUS = %d\n", *last_status);
+	
 }
