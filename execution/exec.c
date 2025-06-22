@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/22 18:19:15 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/22 19:16:24 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,81 +443,70 @@ void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 	}
 }
 
-void execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status)
+void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 {
-    t_command *curr = cmds;
-    char *d;
-    int pipe_fd[2];
-    int prev_fd = -1;
-    pid_t pid;
-    pid_t last_pid = -1;
+	char	*d;
 
-    signal(SIGINT, SIG_IGN);
+	ctx->pid = fork();
+	if (ctx->pid == -1)
+	{
+		perror("fork");
+		exit(1);
+	}
+	if (ctx->pid == 0) 
+	{
+		if (curr->next || ctx->prev_fd != -1)
+			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
+		d = check_if_exist(*env, curr);
+		redirection(curr, d);
+		if (is_builtins(curr->args)) 
+			exit(builtins(env, curr->args, ctx->prev_pwd));
+		ft_execve(curr, env, d);
+	}
+	close_fd(ctx->prev_fd);
+	ctx->last_pid = ctx->pid;
+	if (curr->next)
+	{
+		close_fd(ctx->pipe_fd[1]);
+		ctx->prev_fd = ctx->pipe_fd[0];
+	}
+}
+
+void execution(t_command *cmds, t_env **env, t_exec *ctx)
+{
+    t_command	*curr = cmds;
+	int			status;
+	int			x;
+
+	ctx->prev_fd = -1;
+	curr = cmds;
+	
+	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
-
     if (is_builtins(curr->args) && !curr->next && !curr->redirections)
-    {
-        *last_status = builtins(env, curr->args, prev_pwd);
-        return;
+	{
+        ctx->last_status = builtins(env, curr->args, ctx->prev_pwd); 
+		return;
     }
-    while (curr)
-    {
-        if (curr->next && pipe(pipe_fd) == -1)
-        {
-            perror("minishell: pipe");
-            break;
-        }
-        pid = fork();
-        if (pid == -1)
-        {
-            perror("minishell: fork");
-            exit(1);
-        }
-
-        if (pid == 0)
-        {
-            if (curr->next || prev_fd != -1)
-                dup_if_there_is_pipe(curr->next, pipe_fd, prev_fd);
-            d = check_if_exist(*env, curr);
-            redirection(curr, d);
-            if (is_builtins(curr->args))
-            {
-                *last_status = builtins(env, curr->args, prev_pwd);
-                exit(*last_status);
-            }
-            ft_execve(curr, env, d);
-        }
-        else
-        {
-            if (!curr->next)
-                last_pid = pid;
-        }
-
-        close_fd(prev_fd);
-        if (curr->next)
-        {
-            close_fd(pipe_fd[1]);
-            prev_fd = pipe_fd[0];
-        }
+    while (curr) 
+	{
+        if (curr->next && pipe(ctx->pipe_fd) == -1)
+		{
+			perror("pipe");
+			break;
+		}
+		creat_a_child(curr, env, ctx);
         curr = curr->next;
     }
-
-    close_fd(prev_fd);
-    int status;
-    pid_t wpid;
-    
-    if (last_pid != -1)
-    {
-        wpid = waitpid(last_pid, &status, 0);
-        if (wpid > 0)
-        {
-            if (WIFEXITED(status))
-                *last_status = WEXITSTATUS(status);
-            else if (WIFSIGNALED(status))
-                *last_status = 128 + WTERMSIG(status);
-        }
-    }
-    
-    while ((wpid = wait(NULL)) > 0)
-        continue;
+    close_fd(ctx->prev_fd);
+	while ((x = wait(&status)) > 0)
+	{
+		if (x == ctx->last_pid)
+		{
+			if (WIFEXITED(status)) 
+				ctx->last_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+                ctx->last_status = 128 + WTERMSIG(status);
+		}
+	}
 }

@@ -99,23 +99,25 @@ int main(int ac, char **av, char **envp)
 {
     char *raw;
     char **tokens;
-    t_command *cmds;
-    t_env *env;
-    int last_status = 0;
+	t_exec		*exec;
+	t_command	*cmds;
+	t_env		*env = NULL;
 
+	exec = malloc(sizeof(t_exec));
+	if (!exec)
+		return (1);
+	exec->last_status = 0; // works now :)
+	exec->prev_pwd = NULL;
     if (av[1])
     {
         printf("minishell: %s: No such file or directory\n", av[1]);
         return (1);
     }
     
-    char *prev_pwd = NULL;
     copy_env(envp, &env);
-    
     while (1)
     {
         signals();
-        
         raw = get_input();
         if (!raw)
             handler_eof(cmds, env);
@@ -131,7 +133,7 @@ int main(int ac, char **av, char **envp)
             continue;
         }
 
-        char *expanded = expand_variables(raw, last_status, &env);
+        char *expanded = expand_variables(raw, exec->last_status, &env);
         if (!expanded)
         {
             free(raw);
@@ -158,8 +160,8 @@ int main(int ac, char **av, char **envp)
         cmds = parse_tokens(tokens);
         if (cmds)
         {
-            check_for_pwd(&prev_pwd);
-            execution(&env, cmds, prev_pwd, &last_status);
+            check_for_pwd(&exec->prev_pwd);
+			execution(cmds, &env, exec);
             free_commands(cmds);
             cmds = NULL;
         }

@@ -59,6 +59,15 @@ typedef struct s_command {
 	struct s_command *next;     // Next command in a pipeline
 }   t_command;
 
+typedef struct s_exec
+{   
+	pid_t 	pid;
+	pid_t 	last_pid;
+	int		prev_fd;
+    int		last_status;
+	int		pipe_fd[2];
+    char	*prev_pwd;
+} t_exec;
 
 /* Function prototypes */
 /* Lexer */
@@ -100,7 +109,7 @@ void    free_commands(t_command *cmd);
 void    print_commands(t_command *cmd);
 
 /* Execution */
-void execution(t_env **env, t_command *cmds, char *prev_pwd, int *last_status);
+void execution(t_command *cmds, t_env **env, t_exec *exec);
 
 /*Signals*/
 void	handler(int signal);
