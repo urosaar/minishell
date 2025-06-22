@@ -7,8 +7,8 @@ O_LDFLAGS += -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
 O_CFLAG = -I$(O_READLINE_DIR)/include # zdt readline library (MAC) #-Wall -Wextra -Werror
 #------------------------------------------------------------------------------
 
-READLINE_INC = -I$(shell brew --prefix readline)/include
-READLINE_LIB = -L$(shell brew --prefix readline)/lib -lreadline
+READLINE_INC =# -I$(shell brew --prefix readline)/include
+READLINE_LIB =# -L$(shell brew --prefix readline)/lib -lreadline
 
 SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c  ./builtins/pwd.c ./builtins/exit.c ./builtins/cd.c\
 		./builtins/split.c ./builtins/unset.c ./builtins/export.c ./builtins/utils.c ./execution/exec.c\

@@ -97,72 +97,73 @@ void signals()
 
 int main(int ac, char **av, char **envp)
 {
-	char		*raw;
-	char		**tokens;
-	t_command	*cmds;
-	t_env		*env;
-	int last_status = 0; // not works yet :)
-	if (av[1])
-	{
-		printf("minishell: %s: No such file or directory\n", av[1]);
-		return (1);
-	}
-	
-	char *prev_pwd = NULL;
-	copy_env(envp, &env);
-	signals();
-	while (1)
-	{
-		raw = get_input();
-		if (!raw)
-			handler_eof(cmds, env);
-		if (is_only_whitespace(raw))
-		{
-			free(raw);
-			continue;
-		}
-		if(check_unclosed_quotes(raw))
-		{
-			printf("minishell: syntax error: unclosed quotes\n");
-			free(raw);
-			continue;
-		}
+    char *raw;
+    char **tokens;
+    t_command *cmds;
+    t_env *env;
+    int last_status = 0;
 
-		char *expanded = expand_variables(raw, last_status, &env);
+    if (av[1])
+    {
+        printf("minishell: %s: No such file or directory\n", av[1]);
+        return (1);
+    }
+    
+    char *prev_pwd = NULL;
+    copy_env(envp, &env);
+    
+    while (1)
+    {
+        signals();
+        
+        raw = get_input();
+        if (!raw)
+            handler_eof(cmds, env);
+        if (is_only_whitespace(raw))
+        {
+            free(raw);
+            continue;
+        }
+        if (check_unclosed_quotes(raw))
+        {
+            printf("minishell: syntax error: unclosed quotes\n");
+            free(raw);
+            continue;
+        }
 
-		if (!expanded)
-		{
-			free(raw);
-			continue;
-		}
+        char *expanded = expand_variables(raw, last_status, &env);
+        if (!expanded)
+        {
+            free(raw);
+            continue;
+        }
 
-		tokens = lexer(expanded);
-		if (!tokens)
-		{
-			free(raw);
-			free(expanded);
-			continue;
-		}
-		if (check_syntax_errors(raw, tokens))
-		{
-			free(raw);
-			free(expanded);
-			free_tokens(tokens);
-			continue;
-		}
-		free(raw);
-		free(expanded);
+        tokens = lexer(expanded);
+        if (!tokens)
+        {
+            free(raw);
+            free(expanded);
+            continue;
+        }
+        if (check_syntax_errors(raw, tokens))
+        {
+            free(raw);
+            free(expanded);
+            free_tokens(tokens);
+            continue;
+        }
+        free(raw);
+        free(expanded);
 
-		cmds = parse_tokens(tokens);
-		if (cmds)
-		{
-			check_for_pwd(&prev_pwd);
-			execution(&env, cmds, prev_pwd, &last_status);
-			free_commands(cmds);
-			cmds = NULL;
-		}
-		free_tokens(tokens);
-	}
-	free_env(env);
+        cmds = parse_tokens(tokens);
+        if (cmds)
+        {
+            check_for_pwd(&prev_pwd);
+            execution(&env, cmds, prev_pwd, &last_status);
+            free_commands(cmds);
+            cmds = NULL;
+        }
+        free_tokens(tokens);
+    }
+    free_env(env);
 }
-
