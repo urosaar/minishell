@@ -24,7 +24,7 @@ int	ft_unset(t_env **env, char **arg)
 	{
 		if (!is_valid_identifier(arg[i]))
 		{
-			printf("unset: `%s': not a valid identifier\n", arg[i]);
+			printf("minishell: unset: `%s': not a valid identifier\n", arg[i]);
 			i++;
 			continue;
 		}

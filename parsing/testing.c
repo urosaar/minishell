@@ -160,6 +160,7 @@ int main(int ac, char **av, char **envp)
         cmds = parse_tokens(tokens);
         if (cmds)
         {
+            // print_commands(cmds);
             check_for_pwd(&exec->prev_pwd);
 			execution(cmds, &env, exec);
             free_commands(cmds);

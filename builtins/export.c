@@ -216,7 +216,7 @@ void	with_plus(t_env **env, char *arg)
 	{
 		if (!strcmp(found->key, "_"))
 			return(remove_if(*env), free(key));
-		found->value = check_for_quote(found->value);
+		// found->value = check_for_quote(found->value);
 		value = strchr(arg, '=');
 		if (value)
 			append_to_found(found, key, value + 1);
@@ -241,7 +241,7 @@ void sort_and_print(t_env **env)
 		printf("declare -x %s", tmp->key);
 		if (tmp->value)
 		{
-			tmp->value = check_for_quote(tmp->value);
+			// tmp->value = check_for_quote(tmp->value);
 				printf("=\"%s\"", tmp->value);
 		}
 		printf("\n");
@@ -267,7 +267,7 @@ int	ft_export(t_env **env, char **arg)
 		valid = is_valid_identifier(arg[i]);
 		if (!valid)
 		{
-			fprintf(stderr, "export: `%s': not a valid identifier\n", arg[i]);
+			fprintf(stderr, "minishell: export: `%s': not a valid identifier\n", arg[i]);
 			flag = 0;
 		}
 		else if (is_valid_identifier(arg[i]) == 1)

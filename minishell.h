@@ -15,6 +15,17 @@
 #include <stdbool.h>
 #define HEREDOC_MAX_LINES 1000
 
+// typedef struct s_col
+// {
+// 	void			*ptr;
+// 	struct s_col	*next;
+// }	t_col;
+
+// typedef enum e_call
+// {
+// 	FREE,
+// 	MALLOC
+// }	t_call;
 
 typedef enum e_token_type
 {

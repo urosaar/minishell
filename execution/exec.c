@@ -89,7 +89,9 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 
 	path = NULL;
 	tmp = env;
-	ft_check1(cmds->cmd);
+	d = ft_check1(cmds->cmd);
+	if (d)
+		return (d);
 	while (tmp)
 	{
 		if (!strcmp(tmp->key, "PATH"))
