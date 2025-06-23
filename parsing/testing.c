@@ -62,14 +62,14 @@ void free_commands(t_command *cmd)
 		cmd = next;
 	}
 }
-void	handler_eof(t_command *cmds, t_env *env)
+void handler_eof(t_command *cmds, t_env *env, int last_status)
 {
-	if (cmds)
-		free_commands(cmds);
-	if (env)
-		free_env(env);
-	printf("exit\n");
-	exit(0);
+    if (cmds)
+        free_commands(cmds);
+    if (env)
+        free_env(env);
+    printf("exit\n");
+    exit(last_status);
 }
 void	handler(int signal)
 {
@@ -97,38 +97,47 @@ void signals()
 
 int main(int ac, char **av, char **envp)
 {
-    char *raw;
-    char **tokens;
-	t_exec		*exec;
-	t_command	*cmds;
-	t_env		*env = NULL;
+    char      *raw;
+    char      **tokens;
+    t_exec    *exec;
+    t_command *cmds;
+    t_env     *env = NULL;
 
-	exec = malloc(sizeof(t_exec));
-	if (!exec)
-		return (1);
-	exec->last_status = 0; // works now :)
-	exec->prev_pwd = NULL;
-    if (av[1])
+    exec = malloc(sizeof(t_exec));
+    if (!exec)
     {
-        printf("minishell: %s: No such file or directory\n", av[1]);
+        perror("minishell");
         return (1);
     }
-    
+    exec->last_status = 0;
+    exec->prev_pwd     = NULL;
+
+    if (av[1])
+    {
+        fprintf(stderr, "minishell: %s: No such file or directory\n", av[1]);
+        exec->last_status = 127;
+        return (127);
+    }
+
     copy_env(envp, &env);
+
     while (1)
     {
         signals();
         raw = get_input();
         if (!raw)
-            handler_eof(cmds, env);
+            handler_eof(cmds, env, exec->last_status);
+
         if (is_only_whitespace(raw))
         {
             free(raw);
             continue;
         }
+
         if (check_unclosed_quotes(raw))
         {
             printf("minishell: syntax error: unclosed quotes\n");
+            exec->last_status = 258;
             free(raw);
             continue;
         }
@@ -136,6 +145,7 @@ int main(int ac, char **av, char **envp)
         char *expanded = expand_variables(raw, exec->last_status, &env);
         if (!expanded)
         {
+            exec->last_status = 1;
             free(raw);
             continue;
         }
@@ -143,30 +153,34 @@ int main(int ac, char **av, char **envp)
         tokens = lexer(expanded);
         if (!tokens)
         {
+            exec->last_status = 1;
             free(raw);
             free(expanded);
             continue;
         }
+
         if (check_syntax_errors(raw, tokens))
         {
+            exec->last_status = 2;
             free(raw);
             free(expanded);
             free_tokens(tokens);
             continue;
         }
+
         free(raw);
         free(expanded);
 
         cmds = parse_tokens(tokens);
         if (cmds)
         {
-            // print_commands(cmds);
             check_for_pwd(&exec->prev_pwd);
-			execution(cmds, &env, exec);
+            execution(cmds, &env, exec);
             free_commands(cmds);
             cmds = NULL;
         }
         free_tokens(tokens);
     }
     free_env(env);
+    return (exec->last_status);
 }

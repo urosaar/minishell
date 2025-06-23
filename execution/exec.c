@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/22 19:16:24 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/23 23:27:56 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,94 +194,6 @@ void handler_heredoc()
 	write(1, "\n", 1);
 	exit(130);
 }
-
-// int handle_heredoc(t_command *cmd)
-// {
-//     int pipefd[2];
-//     char *line;
-//     int total_lines = 0;
-//     int ctrl_d_at_start = 0;
-    
-//     if (pipe(pipefd) == -1)
-//         return (-1);
-
-//     pid_t pid = fork();
-//     if (pid == -1)
-//         return (-1);
-
-//     if (pid == 0)
-//     {
-//         // Child process - set default signal handling
-//         signal(SIGINT, SIG_DFL);
-//         signal(SIGQUIT, SIG_DFL);
-        
-//         close(pipefd[0]);
-//         while (1)
-//         {
-//             line = readline("> ");
-//             if (!line)  // Ctrl+D pressed
-//             {
-//                 // Only print newline if we're at start of line
-//                 if (ctrl_d_at_start)
-//                     write(STDOUT_FILENO, "\n", 1);
-//                 break;
-//             }
-//             if (ft_strcmp(line, cmd->infile) == 0)
-//             {
-//                 free(line);
-//                 break;
-//             }
-
-//             // Reset flag since we have input
-//             ctrl_d_at_start = 0;
-            
-//             total_lines++;
-//             if (total_lines > HEREDOC_MAX_LINES)
-//             {
-//                 printf("minishell: heredoc limit exceeded\n");
-//                 free(line);
-//                 close(pipefd[1]);
-//                 exit(1);
-//             }
-//             write(pipefd[1], line, ft_strlen(line));
-//             write(pipefd[1], "\n", 1);
-//             free(line);
-//         }
-//         close(pipefd[1]);
-//         exit(0);
-//     }
-//     else
-//     {
-//         int status;
-//         close(pipefd[1]);
-//         // Parent process - ignore SIGINT while waiting
-//         signal(SIGINT, SIG_IGN);
-//         waitpid(pid, &status, 0);
-        
-//         if (WIFEXITED(status))
-//         {
-//             if (WEXITSTATUS(status) != 0)
-//             {
-//                 close(pipefd[0]);
-//                 return (-1);
-//             }
-//         }
-//         else if (WIFSIGNALED(status))
-//         {
-//             if (WTERMSIG(status) == SIGINT)
-//             {
-//                 write(STDOUT_FILENO, "\n", 1);
-//                 close(pipefd[0]);
-//                 return (-1);
-//             }
-//         }
-//         dup2(pipefd[0], STDIN_FILENO);
-//         close(pipefd[0]);
-//     }
-//     return (0);
-// }
-
-
 int handle_heredoc(t_command *cmd)
 {
     int pipefd[2];
@@ -294,13 +206,16 @@ int handle_heredoc(t_command *cmd)
 
     if (pid == 0)
     {
-        signal(SIGINT, SIG_DFL);
+        signal(SIGINT, handler_heredoc);
         signal(SIGQUIT, SIG_DFL);
         close(pipefd[0]);
         
         char c;
         int newline_needed = 0;
         int line_count = 0;
+        char line[1024];
+        int line_index = 0;
+        int delim_matched = 0;
 
         while (1)
         {
@@ -314,29 +229,27 @@ int handle_heredoc(t_command *cmd)
             write(STDOUT_FILENO, "> ", 2);
             newline_needed = 0;
             line_count++;
-            
+            line_index = 0;
+			
             while (read(STDIN_FILENO, &c, 1) == 1 && c != '\n')
             {
                 newline_needed = 1;
                 if (c == 4)
                     continue;
-                write(pipefd[1], &c, 1);
+                if (line_index < sizeof(line) - 1)
+                {
+                    line[line_index++] = c;
+                }
             }
-            
-            if (c == '\n')
-            {
-                write(pipefd[1], "\n", 1);
-                newline_needed = 0;
-            }
-            else if (newline_needed) 
-            {
-                write(pipefd[1], "\n", 1);
-            }
-            
+            line[line_index] = '\0';
             if (c != '\n' && !newline_needed)
                 break;
+            if (ft_strcmp(line, cmd->infile) == 0)
+                break;
+            if (line_index > 0)
+                write(pipefd[1], line, line_index);
+            write(pipefd[1], "\n", 1);
         }
-        
         close(pipefd[1]);
         exit(0);
     }
