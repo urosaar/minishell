@@ -106,77 +106,98 @@ char *ft_getenv(const char *name, t_env *env)
 
 char *expand_variables(const char *input, int last_status, t_env **env) {
     char *result = malloc(1);
-    if (!result) return NULL;
+    if (!result)
+        return NULL;
     result[0] = '\0';
 
     int in_single = 0, in_double = 0;
     int i = 0, rlen = 0;
     while (input[i]) {
-        if (input[i] == '\'' && !in_double) {
+        if (input[i] == '\'' && !in_double)
+        {
             in_single = !in_single;
             result = append_char(result, &rlen, input[i++]);
         }
-        else if (input[i] == '"' && !in_single) {
+        else if (input[i] == '"' && !in_single)
+        {
             in_double = !in_double;
             result = append_char(result, &rlen, input[i++]);
         }
-        else if (input[i] == '$' && !in_single) {
-            i++;  
+        else if (input[i] == '$' && !in_single)
+        {
+            i++; 
 
-            if (input[i] == '?') {
+            if (input[i] == '?')
+            {
                 char *num = ft_itoa(last_status);
-                if (!num)
-                    return (free(result), NULL);
+                if (!num) {
+                    free(result);
+                    return NULL;
+                }
 
                 int addlen = strlen(num);
                 char *tmp = malloc(rlen + addlen + 1);
                 if (!tmp)
-                    return (free(result), free(num), NULL);
+                {
+                    free(result);
+                    free(num);
+                    return NULL;
+                }
 
-                memcpy(tmp,        result, rlen);
-                memcpy(tmp + rlen, num,    addlen);
+                ft_memcpy(tmp, result, rlen);
+                ft_memcpy(tmp + rlen, num, addlen);
                 rlen += addlen;
                 tmp[rlen] = '\0';
 
                 free(result);
                 free(num);
                 result = tmp;
-                i++;  // skip '?'
-                continue;
+                i++;  // Skip the '?'
             }
-            int start = i;
-            while (isalnum((unsigned char)input[i]) || input[i] == '_')
-                i++;
-            int varlen = i - start;
+            else
+            {
+                int start = i;
+   
+                while (isalnum((unsigned char)input[i]) || input[i] == '_')
+                    i++;
+                int varlen = i - start;
 
-            if (varlen > 0) {
-                char *var = strndup(input + start, varlen);
-                char *val = ft_getenv(var, *env);
-                free(var);
+                if (varlen > 0) 
+                {
+                    char *var = strndup(input + start, varlen);
+                    char *val = ft_getenv(var, *env);
+                    free(var);
 
-                if (val) {
-                    int vlen = strlen(val);
-                    char *tmp = malloc(rlen + vlen + 1);
-                    if (!tmp)
-                        return (free(result), NULL);
+                    if (val) {
+                        int vlen = strlen(val);
+                        char *tmp = malloc(rlen + vlen + 1);
+                        if (!tmp)
+                        {
+                            free(result);
+                            return NULL;
+                        }
 
-                    memcpy(tmp,        result, rlen);
-                    memcpy(tmp + rlen, val,    vlen);
-                    rlen += vlen;
-                    tmp[rlen] = '\0';
+                        memcpy(tmp, result, rlen);
+                        memcpy(tmp + rlen, val, vlen);
+                        rlen += vlen;
+                        tmp[rlen] = '\0';
 
-                    free(result);
-                    result = tmp;
+                        free(result);
+                        result = tmp;
+                    }
+                }
+                else {
+
+                    result = append_char(result, &rlen, '$');
+                    if (!result)
+                        return NULL;
                 }
             }
         }
-        else {
+        else 
             result = append_char(result, &rlen, input[i++]);
-        }
-
         if (!result)
             return NULL;
     }
-
     return result;
 }

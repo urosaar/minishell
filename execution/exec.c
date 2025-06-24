@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/23 23:27:56 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/24 14:17:24 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -420,8 +420,8 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 		{
 			if (WIFEXITED(status)) 
 				ctx->last_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-                ctx->last_status = 128 + WTERMSIG(status);
+			// else if (WIFSIGNALED(status))
+            //     ctx->last_status = 128 + WTERMSIG(status);
 		}
 	}
 }

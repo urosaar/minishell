@@ -1,7 +1,9 @@
 
 heredoc ctr +c quit heredoc : need fix : done
-heredoc need fix for exit status
-add exit status syntax done
+heredoc need fix for exit status : done
+add exit status syntax : done
 < infile grep hello | tr 'a-z' 'A-Z' | cat > outfile : done
+
+need to fix:
 >>>>>>>>>>>>>>>>>>>>
 ls | > out  no return
