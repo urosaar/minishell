@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/19 15:30:46 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/25 17:53:00 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ void	if_envp_empty(t_env **env)
 	node1 = "PWD=/mnt/homes/skhallou/Desktop/minishell";
 	node2 = "SHLVL=1";
 	node3 = "_=/usr/bin/env";
-	node4 = "PATH=/mnt/homes/skhallou/goinfre/homebrew/bin:/mnt/homes/skhallou/goinfre/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Library/Apple/usr/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands";
-	node = ft_newnode(strdup(node1), '=');
-	node->next = ft_newnode(strdup(node2), '=');
-	node->next->next = ft_newnode(strdup(node3), '=');
-	node->next->next->next = ft_newnode(strdup(node4), '=');
+	node4 = "PATH=/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.";
+	node = ft_newnode((node1), '=');
+	node->next = ft_newnode((node2), '=');
+	node->next->next = ft_newnode((node3), '=');
+	node->next->next->next = ft_newnode((node4), '=');
 	ft_lstadd_back(env, node);
 }
 
@@ -40,7 +40,7 @@ void	copy_env(char **envp, t_env **env)
 	i = 0;
 	while (envp[i])
 	{
-		new_node = ft_newnode(strdup(envp[i]), '=');
+		new_node = ft_newnode(ft_strdup(envp[i]), '=');
 		ft_lstadd_back(env, new_node);
 		i++;
 	}
@@ -88,7 +88,7 @@ void	check_for_pwd(char **prev_pwd)
 	pwd = getcwd(NULL, 0);
 	int i = chdir(pwd);
 	if (!i)
-		*prev_pwd = strdup(pwd);
+		*prev_pwd = ft_strdup(pwd);
 	if (i == -1)
 		return;
 }

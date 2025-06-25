@@ -1,5 +1,7 @@
 #include "../minishell.h"
 
+int g_status = 0;
+
 void free_tokens(char **tokens)
 {
 	int i = 0;
@@ -62,6 +64,12 @@ void free_commands(t_command *cmd)
 		cmd = next;
 	}
 }
+int ft_exit_status(int status)
+{
+    if (status == 1)
+        return (1);
+    return (0);
+}
 void handler_eof(t_command *cmds, t_env *env, int last_status)
 {
     if (cmds)
@@ -73,10 +81,11 @@ void handler_eof(t_command *cmds, t_env *env, int last_status)
 }
 void	handler(int signal)
 {
-	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
+    write(1, "\n", 1);
+    rl_on_new_line();
+    rl_replace_line("", 0);
+    rl_redisplay();
+
 }
 
 void signals()
@@ -103,13 +112,14 @@ int main(int ac, char **av, char **envp)
     t_command *cmds;
     t_env     *env = NULL;
 
-    exec = malloc(sizeof(t_exec));
+    exec = ft_malloc(sizeof(t_exec), MALLOC);
     if (!exec)
     {
         perror("minishell");
         return (1);
     }
     exec->last_status = 0;
+    printf("status = %d\n", exec->last_status);
     exec->prev_pwd     = NULL;
 
     if (av[1])
@@ -118,12 +128,14 @@ int main(int ac, char **av, char **envp)
         exec->last_status = 127;
         return (127);
     }
-
+    // rl_catch_signals = 0;
     copy_env(envp, &env);
 
     while (1)
     {
         signals();
+        exec->last_status = ft_exit_status(g_status);
+        printf("HIIII\n");
         raw = get_input();
         if (!raw)
             handler_eof(cmds, env, exec->last_status);
@@ -181,6 +193,6 @@ int main(int ac, char **av, char **envp)
         }
         free_tokens(tokens);
     }
-    free_env(env);
+	ft_malloc(0, FREE);
     return (exec->last_status);
 }

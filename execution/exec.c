@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/24 14:17:24 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/25 18:01:34 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <errno.h>
 
 char	**build_env_array(t_env **env)
 {
@@ -25,7 +24,7 @@ char	**build_env_array(t_env **env)
 		count++;
 		tmp = tmp->next;
 	}
-	char **envp = malloc((count + 1) * sizeof(char *));
+	char **envp = ft_malloc((count + 1) * sizeof(char *), MALLOC);
 	tmp = *env;
 	int i = 0;
 	while (tmp)
@@ -108,24 +107,6 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 		return (d);
 	return (free_array(path), NULL);
 }
-// int	check_redirections(t_command *cmd)
-// {
-// 	t_redirection *r = cmd->redirections;
-
-// 	while (r)
-// 	{
-// 		if (r->type == TOKEN_REDIRECT_IN)
-// 		{
-// 			if (access(r->filename, R_OK) == -1)
-// 			{
-// 				// printf("minishellll: %s: No such file or directory\n", r->filename);
-// 				return (0); 
-// 			}
-// 		}
-// 		r = r->next;
-// 	}
-// 	return (1);
-// }
 
 int redirect_output(char *d, t_command *curr)
 {
@@ -372,6 +353,7 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 	{
 		if (curr->next || ctx->prev_fd != -1)
 			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
+		signal(SIGINT, SIG_DFL);
 		d = check_if_exist(*env, curr);
 		redirection(curr, d);
 		if (is_builtins(curr->args)) 
@@ -395,7 +377,7 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 
 	ctx->prev_fd = -1;
 	curr = cmds;
-	
+
 	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
     if (is_builtins(curr->args) && !curr->next && !curr->redirections)

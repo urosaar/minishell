@@ -4,6 +4,15 @@ heredoc need fix for exit status : done
 add exit status syntax : done
 < infile grep hello | tr 'a-z' 'A-Z' | cat > outfile : done
 
+
 need to fix:
 >>>>>>>>>>>>>>>>>>>>
 ls | > out  no return
+ << aa | ls
+wc -c ctr+cat
+ctr + c exit status should be -> 1 : need fix
+cat with ctr + c
+
+>>>>>>>>>>>>>
+HEREDOC with expand
+<< a << aa =

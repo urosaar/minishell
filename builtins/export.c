@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 19:51:55 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/25 17:30:40 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ char	*key_full(char *line, char c)
 		return (NULL);
 	while (line[i] && line[i] != c)
 		i++;
-	key = malloc(sizeof(char) * (i + 1));
+	key = ft_malloc(sizeof(char) * (i + 1), MALLOC);
 	if (!key)
 		return (NULL);
 	i = 0;
@@ -83,7 +83,7 @@ char	*check_for_quote(char *value)
 	if (!value)
 		return (NULL);
 	len = ft_strlen(value);
-	d = malloc(len + 1);
+	d = ft_malloc(len + 1, MALLOC);
 	if (!d)
 		return (NULL);
 	while (value[i])
@@ -160,10 +160,10 @@ void	update_found_node(t_env *found, char *arg)
 
 	value = strchr(arg, '=');
 	free(found->line);
-	found->line = strdup(arg);
+	found->line = ft_strdup(arg);
 	if (found->value)
 		free(found->value);
-	found->value = strdup(value + 1);
+	found->value = ft_strdup(value + 1);
 }
 
 void	without_plus(t_env **env, char *arg)
@@ -187,7 +187,7 @@ void	without_plus(t_env **env, char *arg)
 	}
 	else if (!found && strcmp(key, "_"))
 	{
-		new = ft_newnode(strdup(arg), '=');
+		new = ft_newnode(ft_strdup(arg), '=');
 		ft_lstadd_back(env, new);
 	}
 	free(key);
@@ -197,7 +197,7 @@ void	append_to_found(t_env *found, char *key, char *value)
 	if (found->value)
 		found->value = ft_join(found->value, value);
 	else
-		found->value = strdup(value);
+		found->value = ft_strdup(value);
 	free(found->line);
 	found->line = ft_join(key, "=");
 	found->line = ft_join(found->line, found->value);
@@ -223,7 +223,7 @@ void	with_plus(t_env **env, char *arg)
 	}
 	else if (!found && strcmp(key, "_"))
 	{
-		new = ft_newnode(strdup(arg), '+');
+		new = ft_newnode(ft_strdup(arg), '+');
 		ft_lstadd_back(env, new);
 	}
 	free(key);

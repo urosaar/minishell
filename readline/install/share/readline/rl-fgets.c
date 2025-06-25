@@ -96,7 +96,7 @@ Best Regards,
       setenv FGETS_PROMPT       "foo> "
       exec "foo" $*
   
-  Copyright (C)©2003-2004 Harold Levy.
+  Copyright (C)ï¿½2003-2004 Harold Levy.
   
   This code links to the GNU readline library, and as such is bound by the
   terms of the GNU General Public License as published by the Free Software
@@ -252,7 +252,7 @@ my_fgets_lookup (
     while ( _fgets(buf1,255,fp) ) {
       buf1[255] = 0 ;
       if ( 1 == sscanf(buf1,"%s",buf2) ) {
-        my_fgets_names[i] = strdup(buf2) ;
+        my_fgets_names[i] = ft_strdup(buf2) ;
         i ++ ;
       }
     }

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:10 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 14:57:43 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/25 17:27:03 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	ft_pwd(t_env *env, char *prev_pwd)
 	node = env;
 	pwd = getcwd(NULL,0);
 	if (!pwd)
-		pwd = strdup(prev_pwd);
+		pwd = ft_strdup(prev_pwd);
 	while (pwd[i])
 		i++;
 	write(1, pwd, i);

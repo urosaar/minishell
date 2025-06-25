@@ -4,6 +4,7 @@
         "signal.h": "c",
         "__locale": "c",
         "cctype": "c",
-        "locale": "c"
+        "locale": "c",
+        "history.h": "c"
     }
 }

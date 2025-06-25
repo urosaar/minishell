@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:27 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/09 17:15:28 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/25 17:27:17 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,21 @@ t_env	*ft_newnode(char *line, char c)
 
 	if (!line)
 		return (NULL);
-	newnode = malloc(sizeof(t_env));
+	newnode = ft_malloc(sizeof(t_env), MALLOC);
 	if (!newnode)
 		return (NULL);
 	newnode->key = key_full(line, c);
 	equal = strchr(line, '=');
 	if (equal)
 	{
-		newnode->value = strdup(equal + 1);
+		newnode->value = ft_strdup(equal + 1);
 		newnode->line = ft_join(newnode->key, "=");
 		newnode->line = ft_join(newnode->line, newnode->value);
 	}
 	else
 	{
 		newnode->value = NULL;
-		newnode->line = strdup(line);
+		newnode->line = ft_strdup(line);
 	}
 	newnode->next = NULL;
 	return (newnode);
@@ -125,7 +125,7 @@ char	*ft_strdup(char *src)
 	i = 0;
 	if (!src)
 		return (NULL);
-	dest = malloc(ft_strlen(src) + 1);
+	dest = ft_malloc(ft_strlen(src) + 1, MALLOC);
 	if (!dest)
 		return (0);
 	while (src[i])
@@ -153,7 +153,7 @@ char	*ft_join(char *s1, char *s2)
 	if (!s2)
 		return (ft_strdup(s1));
 	len = ft_strlen(s1) + ft_strlen(s2);
-	newstring = malloc(len + 1);
+	newstring = ft_malloc(len + 1 , MALLOC);
 	if (!newstring)
 		return (free(s1), NULL);
 	while (s1[i])

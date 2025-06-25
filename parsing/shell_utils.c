@@ -153,6 +153,7 @@ char *expand_variables(const char *input, int last_status, t_env **env) {
                 free(num);
                 result = tmp;
                 i++;  // Skip the '?'
+                continue;
             }
             else
             {

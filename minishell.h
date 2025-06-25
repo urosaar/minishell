@@ -10,22 +10,23 @@
 #include <stdint.h>
 #include <signal.h>
 #include <sys/wait.h>
+#include <errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdbool.h>
 #define HEREDOC_MAX_LINES 1000
 
-// typedef struct s_col
-// {
-// 	void			*ptr;
-// 	struct s_col	*next;
-// }	t_col;
+typedef struct s_malloc
+{
+	void			*ptr;
+	struct s_malloc	*next;
+}	t_malloc;
 
-// typedef enum e_call
-// {
-// 	FREE,
-// 	MALLOC
-// }	t_call;
+typedef enum e_type
+{
+	FREE,
+	MALLOC
+}	t_type;
 
 typedef enum e_token_type
 {
@@ -155,5 +156,12 @@ char	*ft_strdup(char *src);
 // int		ft_strcmp(char *s1, char *s2);
 char	**free_array(char **array);
 void ft_putstr_fd(char *s, int fd);
+
+/*Malloc*/
+void	*ft_malloc(size_t size, t_type type);
+t_malloc	*new_node(void	*ptr);
+t_malloc	*last_node(t_malloc **head);
+void	add_back(t_malloc	**head, t_malloc *new);
+void	clear_all(t_malloc **head);
 
 #endif
