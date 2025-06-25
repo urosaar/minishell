@@ -402,8 +402,12 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 		{
 			if (WIFEXITED(status)) 
 				ctx->last_status = WEXITSTATUS(status);
-			// else if (WIFSIGNALED(status))
-            //     ctx->last_status = 128 + WTERMSIG(status);
+			// else if (WIFSIGNALED(status)) 
+			// {
+			// 	ctx->last_status = 128 + WTERMSIG(status);
+			// 	if (WTERMSIG(status) == SIGINT)
+			// 		write(STDOUT_FILENO, "\n", 1);
+        	// }
 		}
 	}
 }

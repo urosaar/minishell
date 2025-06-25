@@ -2,9 +2,9 @@ NAME = minishell
 CC = cc
 CFLAG = -Wall -Werror -Wextra -g
 # hado lflags dreadline library 3ndi flmac
-O_READLINE_DIR := readline/install
-O_LDFLAGS += -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
-O_CFLAG = -I$(O_READLINE_DIR)/include # zdt readline library (MAC) #-Wall -Wextra -Werror
+#O_READLINE_DIR := readline/install
+#O_LDFLAGS += -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
+#O_CFLAG = -I$(O_READLINE_DIR)/include # zdt readline library (MAC) #-Wall -Wextra -Werror
 #------------------------------------------------------------------------------
 
 READLINE_INC =# -I$(shell brew --prefix readline)/include
@@ -20,10 +20,10 @@ HEAD = fractol.h
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(OBJ) $(CFLAGS) $(O_CFLAG) $(O_LDFLAGS) -lreadline -o $(NAME) $(READLINE_LIB)
+	$(CC) $(OBJ) $(CFLAGS) -lreadline -o $(NAME) $(READLINE_LIB)
 
-%.o: %.c minishell.h Makefile
-	$(CC) $(CFLAGS) $(O_CFLAG) $(READLINE_INC) -c $< -o $@
+%.o: %.c minishell.h	Makefile
+	$(CC) $(CFLAGS) $(READLINE_INC) -c $< -o $@
 
 clean:
 	$(RM) $(OBJ)
