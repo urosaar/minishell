@@ -13,6 +13,6 @@ wc -c ctr+cat
 ctr + c exit status should be -> 1 : need fix
 cat with ctr + c
 
->>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>
 HEREDOC with expand
 << a << aa =

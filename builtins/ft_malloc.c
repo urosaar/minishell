@@ -17,7 +17,7 @@ void	ft_free_exit(void *ptr, t_malloc **head)
 {
 	printf("minishell : error malloc failed\n");
 	free(ptr);
-	clear_all(head);
+	free_all(head);
 	exit(1);
 }
 
@@ -33,7 +33,7 @@ void	*ft_malloc(size_t size, t_type type)
 		if (!ptr)
 		{
 			printf("minishell : error malloc failed\n");
-			clear_all(&head);
+			free_all(&head);
 			exit(1);
 		}
 		tmp = new_node(ptr);
@@ -43,6 +43,6 @@ void	*ft_malloc(size_t size, t_type type)
 		return (ptr);
 	}
 	else if (type == FREE)
-		clear_all(&head);
+		free_all(&head);
 	return (NULL);
 }

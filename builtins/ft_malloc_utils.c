@@ -46,7 +46,7 @@ void	add_back(t_malloc	**head, t_malloc *new)
 		last_node(head)->next = new;
 }
 
-void	clear_all(t_malloc **head)
+void	free_all(t_malloc **head)
 {
 	t_malloc	*cur;
 	t_malloc	*tmp;
