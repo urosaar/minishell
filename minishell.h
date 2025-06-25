@@ -157,11 +157,11 @@ char	*ft_strdup(char *src);
 char	**free_array(char **array);
 void ft_putstr_fd(char *s, int fd);
 
-/*Malloc*/
+/* Malloc */
 void	*ft_malloc(size_t size, t_type type);
 t_malloc	*new_node(void	*ptr);
 t_malloc	*last_node(t_malloc **head);
 void	add_back(t_malloc	**head, t_malloc *new);
-void	clear_all(t_malloc **head);
+void	free_all(t_malloc **head);
 
 #endif
