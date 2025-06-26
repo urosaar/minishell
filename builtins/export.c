@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/25 17:30:40 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/26 20:43:09 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	swap_line(t_env **head)
 	node = *head;
 	while (node && node->next)
 	{
-		if (node->key && strcmp(node->key, node->next->key) > 0)
+		if (node->key && ft_strcmp(node->key, node->next->key) > 0)
 		{
 			swap_nodes(node, node->next);
 			node = *head;
@@ -100,7 +100,7 @@ t_env	*find_in_env(t_env *env, char *key)
 {
 	while (env)
 	{
-		if (env->key && strcmp(env->key, key) == 0)
+		if (env->key && ft_strcmp(env->key, key) == 0)
 			return (env);
 		env = env->next;
 	}
@@ -137,7 +137,7 @@ void	remove_if(t_env *env)
 	prev = NULL;
 	while (node)
 	{
-		if (node->key && strcmp(node->key, "_") == 0)
+		if (node->key && ft_strcmp(node->key, "_") == 0)
 		{
 			tmp = node->next;
 			if (prev)
@@ -176,7 +176,7 @@ void	without_plus(t_env **env, char *arg)
 	found = find_in_env(*env, key);
 	if (found)
 	{
-		if (!strcmp(found->key, "_"))
+		if (!ft_strcmp(found->key, "_"))
 		{
 			remove_if(*env);
 			free(key);
@@ -185,7 +185,7 @@ void	without_plus(t_env **env, char *arg)
 		if (strchr(arg, '='))
 			update_found_node(found, arg);
 	}
-	else if (!found && strcmp(key, "_"))
+	else if (!found && ft_strcmp(key, "_"))
 	{
 		new = ft_newnode(ft_strdup(arg), '=');
 		ft_lstadd_back(env, new);
@@ -214,14 +214,14 @@ void	with_plus(t_env **env, char *arg)
 	found = find_in_env(*env, key);
 	if (found)
 	{
-		if (!strcmp(found->key, "_"))
+		if (!ft_strcmp(found->key, "_"))
 			return(remove_if(*env), free(key));
 		// found->value = check_for_quote(found->value);
 		value = strchr(arg, '=');
 		if (value)
 			append_to_found(found, key, value + 1);
 	}
-	else if (!found && strcmp(key, "_"))
+	else if (!found && ft_strcmp(key, "_"))
 	{
 		new = ft_newnode(ft_strdup(arg), '+');
 		ft_lstadd_back(env, new);

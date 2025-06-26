@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/19 15:19:50 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/26 20:42:42 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ long	ft_atoi(t_env *env, char *arg)
 	i = 0;
 	r = 0;
 	sign = 1;
-	if (!strcmp(arg, "-9223372036854775808"))
+	if (!ft_strcmp(arg, "-9223372036854775808"))
 		return (0);
 	while (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
 		i++;

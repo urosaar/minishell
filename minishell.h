@@ -16,6 +16,8 @@
 #include <stdbool.h>
 #define HEREDOC_MAX_LINES 1000
 
+int g_status;
+
 typedef struct s_malloc
 {
 	void			*ptr;
@@ -76,6 +78,7 @@ typedef struct s_exec
 {   
 	pid_t 	pid;
 	pid_t 	last_pid;
+	int		status2;
 	int		prev_fd;
     int		last_status;
 	int		pipe_fd[2];

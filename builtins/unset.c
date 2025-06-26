@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:18 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 17:02:07 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/26 20:43:30 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	ft_unset(t_env **env, char **arg)
 		prev = NULL;
 		while (node)
 		{
-			if (node->key && strcmp(node->key, arg[i]) == 0)
+			if (node->key && ft_strcmp(node->key, arg[i]) == 0)
 			{
 				tmp = node->next;
 				if (prev)

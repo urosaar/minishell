@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/26 01:10:30 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/26 20:43:59 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 		return (d);
 	while (tmp)
 	{
-		if (!strcmp(tmp->key, "PATH"))
+		if (!ft_strcmp(tmp->key, "PATH"))
 		{
 			path = ft_split(tmp->value, ':');
 			break;
@@ -173,18 +173,16 @@ int redirect_input(char *d, t_command *curr)
 void handler_heredoc()
 {
 	write(1, "\n", 1);
-	exit(130);
+	exit(1);
 }
 int handle_heredoc(t_command *cmd, int last_status, t_env **env)
 {
     int pipefd[2];
     if (pipe(pipefd) == -1)
         return (-1);
-
     pid_t pid = fork();
     if (pid == -1)
         return (-1);
-
     if (pid == 0)
     {
         signal(SIGINT, handler_heredoc);
@@ -226,7 +224,7 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
                 break;
             if (!cmd->heredoc_quoted)
             {
-                char *expanded = expand_variables(line, last_status, env);
+                char *expanded = expand_variables(line, g_status, env);
                 if (expanded)
                 {
                     write(pipefd[1], expanded, strlen(expanded));
@@ -255,7 +253,6 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
         close(pipefd[1]);
         signal(SIGINT, SIG_IGN);
         waitpid(pid, &status, 0);
-        
         if (WIFEXITED(status))
         {
             if (WEXITSTATUS(status) != 0)
@@ -264,15 +261,15 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
                 return (-1);
             }
         }
-        else if (WIFSIGNALED(status))
-        {
-            if (WTERMSIG(status) == SIGINT)
-            {
-                write(STDOUT_FILENO, "\n", 1);
-                close(pipefd[0]);
-                return (-1);
-            }
-        }
+        // else if (WIFSIGNALED(status))
+        // {
+        //     if (WTERMSIG(status) == SIGINT)
+        //     {
+		// 		WEXITSTATUS(status);
+        //         close(pipefd[0]);
+        //         return (-1);
+        //     }
+        // }
         dup2(pipefd[0], STDIN_FILENO);
         close(pipefd[0]);
     }
@@ -368,6 +365,7 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 		if (curr->next || ctx->prev_fd != -1)
 			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
 		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		d = check_if_exist(*env, curr);
 		redirection(curr, d, ctx->last_status, env);
 		if (is_builtins(curr->args)) 
@@ -383,15 +381,36 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 	}
 }
 
-void execution(t_command *cmds, t_env **env, t_exec *ctx)
+void	ft_wait(t_exec *ctx)
 {
-    t_command	*curr = cmds;
-	int			status;
-	int			x;
+	int	status;
+	int	x;
+
+	while ((x = wait(&status)) > 0)
+	{
+		if (x == ctx->last_pid)
+		{
+			if (WIFEXITED(status)) 
+				ctx->last_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status) && g_status == 0) 
+			{
+				ctx->last_status = 128 + WTERMSIG(status);
+				if (WTERMSIG(status) == SIGINT)
+					write(STDOUT_FILENO, "\n", 1);
+				if (WTERMSIG(status) == SIGQUIT)
+					printf("Quit: 3\n");
+        	}
+		}
+	}
+	printf("STATUS = %d\n", ctx->last_status);
+}
+
+void	execution(t_command *cmds, t_env **env, t_exec *ctx)
+{
+    t_command	*curr;
 
 	ctx->prev_fd = -1;
 	curr = cmds;
-
 	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
     if (is_builtins(curr->args) && !curr->next && !curr->redirections)
@@ -410,18 +429,5 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
         curr = curr->next;
     }
     close_fd(ctx->prev_fd);
-	while ((x = wait(&status)) > 0)
-	{
-		if (x == ctx->last_pid)
-		{
-			if (WIFEXITED(status)) 
-				ctx->last_status = WEXITSTATUS(status);
-			// else if (WIFSIGNALED(status)) 
-			// {
-			// 	ctx->last_status = 128 + WTERMSIG(status);
-			// 	if (WTERMSIG(status) == SIGINT)
-			// 		write(STDOUT_FILENO, "\n", 1);
-        	// }
-		}
-	}
+	ft_wait(ctx);
 }
