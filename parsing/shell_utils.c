@@ -1,4 +1,5 @@
 #include "../minishell.h"
+# include<ctype.h>
 
 char *get_input(void)
 {

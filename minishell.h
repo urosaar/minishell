@@ -69,6 +69,7 @@ typedef struct s_command {
 	int              append;    // 1 if “>>”, 0 if “>”
 	int              heredoc;   // 1 if “<<”
 	struct s_command *next;     // Next command in a pipeline
+	int 			heredoc_quoted;
 }   t_command;
 
 typedef struct s_exec

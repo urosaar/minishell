@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/25 18:01:34 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/06/26 01:10:30 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,7 @@ void handler_heredoc()
 	write(1, "\n", 1);
 	exit(130);
 }
-int handle_heredoc(t_command *cmd)
+int handle_heredoc(t_command *cmd, int last_status, t_env **env)
 {
     int pipefd[2];
     if (pipe(pipefd) == -1)
@@ -196,7 +196,6 @@ int handle_heredoc(t_command *cmd)
         int line_count = 0;
         char line[1024];
         int line_index = 0;
-        int delim_matched = 0;
 
         while (1)
         {
@@ -211,25 +210,41 @@ int handle_heredoc(t_command *cmd)
             newline_needed = 0;
             line_count++;
             line_index = 0;
-			
+            
             while (read(STDIN_FILENO, &c, 1) == 1 && c != '\n')
             {
                 newline_needed = 1;
                 if (c == 4)
                     continue;
                 if (line_index < sizeof(line) - 1)
-                {
                     line[line_index++] = c;
-                }
             }
             line[line_index] = '\0';
             if (c != '\n' && !newline_needed)
                 break;
             if (ft_strcmp(line, cmd->infile) == 0)
                 break;
-            if (line_index > 0)
-                write(pipefd[1], line, line_index);
-            write(pipefd[1], "\n", 1);
+            if (!cmd->heredoc_quoted)
+            {
+                char *expanded = expand_variables(line, last_status, env);
+                if (expanded)
+                {
+                    write(pipefd[1], expanded, strlen(expanded));
+                    free(expanded);
+                }
+                else
+                {
+                    if (line_index > 0)
+                        write(pipefd[1], line, line_index);
+                }
+                write(pipefd[1], "\n", 1);
+            }
+            else
+            {
+                if (line_index > 0)
+                    write(pipefd[1], line, line_index);
+                write(pipefd[1], "\n", 1);
+            }
         }
         close(pipefd[1]);
         exit(0);
@@ -264,7 +279,6 @@ int handle_heredoc(t_command *cmd)
     return (0);
 }
 
-
 void close_fd(int fd)
 {
 	if (fd != -1)
@@ -276,32 +290,32 @@ void perror_and_exit(const char *msg)
 	perror(msg);
 	exit(1);
 }
-void	redirection(t_command *curr, char *d)
+void redirection(t_command *curr, char *d, int last_status, t_env **env)
 {
-	while (curr->redirections)
-	{
-		if (curr->redirections->type == TOKEN_HEREDOC)
-		{
-			if (handle_heredoc(curr) == -1)
-				exit(1);
-		}
-		else if (curr->redirections->type == TOKEN_REDIRECT_IN)
-		{
-			if (!redirect_input(d, curr))
-				exit(1);
-		}
-		else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
-		{
-			if (!redirect_output(d, curr))
-				exit(1);
-		}
-		else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
-		{
-			if (!append_mode(d, curr))
-				exit(1);
-		}
-		curr->redirections = curr->redirections->next;
-	}
+    while (curr->redirections)
+    {
+        if (curr->redirections->type == TOKEN_HEREDOC)
+        {
+            if (handle_heredoc(curr, last_status, env) == -1)
+                exit(1);
+        }
+        else if (curr->redirections->type == TOKEN_REDIRECT_IN)
+        {
+            if (!redirect_input(d, curr))
+                exit(1);
+        }
+        else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
+        {
+            if (!redirect_output(d, curr))
+                exit(1);
+        }
+        else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
+        {
+            if (!append_mode(d, curr))
+                exit(1);
+        }
+        curr->redirections = curr->redirections->next;
+    }
 }
 void	ft_execve(t_command *curr, t_env **env, char *d)
 {
@@ -355,7 +369,7 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
 		signal(SIGINT, SIG_DFL);
 		d = check_if_exist(*env, curr);
-		redirection(curr, d);
+		redirection(curr, d, ctx->last_status, env);
 		if (is_builtins(curr->args)) 
 			exit(builtins(env, curr->args, ctx->prev_pwd));
 		ft_execve(curr, env, d);
