@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/27 15:29:10 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:16:46 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,7 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
             line = readline("> ");
             if (!line)
             {
-                // write(STDOUT_FILENO, "\033[A\033[2C", 7);  // Move cursor up and right
+                write(STDOUT_FILENO, "\033[A\033[2C", 7);  // Move cursor up and right
                 break;
             }
             

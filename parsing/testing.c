@@ -75,6 +75,7 @@ void handler_eof(t_command *cmds, t_env *env, int last_status)
 		free_commands(cmds);
 	if (env)
 		free_env(env);
+	// write(STDOUT_FILENO, "\033[A\033[2C", 7);  
 	printf("exit\n");
 	exit(last_status);
 }
