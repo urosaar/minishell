@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/27 12:31:28 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/06/27 15:29:10 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,6 +175,8 @@ void handler_heredoc()
 	write(1, "\n", 1);
 	exit(1);
 }
+
+
 int handle_heredoc(t_command *cmd, int last_status, t_env **env)
 {
     int pipefd[2];
@@ -185,70 +187,58 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
         return (-1);
     if (pid == 0)
     {
-        signal(SIGINT, handler_heredoc);
-        signal(SIGQUIT, SIG_DFL);
+        signal(SIGINT, handler_heredoc); 
+        signal(SIGQUIT, SIG_IGN);
         close(pipefd[0]);
         
-        char c;
-        int newline_needed = 0;
+        char *line;
         int line_count = 0;
-        char line[1024];
-        int line_index = 0;
 
         while (1)
         {
             if (line_count >= HEREDOC_MAX_LINES)
             {
-                write(STDERR_FILENO, "minishell: heredoc limit exceeded\n", 34);
+                ft_putstr_fd("minishell: heredoc limit exceeded\n", STDERR_FILENO);
                 close(pipefd[1]);
                 exit(1);
             }
             
-            write(STDOUT_FILENO, "> ", 2);
-            newline_needed = 0;
-            line_count++;
-            line_index = 0;
-            ssize_t read_bytes;
-            
-            while ((read_bytes = read(STDIN_FILENO, &c, 1)) > 0 && c != '\n')
+            line = readline("> ");
+            if (!line)
             {
-                newline_needed = 1;
-                if (c == 4) 
-                    continue;
-                if (line_index < sizeof(line) - 1)
-                    line[line_index++] = c;
-            }
-            if (read_bytes == 0 && !newline_needed)
-            {
-                close(pipefd[1]);
-                exit(0);
-            }
-            
-            line[line_index] = '\0';
-            if (read_bytes <= 0 && line_index == 0)
+                // write(STDOUT_FILENO, "\033[A\033[2C", 7);  // Move cursor up and right
                 break;
-                
+            }
+            
             if (ft_strcmp(line, cmd->heredoc_delimiter) == 0)
+            {
+                free(line);
                 break;
-                
+            }
+            
             if (!cmd->heredoc_quoted)
             {
                 char *expanded = expand_variables(line, last_status, env);
                 if (expanded)
                 {
-                    write(pipefd[1], expanded, strlen(expanded));
+                    write(pipefd[1], expanded, ft_strlen(expanded));
+                    write(pipefd[1], "\n", 1);
                     free(expanded);
                 }
                 else
                 {
-                    write(pipefd[1], line, line_index);
+                    write(pipefd[1], line, ft_strlen(line));
+                    write(pipefd[1], "\n", 1);
                 }
             }
             else
             {
-                write(pipefd[1], line, line_index);
+                write(pipefd[1], line, ft_strlen(line));
+                write(pipefd[1], "\n", 1);
             }
-            write(pipefd[1], "\n", 1);
+            
+            free(line);
+            line_count++;
         }
         close(pipefd[1]);
         exit(0);
@@ -258,7 +248,13 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
         int status;
         close(pipefd[1]);
         signal(SIGINT, SIG_IGN);
+        signal(SIGQUIT, SIG_IGN); 
+        
         waitpid(pid, &status, 0);
+        
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
+        
         if (WIFEXITED(status))
         {
             if (WEXITSTATUS(status) != 0)
@@ -269,11 +265,8 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
         }
         else if (WIFSIGNALED(status))
         {
-            if (WTERMSIG(status) == SIGINT)
-            {
-                close(pipefd[0]);
-                return (-1);
-            }
+            close(pipefd[0]);
+            return (-1);
         }
         dup2(pipefd[0], STDIN_FILENO);
         close(pipefd[0]);
@@ -407,7 +400,7 @@ void	ft_wait(t_exec *ctx)
         	}
 		}
 	}
-	printf("STATUS = %d\n", ctx->last_status);
+	// printf("STATUS = %d\n", ctx->last_status);
 }
 
 void	execution(t_command *cmds, t_env **env, t_exec *ctx)
