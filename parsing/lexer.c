@@ -1,21 +1,5 @@
 #include "../minishell.h"
 
-// char *extract_quoted(const char *input, int *i)
-// {
-//     char quote = input[*i];
-//     int start = *i;
-//     (*i)++;
-//     while (input[*i] && input[*i] != quote)
-//         (*i)++;
-//     if (input[*i] != quote)
-//     {
-//         printf("minishell: syntax error: unterminated quoted string\n");
-//         return (NULL);
-//     }
-//     (*i)++;
-//     return (substr(input, start, *i));
-// }
-
 char *extract_operator(const char *input, int *i)
 {
     if ((input[*i] == '<' && input[*i + 1] == '<')

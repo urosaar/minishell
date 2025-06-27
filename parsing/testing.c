@@ -95,16 +95,33 @@ void signals()
 	signal(SIGINT, handler);
 	signal(SIGQUIT, SIG_IGN); /* [ctrl + \] */
 }
+void expand_tokens(char **tokens, int last_status, t_env **env)
+{
+    int skip_next = 0;
+    
+    for (int i = 0; tokens[i]; i++)
+    {
+        if (skip_next)
+        {
+            skip_next = 0;
+            continue;
+        }
 
-// void leak_fd(void)
-// {
-// 	int fd = 3;
-// 	while (fd < OPEN_MAX)
-// 	{
-// 		close(fd);
-// 		fd++;
-// 	}
-// }
+        if (ft_strcmp(tokens[i], "<<") == 0)
+        {
+            skip_next = 1;
+        }
+        else
+        {
+            char *expanded = expand_variables(tokens[i], last_status, env);
+            if (expanded)
+            {
+                free(tokens[i]);
+                tokens[i] = expanded;
+            }
+        }
+    }
+}
 
 int main(int ac, char **av, char **envp)
 {
@@ -130,76 +147,62 @@ int main(int ac, char **av, char **envp)
 		exec->last_status = 127;
 		return (127);
 	}
-	// rl_catch_signals = 0;
 	copy_env(envp, &env);
 
 	while (1)
-	{
-		signals();
-		raw = get_input();
-		if (!raw)
-			handler_eof(cmds, env, g_status);
+    {
+        signals();
+        raw = get_input();
+        if (!raw)
+            handler_eof(cmds, env, g_status);
 
-		if (is_only_whitespace(raw))
-		{
-			free(raw);
-			continue;
-		}
+        if (is_only_whitespace(raw))
+        {
+            free(raw);
+            continue;
+        }
 
-		if (check_unclosed_quotes(raw))
-		{
-			printf("minishell: syntax error: unclosed quotes\n");
-			exec->last_status = 258;
-			free(raw);
-			continue;
-		}
+        if (check_unclosed_quotes(raw))
+        {
+            printf("minishell: syntax error: unclosed quotes\n");
+            exec->last_status = 258;
+            free(raw);
+            continue;
+        }
+        tokens = lexer(raw);
+        free(raw); 
+        
+        if (!tokens)
+        {
+            exec->last_status = 1;
+            continue;
+        }
+        expand_tokens(tokens, g_status, &env);
 
-		char *expanded = expand_variables(raw, g_status, &env);
-		if (!expanded)
-		{
-			exec->last_status = 1;
-			free(raw);
-			continue;
-		}
+        if (check_syntax_errors(raw,tokens))
+        {
+            exec->last_status = 2;
+            free_tokens(tokens);
+            continue;
+        }
 
-		tokens = lexer(expanded);
-		if (!tokens)
-		{
-			exec->last_status = 1;
-			free(raw);
-			free(expanded);
-			continue;
-		}
-
-		if (check_syntax_errors(raw, tokens))
-		{
-			exec->last_status = 2;
-			free(raw);
-			free(expanded);
-			free_tokens(tokens);
-			continue;
-		}
-
-		free(raw);
-		free(expanded);
-
-		cmds = parse_tokens(tokens);
-		g_status = 0;
-		if (cmds->redirections && cmds->redirections->type == TOKEN_HEREDOC)
-		{
-			exec->last_status = 0;
-			g_status = 1;
-		}
-		if (cmds)
-		{
-			check_for_pwd(&exec->prev_pwd);
-			execution(cmds, &env, exec);
-			free_commands(cmds);
-			cmds = NULL;
-		}
-		g_status = exec->last_status;
-		free_tokens(tokens);
-	}
+        cmds = parse_tokens(tokens);
+        g_status = 0;
+        if (cmds && cmds->redirections && cmds->redirections->type == TOKEN_HEREDOC)
+        {
+            exec->last_status = 0;
+            g_status = 1;
+        }
+        if (cmds)
+        {
+            check_for_pwd(&exec->prev_pwd);
+            execution(cmds, &env, exec);
+            free_commands(cmds);
+            cmds = NULL;
+        }
+        g_status = exec->last_status;
+        free_tokens(tokens);
+    }
 	ft_malloc(0, FREE);
 	return (exec->last_status);
 }

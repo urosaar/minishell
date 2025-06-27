@@ -42,14 +42,14 @@ static t_command *parse_one_command(char **tokens, int *idx)
     if (!cmd->args)
         return NULL;
 
-    while (tokens[*idx] && tokens[*idx][0] != '|')
+     while (tokens[*idx] && tokens[*idx][0] != '|')
     {
         if (is_redir_token(tokens[*idx]))
         {
             t_redirection *redir = ft_calloc(1, sizeof(t_redirection));
-            char           *filename;
             if (!redir)
                 return NULL;
+                
             if (ft_strcmp(tokens[*idx], "<") == 0)
                 redir->type = TOKEN_REDIRECT_IN;
             else if (ft_strcmp(tokens[*idx], "<<") == 0)
@@ -58,32 +58,42 @@ static t_command *parse_one_command(char **tokens, int *idx)
                 redir->type = TOKEN_REDIRECT_OUT;
             else 
                 redir->type = TOKEN_REDIRECT_APPEND;
+
             (*idx)++;
-            if (!tokens[*idx])
-                return NULL;  
-
-            filename = strip_quotes(tokens[*idx]);
-            redir->filename = filename;
-
-            if (redir->type == TOKEN_REDIRECT_IN)
-            {
-                cmd->infile = ft_strdup(filename);
+            if (!tokens[*idx]) {
+                free(redir);
+                return NULL;
             }
-            else if (redir->type == TOKEN_HEREDOC)
+
+            if (redir->type == TOKEN_HEREDOC)
             {
+                cmd->heredoc_delimiter = ft_strdup(tokens[*idx]);
+                redir->filename = ft_strdup(tokens[*idx]);
                 cmd->heredoc = 1;
-                cmd->infile = ft_strdup(filename);
+                if (tokens[*idx][0] == '\'' || tokens[*idx][0] == '"')
+                    cmd->heredoc_quoted = 1;
+                else
+                    cmd->heredoc_quoted = 0;
             }
-            else if (redir->type == TOKEN_REDIRECT_OUT)
+            else
             {
-                cmd->outfile = ft_strdup(filename);
-                cmd->append = 0;
+                char *filename = strip_quotes(tokens[*idx]);
+                redir->filename = filename;
+                
+                if (redir->type == TOKEN_REDIRECT_IN)
+                    cmd->infile = ft_strdup(filename);
+                else if (redir->type == TOKEN_REDIRECT_OUT)
+                {
+                    cmd->outfile = ft_strdup(filename);
+                    cmd->append = 0;
+                }
+                else 
+                {
+                    cmd->outfile = ft_strdup(filename);
+                    cmd->append = 1;
+                }
             }
-            else 
-            {
-                cmd->outfile = ft_strdup(filename);
-                cmd->append = 1;
-            }
+
             if (!cmd->redirections)
                 cmd->redirections = redir;
             else
@@ -97,7 +107,6 @@ static t_command *parse_one_command(char **tokens, int *idx)
             (*idx)++;
         }
     }
-
     cmd->args[arg_i] = NULL;
     if (cmd->args[0])
         cmd->cmd = ft_strdup(cmd->args[0]);
