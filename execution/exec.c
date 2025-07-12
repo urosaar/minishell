@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/27 17:16:46 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/12 06:58:47 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,28 @@ void	free_envp(char **envp)
 		free(envp[i++]);
 	free(envp);
 }
-char	*ft_check1(char *cmd)
+
+char *ft_check1(char *cmd)
 {
-	if (!cmd)
-		return (NULL);
-	if (access(cmd, X_OK) == 0)
-		return ft_strdup(cmd);
-	if (strchr(cmd, '/'))
-		printf("minishell: %s: No such file or directory\n", cmd);
-	return (NULL);
+    int   dirfd;
+
+    if (!cmd)
+        return (NULL);
+    dirfd = open(cmd, O_DIRECTORY);
+    if (dirfd >= 0)
+    {
+        close(dirfd);
+        fprintf(stderr, "minishell: %s: is a directory\n", cmd);
+        return (NULL);
+    }
+
+    if (access(cmd, X_OK) == 0)
+        return (strdup(cmd));
+
+    if (strchr(cmd, '/'))
+        fprintf(stderr, "minishell: %s: No such file or directory\n", cmd);
+
+    return (NULL);
 }
 char	*ft_check2(char **path, char *cmd)
 {
@@ -206,7 +219,7 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
             line = readline("> ");
             if (!line)
             {
-                write(STDOUT_FILENO, "\033[A\033[2C", 7);  // Move cursor up and right
+                write(STDOUT_FILENO, CTRLD, 7);  // Move cursor up and right
                 break;
             }
             
@@ -273,6 +286,7 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
     }
     return (0);
 }
+
 
 void close_fd(int fd)
 {
@@ -364,8 +378,10 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		d = check_if_exist(*env, curr);
 		redirection(curr, d, ctx->last_status, env);
+		if (!curr->cmd || curr->cmd[0] == '\0')
+        exit(ctx->last_status);
+		d = check_if_exist(*env, curr);
 		if (is_builtins(curr->args)) 
 			exit(builtins(env, curr->args, ctx->prev_pwd));
 		ft_execve(curr, env, d);
@@ -378,6 +394,7 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 		ctx->prev_fd = ctx->pipe_fd[0];
 	}
 }
+
 
 void	ft_wait(t_exec *ctx)
 {

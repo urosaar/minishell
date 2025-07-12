@@ -16,6 +16,8 @@
 #include <stdbool.h>
 #define HEREDOC_MAX_LINES 1000
 
+#define CTRLD "\033[A\033[2C"
+
 int g_status;
 
 typedef struct s_malloc

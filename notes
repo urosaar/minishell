@@ -14,5 +14,5 @@ ctr + c exit status should be -> 1 : need fix
 cat with ctr + c
 
 >>>>>>>>>>>>>>>>>>>>
-HEREDOC with expand
+HEREDOC with expand : done
 << a << aa =
