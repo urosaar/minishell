@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/12 06:58:47 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/07/14 06:08:02 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,63 +189,65 @@ void handler_heredoc()
 	exit(1);
 }
 
-
-int handle_heredoc(t_command *cmd, int last_status, t_env **env)
+int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
 {
     int pipefd[2];
     if (pipe(pipefd) == -1)
         return (-1);
+    
     pid_t pid = fork();
     if (pid == -1)
-        return (-1);
+	{
+        close(pipefd[0]);
+        close(pipefd[1]);
+        return -1;
+    }
+    
     if (pid == 0)
-    {
-        signal(SIGINT, handler_heredoc); 
+	{
+        signal(SIGINT, handler_heredoc);
         signal(SIGQUIT, SIG_IGN);
         close(pipefd[0]);
         
         char *line;
         int line_count = 0;
-
-        while (1)
-        {
+        while (1) {
             if (line_count >= HEREDOC_MAX_LINES)
-            {
+			{
                 ft_putstr_fd("minishell: heredoc limit exceeded\n", STDERR_FILENO);
                 close(pipefd[1]);
                 exit(1);
             }
             
             line = readline("> ");
-            if (!line)
+              if (!line)
             {
                 write(STDOUT_FILENO, CTRLD, 7);  // Move cursor up and right
                 break;
             }
             
-            if (ft_strcmp(line, cmd->heredoc_delimiter) == 0)
-            {
+            if (ft_strcmp(line, delimiter) == 0)
+			{
                 free(line);
                 break;
             }
             
-            if (!cmd->heredoc_quoted)
-            {
+            if (!quoted)
+			{
                 char *expanded = expand_variables(line, last_status, env);
                 if (expanded)
-                {
+				{
                     write(pipefd[1], expanded, ft_strlen(expanded));
                     write(pipefd[1], "\n", 1);
                     free(expanded);
-                }
-                else
-                {
+                } else
+				{
                     write(pipefd[1], line, ft_strlen(line));
                     write(pipefd[1], "\n", 1);
                 }
-            }
-            else
-            {
+            } 
+			else
+			{
                 write(pipefd[1], line, ft_strlen(line));
                 write(pipefd[1], "\n", 1);
             }
@@ -255,13 +257,13 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
         }
         close(pipefd[1]);
         exit(0);
-    }
-    else
-    {
+    } 
+	else 
+	{
         int status;
         close(pipefd[1]);
         signal(SIGINT, SIG_IGN);
-        signal(SIGQUIT, SIG_IGN); 
+        signal(SIGQUIT, SIG_IGN);
         
         waitpid(pid, &status, 0);
         
@@ -269,24 +271,21 @@ int handle_heredoc(t_command *cmd, int last_status, t_env **env)
         signal(SIGQUIT, SIG_DFL);
         
         if (WIFEXITED(status))
-        {
-            if (WEXITSTATUS(status) != 0)
-            {
+		{
+            if (WEXITSTATUS(status) != 0) 
+			{
                 close(pipefd[0]);
-                return (-1);
+                return -1;
             }
-        }
-        else if (WIFSIGNALED(status))
-        {
+        } 
+		else if (WIFSIGNALED(status))
+		{
             close(pipefd[0]);
-            return (-1);
+            return -1;
         }
-        dup2(pipefd[0], STDIN_FILENO);
-        close(pipefd[0]);
+        return pipefd[0];
     }
-    return (0);
 }
-
 
 void close_fd(int fd)
 {
@@ -299,31 +298,58 @@ void perror_and_exit(const char *msg)
 	perror(msg);
 	exit(1);
 }
+
 void redirection(t_command *curr, char *d, int last_status, t_env **env)
 {
-    while (curr->redirections)
-    {
-        if (curr->redirections->type == TOKEN_HEREDOC)
-        {
-            if (handle_heredoc(curr, last_status, env) == -1)
+    t_redirection *head = curr->redirections;
+    int last_heredoc_fd = -1;
+    
+    t_redirection *tmp = head;
+    while (tmp)
+	{
+        if (tmp->type == TOKEN_HEREDOC)
+		{
+            if (last_heredoc_fd != -1) 
+                close(last_heredoc_fd);
+            
+            last_heredoc_fd = handle_heredoc(tmp->filename, curr->heredoc_quoted, last_status, env);
+            if (last_heredoc_fd == -1)
                 exit(1);
         }
-        else if (curr->redirections->type == TOKEN_REDIRECT_IN)
-        {
+        tmp = tmp->next;
+    }
+    
+    if (last_heredoc_fd != -1)
+	{
+        if (dup2(last_heredoc_fd, STDIN_FILENO) == -1)
+		{
+            perror("minishell: dup2");
+            close(last_heredoc_fd);
+            exit(1);
+        }
+        close(last_heredoc_fd);
+    }
+    
+
+    tmp = head;
+    while (tmp)
+	{
+        if (tmp->type == TOKEN_REDIRECT_IN)
+		{
             if (!redirect_input(d, curr))
                 exit(1);
         }
-        else if (curr->redirections->type == TOKEN_REDIRECT_OUT)
-        {
+        else if (tmp->type == TOKEN_REDIRECT_OUT)
+		{
             if (!redirect_output(d, curr))
                 exit(1);
         }
-        else if (curr->redirections->type == TOKEN_REDIRECT_APPEND)
-        {
+        else if (tmp->type == TOKEN_REDIRECT_APPEND)
+		{
             if (!append_mode(d, curr))
                 exit(1);
         }
-        curr->redirections = curr->redirections->next;
+        tmp = tmp->next;
     }
 }
 void	ft_execve(t_command *curr, t_env **env, char *d)
@@ -362,9 +388,10 @@ void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 	}
 }
 
+
 void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 {
-	char	*d;
+	char	*d = NULL;
 
 	ctx->pid = fork();
 	if (ctx->pid == -1)
@@ -372,26 +399,38 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 		perror("fork");
 		exit(1);
 	}
+
 	if (ctx->pid == 0) 
 	{
 		if (curr->next || ctx->prev_fd != -1)
 			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
+		
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
+		
 		redirection(curr, d, ctx->last_status, env);
-		if (!curr->cmd || curr->cmd[0] == '\0')
-        exit(ctx->last_status);
+
+		if (!curr->cmd || curr->cmd[0] == '\0') {
+			exit(ctx->last_status);
+		}
+		
 		d = check_if_exist(*env, curr);
-		if (is_builtins(curr->args)) 
+		if (is_builtins(curr->args)) {
 			exit(builtins(env, curr->args, ctx->prev_pwd));
+		}
+		
 		ft_execve(curr, env, d);
 	}
-	close_fd(ctx->prev_fd);
-	ctx->last_pid = ctx->pid;
-	if (curr->next)
+	else 
 	{
-		close_fd(ctx->pipe_fd[1]);
-		ctx->prev_fd = ctx->pipe_fd[0];
+		close_fd(ctx->prev_fd);
+		ctx->last_pid = ctx->pid;
+		
+		if (curr->next)
+		{
+			close_fd(ctx->pipe_fd[1]);
+			ctx->prev_fd = ctx->pipe_fd[0];
+		}
 	}
 }
 

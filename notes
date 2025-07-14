@@ -15,4 +15,4 @@ cat with ctr + c
 
 >>>>>>>>>>>>>>>>>>>>
 HEREDOC with expand : done
-<< a << aa =
+<< a << aa = : done
