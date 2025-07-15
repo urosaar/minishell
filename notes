@@ -7,8 +7,8 @@ add exit status syntax : done
 
 need to fix:
 >>>>>>>>>>>>>>>>>>>>
-ls | > out  no return
-<< aa | ls
+ls | > out  no return : done
+<< aa | ls  : done 
 wc -c ctr+cat
 ctr + c exit status should be -> 1 : need fix
 cat with ctr + c

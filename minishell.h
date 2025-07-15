@@ -54,6 +54,7 @@ typedef struct s_redirection
 	int                  type;
 	char                *filename;
 	struct s_redirection *next;
+	int                   heredoc_fd;
 }   t_redirection;
 
 typedef struct s_env

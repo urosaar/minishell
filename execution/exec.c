@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/14 06:08:02 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/07/15 04:53:40 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,73 +121,62 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 	return (free_array(path), NULL);
 }
 
-int redirect_output(char *d, t_command *curr)
+int redirect_input(char *filename)
 {
-	int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_TRUNC, 0777);
-	if (f == -1)
+    int f = open(filename, O_RDONLY);
+    if (f == -1)
 	{
-		perror("minishell: redirect_output");
-		return (0); 
-	}
-	if (d || is_builtins(curr->args))
-	{
-		if (dup2(f, STDOUT_FILENO) == -1)
-		{
-			perror("minishell: dup2");
-			close(f);
-			return (0);
-		}
-	}
-	close(f);
-	return (1);
+        fprintf(stderr, "minishell: %s: No such file or directory\n", filename);
+        return 0;
+    }
+    if (dup2(f, STDIN_FILENO) == -1)
+	{ 
+        perror("minishell: dup2");
+        close(f);
+        return 0;
+    }
+    close(f);
+    return 1;
+}
+int append_mode(t_command *curr)
+{
+    int f = open(curr->redirections->filename, O_CREAT | O_RDONLY | O_APPEND, 0777);
+    if (f == -1) {
+        perror("minishell: append_mode");
+        return 0;
+    }
+    if (dup2(f, STDOUT_FILENO) == -1)
+	{ 
+        perror("minishell: dup2");
+        close(f);
+        return 0; 
+    }
+    close(f);
+    return 1; 
+}
+int redirect_output(t_command *curr)
+{
+    int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_TRUNC, 0777);
+    if (f == -1) {
+        perror("minishell: redirect_output");
+        return 0; 
+    }
+    if (dup2(f, STDOUT_FILENO) == -1)
+	{ 
+        perror("minishell: dup2");
+        close(f);
+        return 0;
+    }
+    close(f);
+    return 1;
 }
 
-int append_mode(char *d, t_command *curr)
-{
-	int f = open(curr->redirections->filename, O_CREAT | O_RDONLY | O_APPEND, 0777);
-	if (f == -1)
-	{
-		perror("minishell: append_mode");
-		return (0);
-	}
-	if (d || is_builtins(curr->args))
-	{
-		if (dup2(f, STDOUT_FILENO) == -1)
-		{
-			perror("minishell: dup2");
-			close(f);
-			return (0); 
-		}
-	}
-	close(f);
-	return (1); 
-}
-
-int redirect_input(char *d, t_command *curr)
-{
-	int f = open(curr->redirections->filename, O_RDONLY, 0777);
-	if (f == -1)
-	{
-		fprintf(stderr, "minishell: %s: No such file or directory\n", curr->redirections->filename);
-		return (0);
-	}
-	if (d || is_builtins(curr->args))
-	{
-		if (dup2(f, STDIN_FILENO) == -1)
-		{
-			perror("minishell: dup2");
-			close(f);
-			return (0);
-		}
-	}
-	close(f);
-	return (1);
-}
 void handler_heredoc()
 {
 	write(1, "\n", 1);
 	exit(1);
 }
+
 
 int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
 {
@@ -286,6 +275,26 @@ int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
         return pipefd[0];
     }
 }
+ int process_all_heredocs(t_command *cmds, int last_status, t_env **env)
+ {
+     t_command     *curr = cmds;
+     while (curr)
+     {
+         t_redirection *redir = curr->redirections;
+         while (redir)
+         {
+           if (redir->type == TOKEN_HEREDOC)
+		   {
+                redir->heredoc_fd = handle_heredoc(redir->filename,curr->heredoc_quoted,last_status,env);
+               if (redir->heredoc_fd < 0)
+                    return 0;  
+             }
+             redir = redir->next;
+         }
+         curr = curr->next;
+     }
+     return 1; 
+ }
 
 void close_fd(int fd)
 {
@@ -299,59 +308,43 @@ void perror_and_exit(const char *msg)
 	exit(1);
 }
 
-void redirection(t_command *curr, char *d, int last_status, t_env **env)
+void redirection(t_command *curr)
 {
-    t_redirection *head = curr->redirections;
-    int last_heredoc_fd = -1;
-    
-    t_redirection *tmp = head;
-    while (tmp)
+    t_redirection *tmp = curr->redirections;
+	while (tmp)
 	{
-        if (tmp->type == TOKEN_HEREDOC)
+		if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0)
 		{
-            if (last_heredoc_fd != -1) 
-                close(last_heredoc_fd);
-            
-            last_heredoc_fd = handle_heredoc(tmp->filename, curr->heredoc_quoted, last_status, env);
-            if (last_heredoc_fd == -1)
-                exit(1);
-        }
-        tmp = tmp->next;
-    }
-    
-    if (last_heredoc_fd != -1)
-	{
-        if (dup2(last_heredoc_fd, STDIN_FILENO) == -1)
+			if (dup2(tmp->heredoc_fd, STDIN_FILENO) == -1)
+			{
+				perror("minishell: dup2 heredoc");
+				close(tmp->heredoc_fd);
+				exit(1);
+			}
+			close(tmp->heredoc_fd);
+		}
+		else if (tmp->type == TOKEN_REDIRECT_IN)
 		{
-            perror("minishell: dup2");
-            close(last_heredoc_fd);
-            exit(1);
-        }
-        close(last_heredoc_fd);
-    }
-    
+			if (!redirect_input(tmp->filename))
+			
+				exit(1);
+		}
+		else if (tmp->type == TOKEN_REDIRECT_OUT)
+		{
+			if (!redirect_output(curr))
+				exit(1);
+		}
+		else if (tmp->type == TOKEN_REDIRECT_APPEND)
+		{
+			if (!append_mode(curr))
+				exit(1);
+		}
+		tmp = tmp->next;
+	}
 
-    tmp = head;
-    while (tmp)
-	{
-        if (tmp->type == TOKEN_REDIRECT_IN)
-		{
-            if (!redirect_input(d, curr))
-                exit(1);
-        }
-        else if (tmp->type == TOKEN_REDIRECT_OUT)
-		{
-            if (!redirect_output(d, curr))
-                exit(1);
-        }
-        else if (tmp->type == TOKEN_REDIRECT_APPEND)
-		{
-            if (!append_mode(d, curr))
-                exit(1);
-        }
-        tmp = tmp->next;
-    }
 }
+
+
 void	ft_execve(t_command *curr, t_env **env, char *d)
 {
 	char	**envp;
@@ -408,7 +401,7 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
 		
-		redirection(curr, d, ctx->last_status, env);
+		redirection(curr);
 
 		if (!curr->cmd || curr->cmd[0] == '\0') {
 			exit(ctx->last_status);
@@ -461,6 +454,11 @@ void	ft_wait(t_exec *ctx)
 
 void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 {
+	if (!process_all_heredocs(cmds, ctx->last_status, env))
+	{
+        ctx->last_status = 1;
+        return;
+    }
     t_command	*curr;
 
 	ctx->prev_fd = -1;

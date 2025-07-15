@@ -67,8 +67,14 @@ static t_command *parse_one_command(char **tokens, int *idx)
 
             if (redir->type == TOKEN_HEREDOC)
             {
-                cmd->heredoc_delimiter = ft_strdup(tokens[*idx]);
-                redir->filename = ft_strdup(tokens[*idx]);
+             char *stripped = strip_quotes(tokens[*idx]);
+            if (!stripped)
+            {
+                free(redir);
+               return NULL;
+            }
+            cmd->heredoc_delimiter = stripped;
+            redir->filename        = ft_strdup(stripped);
                 cmd->heredoc = 1;
                 if (tokens[*idx][0] == '\'' || tokens[*idx][0] == '"')
                     cmd->heredoc_quoted = 1;
