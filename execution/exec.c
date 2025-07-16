@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/15 04:53:40 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/07/16 06:51:12 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,9 +138,9 @@ int redirect_input(char *filename)
     close(f);
     return 1;
 }
-int append_mode(t_command *curr)
+int append_mode(const char *filename)
 {
-    int f = open(curr->redirections->filename, O_CREAT | O_RDONLY | O_APPEND, 0777);
+    int f = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
     if (f == -1) {
         perror("minishell: append_mode");
         return 0;
@@ -154,9 +154,9 @@ int append_mode(t_command *curr)
     close(f);
     return 1; 
 }
-int redirect_output(t_command *curr)
+int redirect_output(const char *filename)
 {
-    int f = open(curr->redirections->filename, O_CREAT | O_RDWR | O_TRUNC, 0777);
+    int f = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
     if (f == -1) {
         perror("minishell: redirect_output");
         return 0; 
@@ -331,12 +331,12 @@ void redirection(t_command *curr)
 		}
 		else if (tmp->type == TOKEN_REDIRECT_OUT)
 		{
-			if (!redirect_output(curr))
+			if (!redirect_output(tmp->filename))
 				exit(1);
 		}
 		else if (tmp->type == TOKEN_REDIRECT_APPEND)
 		{
-			if (!append_mode(curr))
+			if (!append_mode(tmp->filename))
 				exit(1);
 		}
 		tmp = tmp->next;
