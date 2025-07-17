@@ -178,8 +178,6 @@ int main(int ac, char **av, char **envp)
             exec->last_status = 1;
             continue;
         }
-        expand_tokens(tokens, g_status, &env);
-
         if (check_syntax_errors(raw,tokens))
         {
             exec->last_status = 2;
@@ -187,20 +185,30 @@ int main(int ac, char **av, char **envp)
             continue;
         }
 
-        cmds = parse_tokens(tokens);
-        g_status = 0;
-        if (cmds && cmds->redirections && cmds->redirections->type == TOKEN_HEREDOC)
-        {
-            exec->last_status = 0;
-            g_status = 1;
-        }
-        if (cmds)
-        {
-            check_for_pwd(&exec->prev_pwd);
-            execution(cmds, &env, exec);
-            free_commands(cmds);
-            cmds = NULL;
-        }
+     cmds = parse_tokens(tokens);
+
+    g_status = 0;
+
+    t_command *c = cmds;
+    while (c)
+    {
+        expand_command_vars(c, exec->last_status, &env);
+        c = c->next;
+    }
+
+    if (cmds && cmds->redirections && cmds->redirections->type == TOKEN_HEREDOC)
+    {
+        exec->last_status = 0;
+        g_status = 1;
+    }
+
+    if (cmds)
+    {
+        check_for_pwd(&exec->prev_pwd);
+        execution(cmds, &env, exec);
+        free_commands(cmds);
+        cmds = NULL;
+    }
         g_status = exec->last_status;
         free_tokens(tokens);
     }

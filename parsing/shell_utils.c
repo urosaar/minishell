@@ -203,3 +203,41 @@ char *expand_variables(const char *input, int last_status, t_env **env) {
     }
     return result;
 }
+void expand_command_vars(t_command *cmd, int last_status, t_env **env)
+{
+    if (cmd->cmd)
+    {
+        char *tmp = expand_variables(cmd->cmd, last_status, env);
+        free(cmd->cmd);
+        cmd->cmd = tmp;
+    }
+    if (cmd->args)
+    {
+        int i = 0;
+        while (cmd->args[i])
+        {
+            char *expanded = expand_variables(cmd->args[i], last_status, env);
+            free(cmd->args[i]);
+            cmd->args[i] = expanded;
+            i++;
+        }
+    }
+    if (cmd->infile)
+    {
+        char *tmp = expand_variables(cmd->infile, last_status, env);
+        free(cmd->infile);
+        cmd->infile = tmp;
+    }
+    if (cmd->outfile)
+    {
+        char *tmp = expand_variables(cmd->outfile, last_status, env);
+        free(cmd->outfile);
+        cmd->outfile = tmp;
+    }
+    if (cmd->heredoc_delimiter)
+    {
+        char *tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
+        free(cmd->heredoc_delimiter);
+        cmd->heredoc_delimiter = tmp;
+    }
+}
