@@ -123,8 +123,13 @@ int check_unclosed_quotes(const char *line)
         if (line[i] == '\'' || line[i] == '"')
         {
             q = line[i++];
-            while (line[i] && line[i] != q)
-                i++;
+            while (line[i] && (line[i] != q))
+            {
+                if (q == '"' && line[i] == '\\' && (line[i + 1] == '"' || line[i + 1] == '\\'))
+                    i += 2;
+                else
+                    i++;
+            }
             if (line[i] != q)
             {
                 printf(
@@ -139,6 +144,7 @@ int check_unclosed_quotes(const char *line)
     }
     return (0);
 }
+
 
 
 int check_consecutive_operators(char **tokens)

@@ -117,12 +117,12 @@ char *expand_variables(const char *input, int last_status, t_env **env) {
         if (input[i] == '\'' && !in_double)
         {
             in_single = !in_single;
-            result = append_char(result, &rlen, input[i++]);
+            i++;  // Skip the quote character
         }
         else if (input[i] == '"' && !in_single)
         {
             in_double = !in_double;
-            result = append_char(result, &rlen, input[i++]);
+            i++;  // Skip the quote character
         }
         else if (input[i] == '$' && !in_single)
         {
@@ -159,40 +159,52 @@ char *expand_variables(const char *input, int last_status, t_env **env) {
             else
             {
                 int start = i;
-   
-                while (isalnum((unsigned char)input[i]) || input[i] == '_')
+                int varlen = 0;
+    
+                result = append_char(result, &rlen, '$');
+                if (!result)
+                    return NULL;
+
+                while (isalnum((unsigned char)input[i]) || input[i] == '_') {
                     i++;
-                int varlen = i - start;
+                    varlen++;
+                }
 
                 if (varlen > 0) 
                 {
-                    char *var = strndup(input + start, varlen);
-                    char *val = ft_getenv(var, *env);
-                    free(var);
+                    char *tmp = malloc(rlen + varlen + 1);
+                    if (!tmp)
+                    {
+                        free(result);
+                        return NULL;
+                    }
 
-                    if (val) {
-                        int vlen = strlen(val);
-                        char *tmp = malloc(rlen + vlen + 1);
-                        if (!tmp)
+                    memcpy(tmp, result, rlen);
+                    memcpy(tmp + rlen, input + start, varlen);
+                    rlen += varlen;
+                    tmp[rlen] = '\0';
+
+                    free(result);
+                    result = tmp;
+
+                    if (!in_single) 
+                    { 
+                        char *var = strndup(input + start, varlen);
+                        char *val = ft_getenv(var, *env);
+                        free(var);
+
+                        if (val)
                         {
                             free(result);
-                            return NULL;
+                            result = malloc(rlen - varlen - 1 + strlen(val) + 1);
+                            if (!result)
+                                return NULL;
+                                
+                            memcpy(result, tmp, rlen - varlen - 1);
+                            strcpy(result + rlen - varlen - 1, val);
+                            rlen = rlen - varlen - 1 + strlen(val);
                         }
-
-                        memcpy(tmp, result, rlen);
-                        memcpy(tmp + rlen, val, vlen);
-                        rlen += vlen;
-                        tmp[rlen] = '\0';
-
-                        free(result);
-                        result = tmp;
                     }
-                }
-                else {
-
-                    result = append_char(result, &rlen, '$');
-                    if (!result)
-                        return NULL;
                 }
             }
         }
