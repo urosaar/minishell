@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/26 20:43:09 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/21 17:55:13 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,31 +69,6 @@ char	*key_full(char *line, char c)
 	}
 	key[i] = '\0';
 	return (key);
-}
-
-char	*check_for_quote(char *value)
-{
-	char	*d;
-	int		i;
-	int		j;
-	int		len;
-
-	i = 0;
-	j = 0;
-	if (!value)
-		return (NULL);
-	len = ft_strlen(value);
-	d = ft_malloc(len + 1, MALLOC);
-	if (!d)
-		return (NULL);
-	while (value[i])
-	{
-		if ( value[i] && value[i] != '"')
-			d[j++] = value[i];
-		i++;
-	}
-	d[j] = '\0';
-	return (free(value), d);
 }
 
 t_env	*find_in_env(t_env *env, char *key)
@@ -192,6 +167,7 @@ void	without_plus(t_env **env, char *arg)
 	}
 	free(key);
 }
+
 void	append_to_found(t_env *found, char *key, char *value)
 {
 	if (found->value)
@@ -216,7 +192,6 @@ void	with_plus(t_env **env, char *arg)
 	{
 		if (!ft_strcmp(found->key, "_"))
 			return(remove_if(*env), free(key));
-		// found->value = check_for_quote(found->value);
 		value = strchr(arg, '=');
 		if (value)
 			append_to_found(found, key, value + 1);
@@ -240,10 +215,7 @@ void sort_and_print(t_env **env)
 	{
 		printf("declare -x %s", tmp->key);
 		if (tmp->value)
-		{
-			// tmp->value = check_for_quote(tmp->value);
 				printf("=\"%s\"", tmp->value);
-		}
 		printf("\n");
 		tmp = tmp->next;
 	}
@@ -252,8 +224,6 @@ void sort_and_print(t_env **env)
 
 int	ft_export(t_env **env, char **arg)
 {
-	t_env	*copy;
-	t_env	*tmp;
 	int		valid;
 	int		i;
 	int		flag;

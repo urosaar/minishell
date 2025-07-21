@@ -6,13 +6,28 @@ add exit status syntax : done
 
 
 need to fix:
->>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 ls | > out  no return : done
 << aa | ls  : done 
 wc -c ctr+cat
 ctr + c exit status should be -> 1 : need fix
 cat with ctr + c
 
->>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 HEREDOC with expand : done
 << a << aa = : done
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+expand
+
+ex ->
+export x="a=b c=dsd"
+export expand(x)
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+ctr + d in multiple heredoc
+

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:27 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/25 17:27:17 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/21 17:10:52 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ t_env	*ft_newnode(char *line, char c)
 	newnode->next = NULL;
 	return (newnode);
 }
+
 t_env	*ft_lstlast(t_env *env)
 {
 	if (!env)
@@ -51,6 +52,7 @@ t_env	*ft_lstlast(t_env *env)
 	}
 	return (env);
 }
+
 void	ft_lstadd_back(t_env **env, t_env *new)
 {
 	t_env	*last;
@@ -65,6 +67,7 @@ void	ft_lstadd_back(t_env **env, t_env *new)
 	last = ft_lstlast(*env);
 	last->next = new;
 }
+
 // int	ft_strlen(char *s)
 // {
 // 	int	i;
@@ -117,6 +120,7 @@ char	*ft_strchr(char *s, int c)
 	}
 	return (NULL);
 }
+
 char	*ft_strdup(char *src)
 {
 	char	*dest;
