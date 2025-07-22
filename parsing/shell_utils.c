@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   shell_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/22 11:02:33 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/07/22 11:02:36 by oukhanfa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 # include<ctype.h>
 
@@ -35,7 +47,7 @@ char *strip_quotes(const char *str)
     out[j] = '\0';
     return (out);
 }
-static char *append_char(char *result, int *rlen, char c)
+char *append_char(char *result, int *rlen, char c)
  {
     char *tmp = malloc(*rlen + 2);
     if (!tmp) {
@@ -105,210 +117,76 @@ char *ft_getenv(const char *name, t_env *env)
     return NULL;
 }
 
-char *expand_variables(const char *input, int last_status, t_env **env) {
-    char *result = malloc(1);
-    if (!result)
+char **splice_tokens(char **tokens, int pos, char **pieces)
+{
+    int old_n = 0, new_n = 0, out_i = 0;
+    char **out;
+
+    while (tokens[old_n])
+        old_n++;
+    while (pieces[new_n])
+        new_n++;
+
+    out = malloc(sizeof(char *) * (old_n - 1 + new_n + 1));
+    if (!out)
         return NULL;
-    result[0] = '\0';
 
-    int in_single = 0, in_double = 0;
-    int i = 0, rlen = 0;
-    while (input[i]) {
-        if (input[i] == '\'' && !in_double)
-        {
-            in_single = !in_single;
-            i++;  // Skip the quote character
-        }
-        else if (input[i] == '"' && !in_single)
-        {
-            in_double = !in_double;
-            i++;  // Skip the quote character
-        }
-        else if (input[i] == '$' && !in_single)
-        {
-            i++; 
-
-            if (input[i] == '?')
-            {
-                char *num = ft_itoa(last_status);
-                if (!num) {
-                    free(result);
-                    return NULL;
-                }
-
-                int addlen = strlen(num);
-                char *tmp = malloc(rlen + addlen + 1);
-                if (!tmp)
-                {
-                    free(result);
-                    free(num);
-                    return NULL;
-                }
-
-                ft_memcpy(tmp, result, rlen);
-                ft_memcpy(tmp + rlen, num, addlen);
-                rlen += addlen;
-                tmp[rlen] = '\0';
-
-                free(result);
-                free(num);
-                result = tmp;
-                i++;  // Skip the '?'
-                continue;
-            }
-            else
-            {
-                int start = i;
-                int varlen = 0;
-    
-                result = append_char(result, &rlen, '$');
-                if (!result)
-                    return NULL;
-
-                while (isalnum((unsigned char)input[i]) || input[i] == '_') {
-                    i++;
-                    varlen++;
-                }
-
-                if (varlen > 0) 
-                {
-                    char *tmp = malloc(rlen + varlen + 1);
-                    if (!tmp)
-                    {
-                        free(result);
-                        return NULL;
-                    }
-
-                    memcpy(tmp, result, rlen);
-                    memcpy(tmp + rlen, input + start, varlen);
-                    rlen += varlen;
-                    tmp[rlen] = '\0';
-
-                    free(result);
-                    result = tmp;
-
-                    if (!in_single) 
-                    { 
-                        char *var = strndup(input + start, varlen);
-                        char *val = ft_getenv(var, *env);
-                        free(var);
-
-                        if (val)
-                        {
-                            free(result);
-                            result = malloc(rlen - varlen - 1 + strlen(val) + 1);
-                            if (!result)
-                                return NULL;
-                                
-                            memcpy(result, tmp, rlen - varlen - 1);
-                            strcpy(result + rlen - varlen - 1, val);
-                            rlen = rlen - varlen - 1 + strlen(val);
-                        }
-                    }
-                }
-            }
-        }
-        else 
-            result = append_char(result, &rlen, input[i++]);
-        if (!result)
-            return NULL;
+    int i = 0;
+    while (i < pos)
+    {
+        out[out_i++] = tokens[i];
+        i++;
     }
-    return result;
+
+    int j = 0;
+    while (j < new_n)
+    {
+        out[out_i++] = pieces[j];
+        j++;
+    }
+
+    i = pos + 1;
+    while (i < old_n)
+    {
+        out[out_i++] = tokens[i];
+        i++;
+    }
+
+    out[out_i] = NULL;
+    free(tokens);
+    return out;
 }
 
-void expand_command_vars(t_command *cmd, int last_status, t_env **env)
+
+char **split_all_args(char **args)
 {
-    char *expanded_cmd = NULL;
-    char **cmd_tokens = NULL;
-    int cmd_token_count = 0;
-
-    if (cmd->cmd)
+    int i = 0;
+    while (args[i])
     {
-        expanded_cmd = expand_variables(cmd->cmd, last_status, env);
-        free(cmd->cmd);
-        cmd->cmd = NULL;
-        if (expanded_cmd)
+        char **pieces = ft_split(args[i], ' ');
+        if (!pieces)
         {
-            cmd_tokens = ft_split(expanded_cmd, ' ');
-            if (cmd_tokens) {
-                while (cmd_tokens[cmd_token_count]) 
-                    cmd_token_count++;
-            }
+            i++;
+            continue;
         }
-    }
-
-    char **expanded_args = NULL;
-    int arg_count = 0;
-    if (cmd->args)
-    {
-        while (cmd->args[arg_count]) arg_count++;
-        expanded_args = malloc(sizeof(char*) * (arg_count + 1));
-        if (expanded_args) {
-            for (int i = 0; i < arg_count; i++) {
-                expanded_args[i] = expand_variables(cmd->args[i], last_status, env);
-            }
-            expanded_args[arg_count] = NULL;
-        }
-    }
-    if (cmd_token_count > 0)
-    {
-        int new_count = cmd_token_count + (arg_count > 0 ? arg_count - 1 : 0);
-        char **new_args = malloc(sizeof(char*) * (new_count + 1));
-        int j = 0;
-
-        for (int i = 0; i < cmd_token_count; i++) {
-            new_args[j++] = cmd_tokens[i]; 
-        }
-        if (arg_count > 0)
+        if (!pieces[1])
         {
-            for (int i = 1; i < arg_count; i++)
-            {
-                new_args[j++] = expanded_args[i];
-            }
-            if (expanded_args[0]) free(expanded_args[0]);
+            free(args[i]);
+            args[i] = pieces[0];
+            free(pieces);
+            i++;
         }
-        new_args[j] = NULL;
-        cmd->cmd = ft_strdup(cmd_tokens[0]);
-        free(cmd_tokens);
-        if (cmd->args)
+        else
         {
-            for (int i = 0; i < arg_count; i++) 
-                if (cmd->args[i]) free(cmd->args[i]);
-            free(cmd->args);
-        }
-        cmd->args = new_args;
+            free(args[i]);
+            args = splice_tokens(args, i, pieces);
+            free(pieces);
 
-        free(expanded_args);
-    }
-    else 
-    {
-        cmd->cmd = expanded_cmd;
-        if (cmd->args && expanded_args) {
-            for (int i = 0; i < arg_count; i++) {
-                free(cmd->args[i]);
-                cmd->args[i] = expanded_args[i];
-            }
-            free(expanded_args);
+            int cnt = 0;
+            while (args[i + cnt])
+                cnt++;
+            i += (cnt - 1);
         }
     }
-    if (cmd_token_count == 0 && expanded_cmd) {
-        free(expanded_cmd);
-    }
-    if (cmd->infile) {
-        char *tmp = expand_variables(cmd->infile, last_status, env);
-        free(cmd->infile);
-        cmd->infile = tmp;
-    }
-
-    if (cmd->outfile) {
-        char *tmp = expand_variables(cmd->outfile, last_status, env);
-        free(cmd->outfile);
-        cmd->outfile = tmp;
-    }
-
-    if (cmd->heredoc_delimiter) {
-        char *tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
-        free(cmd->heredoc_delimiter);
-        cmd->heredoc_delimiter = tmp;
-    }
+    return args;
 }

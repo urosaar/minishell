@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/21 18:59:52 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/22 11:05:10 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ char	**build_env_array(t_env **env)
 	envp[i] = NULL;
 	return (envp);
 }
-
 void	free_envp(char **envp)
 {
 	int i = 0;
@@ -70,7 +69,6 @@ char *ft_check1(char *cmd)
 
     return (NULL);
 }
-
 char	*ft_check2(char **path, char *cmd)
 {
 	char	*s;
@@ -93,6 +91,7 @@ char	*ft_check2(char **path, char *cmd)
 	}
 	return (NULL);
 }
+
 
 char	*check_if_exist(t_env *env, t_command *cmds)
 {
@@ -139,7 +138,6 @@ int redirect_input(char *filename)
     close(f);
     return 1;
 }
-
 int append_mode(const char *filename)
 {
     int f = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
@@ -156,7 +154,6 @@ int append_mode(const char *filename)
     close(f);
     return 1; 
 }
-
 int redirect_output(const char *filename)
 {
     int f = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
@@ -173,7 +170,8 @@ int redirect_output(const char *filename)
     close(f);
     return 1;
 }
-/* HEREDOC */
+
+
 void handler_heredoc()
 {
 	write(1, "\n", 1);
@@ -212,7 +210,7 @@ int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
             }
             
             line = readline("> ");
-            if (!line)
+              if (!line)
             {
                 // write(STDOUT_FILENO, CTRLD, 7);  // Move cursor up and right
                 break;
@@ -278,9 +276,8 @@ int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
         return pipefd[0];
     }
 }
-
-int process_all_heredocs(t_command *cmds, int last_status, t_env **env)
-{
+ int process_all_heredocs(t_command *cmds, int last_status, t_env **env)
+ {
      t_command     *curr = cmds;
      while (curr)
      {
@@ -298,8 +295,8 @@ int process_all_heredocs(t_command *cmds, int last_status, t_env **env)
          curr = curr->next;
      }
      return 1; 
-}
-/*---------------------------------------------––––--––--------------------------*/
+ }
+
 void close_fd(int fd)
 {
 	if (fd != -1)
@@ -348,15 +345,10 @@ void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 	}
 }
 
-int apply_redirection(t_command *curr) 
-{
-    t_redirection   *tmp;
-
-    tmp = curr->redirections;
-    while (tmp)
-    {
-        if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0)
-        {
+int apply_redirection(t_command *curr) {
+    t_redirection *tmp = curr->redirections;
+    while (tmp) {
+        if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0) {
             if (dup2(tmp->heredoc_fd, STDIN_FILENO) == -1) {
                 perror("minishell: dup2 heredoc");
                 return 0;
@@ -381,47 +373,52 @@ int apply_redirection(t_command *curr)
     return 1;
 }
 
-
 void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 {
 	char	*d = NULL;
 
 	ctx->pid = fork();
-	if (ctx->pid == -1) {
+	if (ctx->pid == -1)
+    {
 		perror("fork");
 		exit(1);
 	}
 
-	if (ctx->pid == 0) 
+	if (ctx->pid == 0)
     {
 		if (curr->next || ctx->prev_fd != -1)
 			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
+		
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
+		
 		if (!apply_redirection(curr))
 			exit(1);
-		// if (curr->cmd == NULL || curr->cmd[0] == '\0')
-        // {
-		// 	fprintf(stderr, "minishell: : command not found\n");
-		// 	exit(127);
-		// }
+
+		if (curr->cmd == NULL || curr->cmd[0] == '\0')
+        {
+			fprintf(stderr, "minishell: : command not found\n");
+			exit(127);
+		}
+		
 		d = check_if_exist(*env, curr);
 		if (is_builtins(curr->args))
+        {
 			exit(builtins(env, curr->args, ctx->prev_pwd));
+		}
+		
 		ft_execve(curr, env, d);
 	}
-	else
-    {
+	else {
 		close_fd(ctx->prev_fd);
 		ctx->last_pid = ctx->pid;
-		if (curr->next) 
-        {
+		
+		if (curr->next) {
 			close_fd(ctx->pipe_fd[1]);
 			ctx->prev_fd = ctx->pipe_fd[0];
 		}
 	}
 }
-
 void	ft_wait(t_exec *ctx)
 {
 	int	status;
@@ -459,6 +456,12 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 	curr = cmds;
 	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
+    if ((cmds->cmd == NULL || cmds->cmd[0] == '\0')
+        && cmds->redirections != NULL)
+    {
+        ctx->last_status = 0;
+        return;
+    }
     if (is_builtins(curr->args) && !curr->next)
 	{
         int saved_stdin = dup(STDIN_FILENO);
@@ -474,7 +477,7 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
             redir_success = apply_redirection(curr);
         if (redir_success)
             ctx->last_status = builtins(env, curr->args, ctx->prev_pwd);
-		 else 
+		else 
             ctx->last_status = 1;
         if (saved_stdin != -1)
 		{

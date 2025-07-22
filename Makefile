@@ -13,7 +13,7 @@ READLINE_LIB =# -L$(shell brew --prefix readline)/lib -lreadline
 SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c  ./builtins/pwd.c ./builtins/exit.c\
 		./builtins/cd.c ./builtins/split.c ./builtins/unset.c ./builtins/export.c ./builtins/utils.c\
 		./builtins/ft_malloc.c ./builtins/ft_malloc_utils.c ./execution/exec.c ./builtins/builtins.c\
-		./parsing/lexer.c ./parsing/parser.c ./parsing/shell_utils.c ./parsing/syntax.c ./parsing/testing.c ./parsing/utils.c
+		./parsing/lexer.c ./parsing/parser.c ./parsing/shell_utils.c ./parsing/syntax.c ./parsing/testing.c ./parsing/utils.c ./parsing/expand.c
 OBJ = $(SRC:.c=.o)
 HEAD = fractol.h
 
