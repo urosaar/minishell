@@ -124,6 +124,11 @@ t_command *parse_tokens(char **tokens)
     t_command *head = NULL;
     t_command *current = NULL;
     int i = 0;
+     if (count_total_heredocs(tokens) > 16)
+    {
+        ft_putstr_fd("minishell: maximum here-document count exceeded\n", STDERR_FILENO);
+        return NULL;
+    }
 
     while (tokens[i])
     {
