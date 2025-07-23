@@ -139,6 +139,12 @@ int main(int ac, char **av, char **envp)
         }
 
      cmds = parse_tokens(tokens);
+	if (!cmds)
+	 {
+		 free_tokens(tokens);
+		exec->last_status = 2;
+		 continue;
+	}
 
     g_status = 0;
 
