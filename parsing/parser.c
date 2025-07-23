@@ -119,6 +119,16 @@ static t_command *parse_one_command(char **tokens, int *idx)
 
     return cmd;
 }
+static int count_total_heredocs(char **tokens)
+{
+    int count = 0;
+    for (int i = 0; tokens[i]; i++)
+    {
+        if (ft_strcmp(tokens[i], "<<") == 0)
+            count++;
+    }
+    return count;
+}
 t_command *parse_tokens(char **tokens)
 {
     t_command *head = NULL;
