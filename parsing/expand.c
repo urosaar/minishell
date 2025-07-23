@@ -12,117 +12,254 @@
 
 #include "../minishell.h"
 
+// char *expand_variables(const char *input, int last_status, t_env **env)
+// {
+//     char *result = malloc(1);
+//     if (!result)
+//         return NULL;
+//     result[0] = '\0';
+
+//     int in_single = 0, in_double = 0;
+//     int i = 0, rlen = 0;
+//     while (input[i]) {
+//         if (input[i] == '\'' && !in_double)
+//         {
+//             in_single = !in_single;
+//             i++;
+//         }
+//         else if (input[i] == '"' && !in_single)
+//         {
+//             in_double = !in_double;
+//             i++;
+//         }
+//         else if (input[i] == '$' && !in_single)
+//         {
+//             i++; 
+
+//             if (input[i] == '?')
+//             {
+//                 char *num = ft_itoa(last_status);
+//                 if (!num) {
+//                     free(result);
+//                     return NULL;
+//                 }
+
+//                 int addlen = strlen(num);
+//                 char *tmp = malloc(rlen + addlen + 1);
+//                 if (!tmp)
+//                 {
+//                     free(result);
+//                     free(num);
+//                     return NULL;
+//                 }
+
+//                 ft_memcpy(tmp, result, rlen);
+//                 ft_memcpy(tmp + rlen, num, addlen);
+//                 rlen += addlen;
+//                 tmp[rlen] = '\0';
+
+//                 free(result);
+//                 free(num);
+//                 result = tmp;
+//                 i++;  // Skip the '?'
+//                 continue;
+//             }
+//             else
+//             {
+//                 int start = i;
+//                 int varlen = 0;
+    
+//                 result = append_char(result, &rlen, '$');
+//                 if (!result)
+//                     return NULL;
+
+//                 while (isalnum((unsigned char)input[i]) || input[i] == '_') {
+//                     i++;
+//                     varlen++;
+//                 }
+
+//                 if (varlen > 0) 
+//                 {
+//                     char *tmp = malloc(rlen + varlen + 1);
+//                     if (!tmp)
+//                     {
+//                         free(result);
+//                         return NULL;
+//                     }
+
+//                     memcpy(tmp, result, rlen);
+//                     memcpy(tmp + rlen, input + start, varlen);
+//                     rlen += varlen;
+//                     tmp[rlen] = '\0';
+
+//                     free(result);
+//                     result = tmp;
+
+//                     if (!in_single) 
+//                     { 
+//                         char *var = strndup(input + start, varlen);
+//                         char *val = ft_getenv(var, *env);
+//                         free(var);
+
+//                         if (val)
+//                         {
+//                             free(result);
+//                             result = malloc(rlen - varlen - 1 + strlen(val) + 1);
+//                             if (!result)
+//                                 return NULL;
+                                
+//                             memcpy(result, tmp, rlen - varlen - 1);
+//                             strcpy(result + rlen - varlen - 1, val);
+//                             rlen = rlen - varlen - 1 + strlen(val);
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//         else 
+//             result = append_char(result, &rlen, input[i++]);
+//         if (!result)
+//             return NULL;
+//     }
+//     return result;
+// }
+
+//************************************************************************************************* */
+
+typedef struct s_state {
+    char        *res;
+    int         rlen;
+    const char  *in;
+    int         idx;
+    int         last_status;
+    t_env       **env;
+    int         in_single;
+    int         in_double;
+}               t_state;
+
+static int grow_buffer(t_state *st, int extra)
+{
+    char *new_buf = malloc(st->rlen + extra + 1);
+    if (!new_buf) {
+        free(st->res);
+        return 0;
+    }
+    if (st->res) {
+        memcpy(new_buf, st->res, st->rlen);
+        free(st->res);
+    }
+    st->res = new_buf;
+    st->res[st->rlen + extra] = '\0';
+    return 1;
+}
+
+static int str_append_char(t_state *st, char c)
+{
+    if (!grow_buffer(st, 1)) return 0;
+    st->res[st->rlen++] = c;
+    return 1;
+}
+
+static int insert_string(t_state *st, const char *s, int len)
+ {
+    if (!len) return 1;
+    if (!grow_buffer(st, len)) return 0;
+    memcpy(st->res + st->rlen, s, len);
+    st->rlen += len;
+    return 1;
+}
+
+static int handle_exit_status(t_state *st)
+{
+    char *num = ft_itoa(st->last_status);
+    if (!num) return 0;
+    int len = strlen(num);
+    int success = insert_string(st, num, len);
+    free(num);
+    st->idx++;
+    return success;
+}
+
+static int handle_env_var(t_state *st)
+{
+    int start = st->idx;
+    int varlen = 0;
+    
+    while (isalnum((unsigned char)st->in[st->idx]) || 
+           st->in[st->idx] == '_'){
+        st->idx++;
+        varlen++;
+    }
+
+    if (varlen == 0) {
+        return str_append_char(st, '$');
+    }
+
+    char *var_name = strndup(st->in + start, varlen);
+    if (!var_name) return 0;
+    
+    char *val = ft_getenv(var_name, *st->env);
+    free(var_name);
+    
+    if (val) {
+        return insert_string(st, val, strlen(val));
+    } else {
+        if (!str_append_char(st, '$')) return 0;
+        return insert_string(st, st->in + start, varlen);
+    }
+}
+
+static int handle_var_exp(t_state *st)
+{
+    st->idx++;
+    if (st->in[st->idx] == '?') {
+        return handle_exit_status(st);
+    } else {
+        return handle_env_var(st);
+    }
+}
+
 char *expand_variables(const char *input, int last_status, t_env **env)
 {
-    char *result = malloc(1);
-    if (!result)
-        return NULL;
-    result[0] = '\0';
+    t_state st = {0};
+    st.in = input;
+    st.last_status = last_status;
+    st.env = env;
+    st.res = malloc(1);
+    if (!st.res) return NULL;
+    st.res[0] = '\0';
 
-    int in_single = 0, in_double = 0;
-    int i = 0, rlen = 0;
-    while (input[i]) {
-        if (input[i] == '\'' && !in_double)
+    while (st.in[st.idx])
+    {
+        char c = st.in[st.idx];
+        if (c == '\'' && !st.in_double)
         {
-            in_single = !in_single;
-            i++;  // Skip the quote character
-        }
-        else if (input[i] == '"' && !in_single)
+            st.in_single = !st.in_single;
+            st.idx++;
+        } else if (c == '"' && !st.in_single)
         {
-            in_double = !in_double;
-            i++;  // Skip the quote character
-        }
-        else if (input[i] == '$' && !in_single)
+            st.in_double = !st.in_double;
+            st.idx++;
+        } else if (c == '$' && !st.in_single)
         {
-            i++; 
-
-            if (input[i] == '?')
+            if (!handle_var_exp(&st))
             {
-                char *num = ft_itoa(last_status);
-                if (!num) {
-                    free(result);
-                    return NULL;
-                }
-
-                int addlen = strlen(num);
-                char *tmp = malloc(rlen + addlen + 1);
-                if (!tmp)
-                {
-                    free(result);
-                    free(num);
-                    return NULL;
-                }
-
-                ft_memcpy(tmp, result, rlen);
-                ft_memcpy(tmp + rlen, num, addlen);
-                rlen += addlen;
-                tmp[rlen] = '\0';
-
-                free(result);
-                free(num);
-                result = tmp;
-                i++;  // Skip the '?'
-                continue;
+                free(st.res);
+                return NULL;
             }
-            else
+        } else {
+            if (!str_append_char(&st, c))
             {
-                int start = i;
-                int varlen = 0;
-    
-                result = append_char(result, &rlen, '$');
-                if (!result)
-                    return NULL;
-
-                while (isalnum((unsigned char)input[i]) || input[i] == '_') {
-                    i++;
-                    varlen++;
-                }
-
-                if (varlen > 0) 
-                {
-                    char *tmp = malloc(rlen + varlen + 1);
-                    if (!tmp)
-                    {
-                        free(result);
-                        return NULL;
-                    }
-
-                    memcpy(tmp, result, rlen);
-                    memcpy(tmp + rlen, input + start, varlen);
-                    rlen += varlen;
-                    tmp[rlen] = '\0';
-
-                    free(result);
-                    result = tmp;
-
-                    if (!in_single) 
-                    { 
-                        char *var = strndup(input + start, varlen);
-                        char *val = ft_getenv(var, *env);
-                        free(var);
-
-                        if (val)
-                        {
-                            free(result);
-                            result = malloc(rlen - varlen - 1 + strlen(val) + 1);
-                            if (!result)
-                                return NULL;
-                                
-                            memcpy(result, tmp, rlen - varlen - 1);
-                            strcpy(result + rlen - varlen - 1, val);
-                            rlen = rlen - varlen - 1 + strlen(val);
-                        }
-                    }
-                }
+                free(st.res);
+                return NULL;
             }
+            st.idx++;
         }
-        else 
-            result = append_char(result, &rlen, input[i++]);
-        if (!result)
-            return NULL;
     }
-    return result;
+    return st.res;
 }
+
+
 
 void expand_command_vars(t_command *cmd, int last_status, t_env **env)
 {
@@ -262,6 +399,7 @@ void expand_command_vars(t_command *cmd, int last_status, t_env **env)
         cmd->heredoc_delimiter = tmp;
     }
 }
+
 void expand_tokens(char **tokens, int last_status, t_env **env)
 {
     int skip_next = 0;
