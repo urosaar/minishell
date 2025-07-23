@@ -64,30 +64,32 @@ char	*extract_word(const char *input, int *i)
 	return (substr(input, start, *i));
 }
 
-static void	process_token(const char *input, int *i)
+static void	skip_quoted(const char *input, int *i)
 {
 	char	quote;
 	bool	escaped;
 
-	if (input[*i] == '\'' || input[*i] == '"')
+	quote = input[(*i)++];
+	while (input[*i])
 	{
-		quote = input[(*i)++];
-		while (input[*i])
+		escaped = (input[*i] == '\\'
+				&& (input[*i + 1] == quote || input[*i + 1] == '\\'));
+		if (escaped)
+			*i += 2;
+		else if (input[*i] == quote)
 		{
-			escaped = (input[*i] == '\\' && 
-					(input[*i + 1] == quote || input[*i + 1] == '\\'));
-			
-			if (escaped)
-				*i += 2;
-			else if (input[*i] == quote)
-			{
-				(*i)++;
-				break;
-			}
-			else
-				(*i)++;
+			(*i)++;
+			break;
 		}
+		else
+			(*i)++;
 	}
+}
+
+static void	process_token(const char *input, int *i)
+{
+	if (input[*i] == '\'' || input[*i] == '"')
+		skip_quoted(input, i);
 	else if (is_operator(input[*i]))
 	{
 		(*i)++;
@@ -99,9 +101,7 @@ static void	process_token(const char *input, int *i)
 	{
 		while (input[*i] && !is_space(input[*i])
 			&& !is_operator(input[*i]))
-		{
 			(*i)++;
-		}
 	}
 }
 
@@ -151,3 +151,4 @@ char	**lexer(const char *input)
 	tokens[j] = NULL;
 	return (tokens);
 }
+
