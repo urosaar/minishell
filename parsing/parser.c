@@ -109,7 +109,8 @@ static t_command *parse_one_command(char **tokens, int *idx)
         }
         else
         {
-            cmd->args[arg_i++] = strip_quotes(tokens[*idx]);
+            // cmd->args[arg_i++] = strip_quotes(tokens[*idx]);
+            cmd->args[arg_i++] = ft_strdup(tokens[*idx]);
             (*idx)++;
         }
     }

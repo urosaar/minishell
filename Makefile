@@ -1,4 +1,5 @@
 NAME = minishell
+SANITIZE =# -fsanitize=address
 CC = cc
 CFLAG = -Wall -Werror -Wextra -g
 # hado lflags dreadline library 3ndi flmac
@@ -20,10 +21,10 @@ HEAD = fractol.h
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(OBJ) $(CFLAGS) $(O_CFLAG) $(O_LDFLAGS) -lreadline -o $(NAME) $(READLINE_LIB)
+	$(CC) $(OBJ) $(CFLAGS) $(SANITIZE) $(O_CFLAG) $(O_LDFLAGS) -lreadline -o $(NAME) $(READLINE_LIB)
 
 %.o: %.c minishell.h Makefile
-	$(CC) $(CFLAGS) $(O_CFLAG) $(READLINE_INC) -c $< -o $@
+	$(CC) $(CFLAGS) $(SANITIZE) $(O_CFLAG) $(READLINE_INC) -c $< -o $@
 
 clean:
 	$(RM) $(OBJ)

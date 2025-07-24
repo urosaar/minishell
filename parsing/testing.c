@@ -124,7 +124,7 @@ int main(int ac, char **av, char **envp)
             continue;
         }
         tokens = lexer(raw);
-        free(raw); 
+        // free(raw); 
         
         if (!tokens)
         {

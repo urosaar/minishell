@@ -295,9 +295,18 @@ void expand_command_vars(t_command *cmd, int last_status, t_env **env)
         if (expanded_args)
         {
             i = 0;
-            while (i < arg_count)
+            // while (i < arg_count)
+            // {
+            //     expanded_args[i] = expand_variables(cmd->args[i], last_status, env);
+            //     i++;
+            // }
+              while (i < arg_count)
             {
-                expanded_args[i] = expand_variables(cmd->args[i], last_status, env);
+                char *raw = cmd->args[i];
+                char *tmp = expand_variables(raw, last_status, env);
+                // free(raw);
+                expanded_args[i] = strip_quotes(tmp);
+                free(tmp);
                 i++;
             }
             expanded_args[arg_count] = NULL;
