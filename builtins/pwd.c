@@ -6,13 +6,32 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:10 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/21 16:57:36 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:40:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	ft_pwd(t_env *env, char *prev_pwd)
+char	*if_pwd_null(t_env *env)
+{
+	t_env	*node;
+	char	*pwd;
+	
+	pwd = NULL;
+	node = env;
+	while (node)
+	{
+		if (node->key && !(ft_strcmp(node->key, "PWD")))
+		{
+			pwd = ft_strdup(node->value);
+			break;
+		}
+		node = node->next;
+	}
+	return (pwd);
+}
+
+int	ft_pwd(t_env *env)
 {
 	t_env	*node;
 	char	*pwd;
@@ -23,18 +42,13 @@ int	ft_pwd(t_env *env, char *prev_pwd)
 	node = env;
 	pwd = getcwd(NULL,0);
 	if (!pwd)
+		pwd = if_pwd_null(env);
+	if (!pwd)
 	{
-		while (node)
-		{
-			if (node->line && !(ft_strcmp(node->key, "PWD")))
-			{
-				pwd = ft_strdup(node->value);
-				break;
-			}
-			node = node->next;
-		}
+		printf("pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+		return (1);	
 	}
-	while (pwd[i])
+	while (pwd && pwd[i])
 		i++;
 	write(1, pwd, i);
 	write(1, "\n", 1);

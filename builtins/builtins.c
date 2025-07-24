@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:14 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 15:48:19 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:40:38 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	builtins(t_env **env, char **args, char *prev_pwd)
 	if (*args && !ft_strcmp(*args, "echo"))
 		last_status = ft_echo(args);
 	else if (*args && !ft_strcmp(*args, "pwd"))
-		last_status = ft_pwd(*env, prev_pwd);
+		last_status = ft_pwd(*env);
 	else if (*args && !ft_strcmp(*args, "cd"))
 		last_status = ft_cd(env, args, prev_pwd);
 	else if (*args && !ft_strcmp(*args, "exit"))

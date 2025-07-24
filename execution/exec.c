@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/22 11:05:10 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/07/24 18:47:17 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	**build_env_array(t_env **env)
 	{
 		count++;
 		tmp = tmp->next;
-	}
+	} 
 	char **envp = ft_malloc((count + 1) * sizeof(char *), MALLOC);
 	tmp = *env;
 	int i = 0;

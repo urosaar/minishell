@@ -139,7 +139,7 @@ void	handler(int signal);
 char	**ft_split(char *s, char c);
 void	ft_exit(t_env *env, char **arg);
 int		ft_echo(char **arg);
-int		ft_pwd(t_env *env, char *prev_pwd);
+int		ft_pwd(t_env *env);
 int		ft_cd(t_env **env, char **arg, char *prev_pwd);
 int		ft_env(t_env **env, char **arg);
 int		ft_unset(t_env **env,char **arg);
