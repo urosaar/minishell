@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/24 18:47:17 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/24 20:15:38 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -395,11 +395,11 @@ void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 		if (!apply_redirection(curr))
 			exit(1);
 
-		if (curr->cmd == NULL || curr->cmd[0] == '\0')
-        {
-			fprintf(stderr, "minishell: : command not found\n");
-			exit(127);
-		}
+		// if (curr->cmd == NULL || curr->cmd[0] == '\0')
+        // {
+		// 	fprintf(stderr, "minishell: : command not found\n");
+		// 	exit(127);
+		// }
 		
 		d = check_if_exist(*env, curr);
 		if (is_builtins(curr->args))
@@ -456,12 +456,12 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 	curr = cmds;
 	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
-    if ((cmds->cmd == NULL || cmds->cmd[0] == '\0')
-        && cmds->redirections != NULL)
-    {
-        ctx->last_status = 0;
-        return;
-    }
+    // if ((cmds->cmd == NULL || cmds->cmd[0] == '\0')
+    //     && cmds->redirections != NULL)
+    // {
+    //     ctx->last_status = 0;
+    //     return;
+    // }
     if (is_builtins(curr->args) && !curr->next)
 	{
         int saved_stdin = dup(STDIN_FILENO);
