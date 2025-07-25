@@ -125,6 +125,155 @@
 // }
 
 //************************************************************************************************* */
+// void expand_command_vars(t_command *cmd, int last_status, t_env **env)
+// {
+//     char    *expanded_cmd = NULL;
+//     char    **cmd_tokens = NULL;
+//     int     cmd_token_count = 0;
+
+//     if (cmd->cmd)
+//     {
+//         expanded_cmd = expand_variables(cmd->cmd, last_status, env);
+//         free(cmd->cmd);
+//         cmd->cmd = NULL;
+//         if (expanded_cmd)
+//         {
+//             cmd_tokens = ft_split(expanded_cmd, ' ');
+//             if (cmd_tokens)
+//             {
+//                 while (cmd_tokens[cmd_token_count])
+//                     cmd_token_count++;
+//             }
+//         }
+//     }
+
+//     char    **expanded_args = NULL;
+//     int     arg_count = 0;
+//     int     i;
+
+//     if (cmd->args)
+//     {
+//         while (cmd->args[arg_count])
+//             arg_count++;
+//         expanded_args = malloc(sizeof(char *) * (arg_count + 1));
+//         if (expanded_args)
+//         {
+//             i = 0;
+//             // while (i < arg_count)
+//             // {
+//             //     expanded_args[i] = expand_variables(cmd->args[i], last_status, env);
+//             //     i++;
+//             // }
+//               while (i < arg_count)
+//             {
+//                 char *raw = cmd->args[i];
+//                 char *tmp = expand_variables(raw, last_status, env);
+//                 // free(raw);
+//                 expanded_args[i] = strip_quotes(tmp);
+//                 free(tmp);
+//                 i++;
+//             }
+//             expanded_args[arg_count] = NULL;
+//         }
+//     }
+
+//         if (cmd_token_count > 0)
+//     {
+//         int new_count;
+//         if (arg_count > 0)
+//             new_count = cmd_token_count + (arg_count - 1);
+//         else
+//             new_count = cmd_token_count + 0;
+
+//         char **new_args = malloc(sizeof(char *) * (new_count + 1));
+//         int j = 0;
+
+//         i = 0;
+//         while (i < cmd_token_count)
+//         {
+//             new_args[j++] = cmd_tokens[i];
+//             i++;
+//         }
+
+//         if (arg_count > 0)
+//         {
+//             i = 1;
+//             while (i < arg_count)
+//             {
+//                 new_args[j++] = expanded_args[i];
+//                 i++;
+//             }
+//             if (expanded_args[0])
+//                 free(expanded_args[0]);
+//         }
+
+//         new_args[j] = NULL;
+//         cmd->cmd = ft_strdup(cmd_tokens[0]);
+//         free(cmd_tokens);
+
+//         if (cmd->args)
+//         {
+//             i = 0;
+//             while (i < arg_count)
+//             {
+//                 if (cmd->args[i])
+//                     free(cmd->args[i]);
+//                 i++;
+//             }
+//             free(cmd->args);
+//         }
+
+//         cmd->args = new_args;
+//         if (cmd->args)
+//             cmd->args = split_all_args(cmd->args);
+
+//         free(expanded_args);
+//     }
+
+//     else
+//     {
+//         cmd->cmd = expanded_cmd;
+//         if (cmd->args && expanded_args)
+//         {
+//             i = 0;
+//             while (i < arg_count)
+//             {
+//                 free(cmd->args[i]);
+//                 cmd->args[i] = expanded_args[i];
+//                 i++;
+//             }
+//             free(expanded_args);
+//         }
+//         if (cmd->args)
+//             cmd->args = split_all_args(cmd->args);
+//     }
+
+//     if (cmd_token_count == 0 && expanded_cmd)
+//         free(expanded_cmd);
+
+//     if (cmd->infile)
+//     {
+//         char *tmp = expand_variables(cmd->infile, last_status, env);
+//         free(cmd->infile);
+//         cmd->infile = tmp;
+//     }
+
+//     if (cmd->outfile)
+//     {
+//         char *tmp = expand_variables(cmd->outfile, last_status, env);
+//         free(cmd->outfile);
+//         cmd->outfile = tmp;
+//     }
+
+//     if (cmd->heredoc_delimiter)
+//     {
+//         char *tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
+//         free(cmd->heredoc_delimiter);
+//         cmd->heredoc_delimiter = tmp;
+//     }
+// }
+
+/**********************************************************************************/
 
 typedef struct s_state {
     char        *res;
@@ -260,153 +409,246 @@ char *expand_variables(const char *input, int last_status, t_env **env)
 }
 
 
+typedef struct s_cmd_exp {
+	char	*expanded_str;
+	char	**tokens;
+	int		token_count;
+}	t_cmd_exp;
 
-void expand_command_vars(t_command *cmd, int last_status, t_env **env)
+char **split_selected_args(char **args, bool *no_split)
 {
-    char    *expanded_cmd = NULL;
-    char    **cmd_tokens = NULL;
-    int     cmd_token_count = 0;
-
-    if (cmd->cmd)
+    int i = 0;
+    while (args[i])
     {
-        expanded_cmd = expand_variables(cmd->cmd, last_status, env);
-        free(cmd->cmd);
-        cmd->cmd = NULL;
-        if (expanded_cmd)
+        if (!no_split[i] && strchr(args[i], ' '))
         {
-            cmd_tokens = ft_split(expanded_cmd, ' ');
-            if (cmd_tokens)
-            {
-                while (cmd_tokens[cmd_token_count])
-                    cmd_token_count++;
-            }
+            char **pieces = ft_split(args[i], ' ');
+            free(args[i]);
+            args = splice_tokens(args, i, pieces);
+            free(pieces);
+            
+            // skip past newly inserted pieces
+            int k = 0;
+            while (args[i + k])
+                k++;
+            i += k;
         }
-    }
-
-    char    **expanded_args = NULL;
-    int     arg_count = 0;
-    int     i;
-
-    if (cmd->args)
-    {
-        while (cmd->args[arg_count])
-            arg_count++;
-        expanded_args = malloc(sizeof(char *) * (arg_count + 1));
-        if (expanded_args)
-        {
-            i = 0;
-            // while (i < arg_count)
-            // {
-            //     expanded_args[i] = expand_variables(cmd->args[i], last_status, env);
-            //     i++;
-            // }
-              while (i < arg_count)
-            {
-                char *raw = cmd->args[i];
-                char *tmp = expand_variables(raw, last_status, env);
-                // free(raw);
-                expanded_args[i] = strip_quotes(tmp);
-                free(tmp);
-                i++;
-            }
-            expanded_args[arg_count] = NULL;
-        }
-    }
-
-        if (cmd_token_count > 0)
-    {
-        int new_count;
-        if (arg_count > 0)
-            new_count = cmd_token_count + (arg_count - 1);
         else
-            new_count = cmd_token_count + 0;
-
-        char **new_args = malloc(sizeof(char *) * (new_count + 1));
-        int j = 0;
-
-        i = 0;
-        while (i < cmd_token_count)
         {
-            new_args[j++] = cmd_tokens[i];
             i++;
         }
-
-        if (arg_count > 0)
-        {
-            i = 1;
-            while (i < arg_count)
-            {
-                new_args[j++] = expanded_args[i];
-                i++;
-            }
-            if (expanded_args[0])
-                free(expanded_args[0]);
-        }
-
-        new_args[j] = NULL;
-        cmd->cmd = ft_strdup(cmd_tokens[0]);
-        free(cmd_tokens);
-
-        if (cmd->args)
-        {
-            i = 0;
-            while (i < arg_count)
-            {
-                if (cmd->args[i])
-                    free(cmd->args[i]);
-                i++;
-            }
-            free(cmd->args);
-        }
-
-        cmd->args = new_args;
-        if (cmd->args)
-            cmd->args = split_all_args(cmd->args);
-
-        free(expanded_args);
     }
+    return args;
+}
+static int	count(char **args)
+{
+	int	count;
 
-    else
-    {
-        cmd->cmd = expanded_cmd;
-        if (cmd->args && expanded_args)
-        {
-            i = 0;
-            while (i < arg_count)
-            {
-                free(cmd->args[i]);
-                cmd->args[i] = expanded_args[i];
-                i++;
-            }
-            free(expanded_args);
-        }
-        if (cmd->args)
-            cmd->args = split_all_args(cmd->args);
-    }
+	count = 0;
+	if (!args)
+		return (0);
+	while (args[count])
+		count++;
+	return (count);
+}
 
-    if (cmd_token_count == 0 && expanded_cmd)
-        free(expanded_cmd);
+static bool	is_assignment(char *str)
+{
+	int	i;
 
-    if (cmd->infile)
-    {
-        char *tmp = expand_variables(cmd->infile, last_status, env);
-        free(cmd->infile);
-        cmd->infile = tmp;
-    }
+	i = 1;
+	while (str[i])
+	{
+		if (str[i] == '=')
+			return (true);
+		if (!(isalnum(str[i]) || str[i] == '_'))
+			break ;
+		i++;
+	}
+	return (false);
+}
 
-    if (cmd->outfile)
-    {
-        char *tmp = expand_variables(cmd->outfile, last_status, env);
-        free(cmd->outfile);
-        cmd->outfile = tmp;
-    }
+static void	free_strarray(char **arr)
+{
+	int	i;
 
-    if (cmd->heredoc_delimiter)
-    {
-        char *tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
-        free(cmd->heredoc_delimiter);
-        cmd->heredoc_delimiter = tmp;
-    }
+	if (!arr)
+		return ;
+	i = 0;
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
+}
+
+static bool	*create_no_split_map(char **args)
+{
+	bool	*no_split;
+	int		idx;
+	int		len;
+	int		orig_argc;
+
+	orig_argc = 0;
+	while (args[orig_argc])
+		orig_argc++;
+	no_split = calloc(orig_argc, sizeof(bool));
+	if (!no_split)
+		return (NULL);
+	idx = 0;
+	while (idx < orig_argc)
+	{
+		len = strlen(args[idx]);
+		no_split[idx] = (len >= 2 && ((args[idx][0] == '"'
+						&& args[idx][len - 1] == '"') || (args[idx][0] == '\''
+						&& args[idx][len - 1] == '\'')));
+		if (!no_split[idx] && (isalpha(args[idx][0]) || args[idx][0] == '_'))
+			no_split[idx] = is_assignment(args[idx]);
+		idx++;
+	}
+	return (no_split);
+}
+
+static t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **env)
+{
+	t_cmd_exp	exp;
+
+	exp.expanded_str = NULL;
+	exp.tokens = NULL;
+	exp.token_count = 0;
+	if (!cmd_str)
+		return (exp);
+	exp.expanded_str = expand_variables(cmd_str, last_status, env);
+	if (!exp.expanded_str)
+		return (exp);
+	exp.tokens = ft_split(exp.expanded_str, ' ');
+	if (exp.tokens)
+		while (exp.tokens[exp.token_count])
+			exp.token_count++;
+	return (exp);
+}
+
+static char	**expand_arguments(char **args, int arg_count, int last_status, t_env **env)
+{
+	char	**expanded;
+	int		i;
+
+	if (!args || arg_count == 0)
+		return (NULL);
+	expanded = malloc(sizeof(char *) * (arg_count + 1));
+	if (!expanded)
+		return (NULL);
+	i = 0;
+	while (i < arg_count)
+	{
+		expanded[i] = strip_quotes(expand_variables(args[i], last_status, env));
+		i++;
+	}
+	expanded[arg_count] = NULL;
+	return (expanded);
+}
+
+static void	expand_redirections(t_command *cmd, int last_status, t_env **env)
+{
+	char	*tmp;
+
+	if (cmd->infile)
+	{
+		tmp = expand_variables(cmd->infile, last_status, env);
+		free(cmd->infile);
+		cmd->infile = tmp;
+	}
+	if (cmd->outfile)
+	{
+		tmp = expand_variables(cmd->outfile, last_status, env);
+		free(cmd->outfile);
+		cmd->outfile = tmp;
+	}
+	if (cmd->heredoc_delimiter)
+	{
+		tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
+		free(cmd->heredoc_delimiter);
+		cmd->heredoc_delimiter = tmp;
+	}
+}
+
+static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,
+	char **exp_args, bool *no_split)
+{
+	char	**new_args;
+	int		new_count;
+	int		i[2];
+
+	new_count = exp->token_count + (count(exp_args) - 1);
+	new_args = malloc(sizeof(char *) * (new_count + 1));
+	memset(i, 0, sizeof(i));
+	while (i[0] < exp->token_count)
+		new_args[i[1]++] = exp->tokens[i[0]++];
+	i[0] = 1;
+	while (exp_args && exp_args[i[0]])
+		new_args[i[1]++] = exp_args[i[0]++];
+	new_args[i[1]] = NULL;
+	free(exp->tokens);
+	cmd->cmd = ft_strdup(new_args[0]);
+	free_strarray(cmd->args);
+	cmd->args = new_args;
+	if (exp_args && exp_args[0])
+		free(exp_args[0]);
+	free(exp_args);
+	if (cmd->args)
+		cmd->args = split_selected_args(cmd->args, no_split);
+}
+
+static void	rebuild_without_tokens(t_command *cmd, char **exp_args,
+	bool *no_split, char *exp_cmd)
+{
+	int	i;
+	int	arg_count;
+
+	cmd->cmd = exp_cmd;
+	if (!cmd->args || !exp_args)
+		return ;
+	arg_count = count(cmd->args);
+	i = 0;
+	while (i < arg_count)
+	{
+		free(cmd->args[i]);
+		cmd->args[i] = exp_args[i];
+		i++;
+	}
+	free(exp_args);
+	if (cmd->args)
+		cmd->args = split_selected_args(cmd->args, no_split);
+}
+
+void	expand_command_vars(t_command *cmd, int last_status, t_env **env)
+{
+	t_cmd_exp	exp;
+	bool		*no_split;
+	char		**exp_args;
+	int			arg_count;
+
+	if (cmd->args)
+		no_split = create_no_split_map(cmd->args);
+	else
+		no_split = NULL;
+	if (cmd->args)
+		arg_count = count(cmd->args);
+	else
+		arg_count = 0;
+	exp = expand_command_string(cmd->cmd, last_status, env);
+	free(cmd->cmd);
+	cmd->cmd = NULL;
+	exp_args = expand_arguments(cmd->args, arg_count, last_status, env);
+	if (exp.token_count > 0)
+		rebuild_with_tokens(cmd, &exp, exp_args, no_split);
+	else
+	{
+		rebuild_without_tokens(cmd, exp_args, no_split, exp.expanded_str);
+		exp.expanded_str = NULL;
+	}
+	if (exp.token_count == 0 && exp.expanded_str)
+		free(exp.expanded_str);
+	free(no_split);
+	expand_redirections(cmd, last_status, env);
 }
 
 void expand_tokens(char **tokens, int last_status, t_env **env)
@@ -435,4 +677,35 @@ void expand_tokens(char **tokens, int last_status, t_env **env)
             }
         }
     }
+}
+
+void	expand_tokens(char **tokens, int last_status, t_env **env)
+{
+	int		i;
+	int		skip_next;
+	char	*expanded;
+
+	i = 0;
+	skip_next = 0;
+	while (tokens && tokens[i])
+	{
+		if (skip_next)
+		{
+			skip_next = 0;
+			i++;
+			continue;
+		}
+		if (ft_strcmp(tokens[i], "<<") == 0)
+			skip_next = 1;
+		else
+		{
+			expanded = expand_variables(tokens[i], last_status, env);
+			if (expanded)
+			{
+				free(tokens[i]);
+				tokens[i] = expanded;
+			}
+		}
+		i++;
+	}
 }
