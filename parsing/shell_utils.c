@@ -158,35 +158,35 @@ char **splice_tokens(char **tokens, int pos, char **pieces)
 }
 
 
-char **split_all_args(char **args)
-{
-    int i = 0;
-    while (args[i])
-    {
-        char **pieces = ft_split(args[i], ' ');
-        if (!pieces)
-        {
-            i++;
-            continue;
-        }
-        if (!pieces[1])
-        {
-            free(args[i]);
-            args[i] = pieces[0];
-            free(pieces);
-            i++;
-        }
-        else
-        {
-            free(args[i]);
-            args = splice_tokens(args, i, pieces);
-            free(pieces);
+// char **split_all_args(char **args)
+// {
+//     int i = 0;
+//     while (args[i])
+//     {
+//         char **pieces = ft_split(args[i], ' ');
+//         if (!pieces)
+//         {
+//             i++;
+//             continue;
+//         }
+//         if (!pieces[1])
+//         {
+//             free(args[i]);
+//             args[i] = pieces[0];
+//             free(pieces);
+//             i++;
+//         }
+//         else
+//         {
+//             free(args[i]);
+//             args = splice_tokens(args, i, pieces);
+//             free(pieces);
 
-            int cnt = 0;
-            while (args[i + cnt])
-                cnt++;
-            i += (cnt - 1);
-        }
-    }
-    return args;
-}
+//             int cnt = 0;
+//             while (args[i + cnt])
+//                 cnt++;
+//             i += (cnt - 1);
+//         }
+//     }
+//     return args;
+// }
