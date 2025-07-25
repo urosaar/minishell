@@ -52,5 +52,6 @@ int	ft_pwd(t_env *env)
 		i++;
 	write(1, pwd, i);
 	write(1, "\n", 1);
+	free(pwd);  
 	return (0);
 }

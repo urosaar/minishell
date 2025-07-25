@@ -12,6 +12,8 @@
 
 #include "../minishell.h"
 
+int g_status = 0;
+
 void free_tokens(char **tokens)
 {
 	int i = 0;
@@ -53,8 +55,10 @@ void handler_eof(t_command *cmds, t_env *env, int last_status)
 {
 	if (cmds)
 		free_commands(cmds);
+	cmds = NULL;
 	if (env)
 		free_env(env);
+	env = NULL;
 	// write(STDOUT_FILENO, "\033[A\033[2C", 7);  
 	printf("exit\n");
 	exit(last_status);
@@ -79,10 +83,10 @@ void signals()
 
 int main(int ac, char **av, char **envp)
 {
-	char      *raw;
+	char      *raw = NULL;
 	char      **tokens;
 	t_exec    *exec;
-	t_command *cmds;
+	t_command *cmds = NULL;
 	t_env     *env = NULL;
 
 	exec = ft_malloc(sizeof(t_exec), MALLOC);
@@ -102,6 +106,7 @@ int main(int ac, char **av, char **envp)
 		return (127);
 	}
 	copy_env(envp, &env);
+
 
 	while (1)
     {
@@ -166,6 +171,8 @@ int main(int ac, char **av, char **envp)
         check_for_pwd(&exec->prev_pwd);
         execution(cmds, &env, exec);
         free_commands(cmds);
+		free(raw);
+		raw = NULL;
         cmds = NULL;
     }
         g_status = exec->last_status;

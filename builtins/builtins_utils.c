@@ -91,4 +91,5 @@ void	check_for_pwd(char **prev_pwd)
 		*prev_pwd = ft_strdup(pwd);
 	if (i == -1)
 		return;
+	free(pwd);
 }

@@ -526,24 +526,50 @@ static t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **e
 	return (exp);
 }
 
-static char	**expand_arguments(char **args, int arg_count, int last_status, t_env **env)
-{
-	char	**expanded;
-	int		i;
+// static char	**expand_arguments(char **args, int arg_count, int last_status, t_env **env)
+// {
+// 	char	**expanded;
+// 	int		i;
 
-	if (!args || arg_count == 0)
-		return (NULL);
-	expanded = malloc(sizeof(char *) * (arg_count + 1));
-	if (!expanded)
-		return (NULL);
-	i = 0;
-	while (i < arg_count)
-	{
-		expanded[i] = strip_quotes(expand_variables(args[i], last_status, env));
-		i++;
-	}
-	expanded[arg_count] = NULL;
-	return (expanded);
+// 	if (!args || arg_count == 0)
+// 		return (NULL);
+// 	expanded = malloc(sizeof(char *) * (arg_count + 1));
+// 	if (!expanded)
+// 		return (NULL);
+// 	i = 0;
+// 	while (i < arg_count)
+// 	{
+// 		expanded[i] = strip_quotes(expand_variables(args[i], last_status, env));
+// 		i++;
+// 	}
+// 	expanded[arg_count] = NULL;
+// 	return (expanded);
+// }
+static char **expand_arguments(char **args, int arg_count, int last_status, t_env **env)
+{
+    char    **expanded;
+    int      i;
+
+    if (!args || arg_count == 0)
+        return (NULL);
+    expanded = malloc(sizeof(char *) * (arg_count + 1));
+    if (!expanded)
+        return (NULL);
+    i = 0;
+    while (i < arg_count)
+    {
+        char *raw = expand_variables(args[i], last_status, env);
+        if (!raw)
+            expanded[i] = NULL;
+        else
+        {
+            expanded[i] = strip_quotes(raw);
+            free(raw);
+        }
+        i++;
+    }
+    expanded[arg_count] = NULL;
+    return (expanded);
 }
 
 static void	expand_redirections(t_command *cmd, int last_status, t_env **env)
@@ -570,8 +596,7 @@ static void	expand_redirections(t_command *cmd, int last_status, t_env **env)
 	}
 }
 
-static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,
-	char **exp_args, bool *no_split)
+static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,char **exp_args, bool *no_split)
 {
 	char	**new_args;
 	int		new_count;
@@ -587,6 +612,7 @@ static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,
 		new_args[i[1]++] = exp_args[i[0]++];
 	new_args[i[1]] = NULL;
 	free(exp->tokens);
+	free(exp->expanded_str);
 	cmd->cmd = ft_strdup(new_args[0]);
 	free_strarray(cmd->args);
 	cmd->args = new_args;

@@ -18,7 +18,7 @@
 
 #define CTRLD "\033[A\033[2C"
 
-int g_status;
+extern int g_status;
 
 typedef struct s_malloc
 {
