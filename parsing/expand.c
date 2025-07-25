@@ -651,34 +651,6 @@ void	expand_command_vars(t_command *cmd, int last_status, t_env **env)
 	expand_redirections(cmd, last_status, env);
 }
 
-void expand_tokens(char **tokens, int last_status, t_env **env)
-{
-    int skip_next = 0;
-    
-    for (int i = 0; tokens[i]; i++)
-    {
-        if (skip_next)
-        {
-            skip_next = 0;
-            continue;
-        }
-
-        if (ft_strcmp(tokens[i], "<<") == 0)
-        {
-            skip_next = 1;
-        }
-        else
-        {
-            char *expanded = expand_variables(tokens[i], last_status, env);
-            if (expanded)
-            {
-                free(tokens[i]);
-                tokens[i] = expanded;
-            }
-        }
-    }
-}
-
 void	expand_tokens(char **tokens, int last_status, t_env **env)
 {
 	int		i;
