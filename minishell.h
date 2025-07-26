@@ -75,7 +75,7 @@ typedef struct s_command {
 	int              heredoc;   // 1 if “<<”
 	struct s_command *next;     // Next command in a pipeline
 	int 			heredoc_quoted;
-	char *heredoc_delimiter;
+	// char *heredoc_delimiter;
 }   t_command;
 
 typedef struct s_exec
