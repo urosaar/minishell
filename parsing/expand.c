@@ -343,16 +343,13 @@ static int handle_env_var(t_state *st)
     if (varlen == 0) {
         return str_append_char(st, '$');
     }
+
     char *var_name = strndup(st->in + start, varlen);
     if (!var_name) return 0;
     
     char *val = ft_getenv(var_name, *st->env);
-    if (!val)
-	{
-		free(var_name);
-		return 0;
-	}
-	free(var_name);
+    free(var_name);
+    
     if (val) {
         return insert_string(st, val, strlen(val));
     } else {
@@ -517,7 +514,7 @@ static t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **e
 	exp.expanded_str = NULL;
 	exp.tokens = NULL;
 	exp.token_count = 0;
-	if (!cmd_str)
+	if (!cmd_str || !*cmd_str)
 		return (exp);
 	exp.expanded_str = expand_variables(cmd_str, last_status, env);
 	if (!exp.expanded_str)
@@ -591,12 +588,12 @@ static void	expand_redirections(t_command *cmd, int last_status, t_env **env)
 		free(cmd->outfile);
 		cmd->outfile = tmp;
 	}
-	if (cmd->heredoc_delimiter)
-	{
-		tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
-		free(cmd->heredoc_delimiter);
-		cmd->heredoc_delimiter = tmp;
-	}
+	// if (cmd->heredoc_delimiter)
+	// {
+	// 	tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
+	// 	free(cmd->heredoc_delimiter);
+	// 	cmd->heredoc_delimiter = tmp;
+	// }
 }
 
 static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,char **exp_args, bool *no_split)
@@ -668,14 +665,20 @@ void	expand_command_vars(t_command *cmd, int last_status, t_env **env)
 	cmd->cmd = NULL;
 	exp_args = expand_arguments(cmd->args, arg_count, last_status, env);
 	if (exp.token_count > 0)
+	{
 		rebuild_with_tokens(cmd, &exp, exp_args, no_split);
+		exp.tokens = NULL;
+	}
 	else
 	{
 		rebuild_without_tokens(cmd, exp_args, no_split, exp.expanded_str);
 		exp.expanded_str = NULL;
 	}
-	if (exp.token_count == 0 && exp.expanded_str)
-		free(exp.expanded_str);
+   	if (exp.tokens)
+		{
+            free(exp.tokens);  // Free the array allocated by ft_split
+            exp.tokens = NULL;
+        }
 	free(no_split);
 	expand_redirections(cmd, last_status, env);
 }
