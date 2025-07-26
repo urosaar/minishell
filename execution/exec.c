@@ -265,6 +265,8 @@ static int parent_heredoc(pid_t pid, int pipefd[2])
 
 int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
 {
+    if (!delimiter || !env)
+    return -1;
     int pipefd[2];
     
     if (pipe(pipefd) == -1)
@@ -542,3 +544,4 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
     }
 	ft_wait(ctx);
 }
+
