@@ -343,13 +343,16 @@ static int handle_env_var(t_state *st)
     if (varlen == 0) {
         return str_append_char(st, '$');
     }
-
     char *var_name = strndup(st->in + start, varlen);
     if (!var_name) return 0;
     
     char *val = ft_getenv(var_name, *st->env);
-    free(var_name);
-    
+    if (!val)
+	{
+		free(var_name);
+		return 0;
+	}
+	free(var_name);
     if (val) {
         return insert_string(st, val, strlen(val));
     } else {
