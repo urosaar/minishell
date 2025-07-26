@@ -27,6 +27,29 @@ static int count_actual_args(char **tokens, int start)
     return count;
 }
  // Parse a single command from tokens, handling redirections and args
+static void free_command_partial(t_command *cmd)
+{
+    if (!cmd) return;
+    
+    if (cmd->args) {
+        for (int i = 0; cmd->args[i]; i++)
+            free(cmd->args[i]);
+        free(cmd->args);
+    }
+    
+    t_redirection *redir = cmd->redirections;
+    while (redir) {
+        t_redirection *next = redir->next;
+        free(redir->filename);
+        free(redir);
+        redir = next;
+    }
+    
+    free(cmd->infile);
+    free(cmd->outfile);
+    free(cmd);
+}
+
 static t_command *parse_one_command(char **tokens, int *idx)
 {
     t_command    *cmd = ft_calloc(1, sizeof(t_command));
@@ -40,16 +63,20 @@ static t_command *parse_one_command(char **tokens, int *idx)
     argc = count_actual_args(tokens, *idx);
     cmd->args = malloc(sizeof(char *) * (argc + 1));
     if (!cmd->args)
+    {
+        free_command_partial(cmd);
         return NULL;
-
+    }
      while (tokens[*idx] && tokens[*idx][0] != '|')
     {
         if (is_redir_token(tokens[*idx]))
         {
             t_redirection *redir = ft_calloc(1, sizeof(t_redirection));
             if (!redir)
+            {
+                free_command_partial(cmd);
                 return NULL;
-                
+            }
             if (ft_strcmp(tokens[*idx], "<") == 0)
                 redir->type = TOKEN_REDIRECT_IN;
             else if (ft_strcmp(tokens[*idx], "<<") == 0)
@@ -62,28 +89,36 @@ static t_command *parse_one_command(char **tokens, int *idx)
             (*idx)++;
             if (!tokens[*idx]) {
                 free(redir);
+                free_command_partial(cmd);
                 return NULL;
             }
 
-            if (redir->type == TOKEN_HEREDOC)
+           if (redir->type == TOKEN_HEREDOC)
             {
-             char *stripped = strip_quotes(tokens[*idx]);
-            if (!stripped)
-            {
-                free(redir);
-               return NULL;
-            }
-            cmd->heredoc_delimiter = stripped;
-            redir->filename        = ft_strdup(stripped);
+                char *stripped = strip_quotes(tokens[*idx]);
+                if (!stripped)
+                {
+                    free(redir);
+                    free_command_partial(cmd);
+                    return NULL;
+                }
+                redir->filename = stripped;
                 cmd->heredoc = 1;
                 if (tokens[*idx][0] == '\'' || tokens[*idx][0] == '"')
                     cmd->heredoc_quoted = 1;
                 else
                     cmd->heredoc_quoted = 0;
             }
+
             else
             {
                 char *filename = strip_quotes(tokens[*idx]);
+            if (!filename)
+            {
+                free(redir);
+                free_command_partial(cmd);
+                return NULL;
+            }
                 redir->filename = filename;
                 
                 if (redir->type == TOKEN_REDIRECT_IN)
@@ -109,8 +144,14 @@ static t_command *parse_one_command(char **tokens, int *idx)
         }
         else
         {
+            char *arg = ft_strdup(tokens[*idx]);
+            if (!arg)
+            {
+                free_command_partial(cmd);
+                return NULL;
+            }
             // cmd->args[arg_i++] = strip_quotes(tokens[*idx]);
-            cmd->args[arg_i++] = ft_strdup(tokens[*idx]);
+            cmd->args[arg_i++] = arg;
             (*idx)++;
         }
     }
@@ -135,7 +176,8 @@ t_command *parse_tokens(char **tokens)
     t_command *head = NULL;
     t_command *current = NULL;
     int i = 0;
-     if (count_total_heredocs(tokens) > 16)
+    
+    if (count_total_heredocs(tokens) > 16)
     {
         ft_putstr_fd("minishell: maximum here-document count exceeded\n", STDERR_FILENO);
         return NULL;
@@ -145,15 +187,20 @@ t_command *parse_tokens(char **tokens)
     {
         t_command *cmd = parse_one_command(tokens, &i);
         if (!cmd)
+        {
+            free_commands(head);
             return NULL;
+        }
+        
         if (!head)
             head = cmd;
         else
             current->next = cmd;
+        
         current = cmd;
+        
         if (tokens[i] && tokens[i][0] == '|')
             i++;
     }
     return head;
 }
-
