@@ -178,103 +178,119 @@ void handler_heredoc()
 	exit(1);
 }
 
+typedef struct s_heredoc_child {
+    int write_fd;
+    char *delimiter;
+    int quoted;
+    int last_status; 
+    t_env **env;
+} t_heredoc_child;
+
+static void process_heredoc_line(t_heredoc_child *data, char *line)
+{
+    if (!data->quoted) {
+        char *expanded = expand_variables(line, data->last_status, data->env);
+        if (expanded) {
+            write(data->write_fd, expanded, ft_strlen(expanded));
+            write(data->write_fd, "\n", 1);
+            free(expanded);
+        } else {
+            write(data->write_fd, line, ft_strlen(line));
+            write(data->write_fd, "\n", 1);
+        }
+    } else {
+        write(data->write_fd, line, ft_strlen(line));
+        write(data->write_fd, "\n", 1);
+    }
+}
+
+static void child_heredoc(t_heredoc_child *data)
+{
+    signal(SIGINT, handler_heredoc);
+    signal(SIGQUIT, SIG_IGN);
+    
+    char *line;
+    int line_count = 0;
+    
+    while (1) {
+        if (line_count >= HEREDOC_MAX_LINES)
+        {
+            ft_putstr_fd("minishell: heredoc limit exceeded\n", STDERR_FILENO);
+            close(data->write_fd);
+            exit(1);
+        }
+        
+        line = readline("> ");
+        if (!line)
+            break;
+        
+        if (ft_strcmp(line, data->delimiter) == 0)
+        {
+            free(line);
+            break;
+        }
+        
+        process_heredoc_line(data, line);
+        free(line);
+        line_count++;
+    }
+    close(data->write_fd);
+    exit(0);
+}
+
+static int parent_heredoc(pid_t pid, int pipefd[2])
+{
+    int status;
+    
+    close(pipefd[1]);
+    signal(SIGINT, SIG_IGN);
+    signal(SIGQUIT, SIG_IGN);
+    
+    waitpid(pid, &status, 0);
+    
+    signal(SIGINT, SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
+    
+    if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+    {
+        close(pipefd[0]);
+        return -1;
+    } else if (WIFSIGNALED(status))
+    {
+        close(pipefd[0]);
+        return -1;
+    }
+    return pipefd[0];
+}
 
 int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
 {
     int pipefd[2];
+    
     if (pipe(pipefd) == -1)
-        return (-1);
+        return -1;
     
     pid_t pid = fork();
-    if (pid == -1)
-	{
+    if (pid == -1) {
         close(pipefd[0]);
         close(pipefd[1]);
         return -1;
     }
     
-    if (pid == 0)
-	{
-        signal(SIGINT, handler_heredoc);
-        signal(SIGQUIT, SIG_IGN);
+    if (pid == 0) {
         close(pipefd[0]);
-        
-        char *line;
-        int line_count = 0;
-        while (1) {
-            if (line_count >= HEREDOC_MAX_LINES)
-			{
-                ft_putstr_fd("minishell: heredoc limit exceeded\n", STDERR_FILENO);
-                close(pipefd[1]);
-                exit(1);
-            }
-            
-            line = readline("> ");
-              if (!line)
-            {
-                // write(STDOUT_FILENO, CTRLD, 7);  // Move cursor up and right
-                break;
-            }
-            
-            if (ft_strcmp(line, delimiter) == 0)
-			{
-                free(line);
-                break;
-            }
-            
-            if (!quoted)
-			{
-                char *expanded = expand_variables(line, last_status, env);
-                if (expanded)
-				{
-                    write(pipefd[1], expanded, ft_strlen(expanded));
-                    write(pipefd[1], "\n", 1);
-                    free(expanded);
-                } else
-				{
-                    write(pipefd[1], line, ft_strlen(line));
-                    write(pipefd[1], "\n", 1);
-                }
-            } 
-			else
-			{
-                write(pipefd[1], line, ft_strlen(line));
-                write(pipefd[1], "\n", 1);
-            }
-            
-            free(line);
-            line_count++;
-        }
-        close(pipefd[1]);
-        exit(0);
-    } 
-	else 
-	{
-        int status;
-        close(pipefd[1]);
-        signal(SIGINT, SIG_IGN);
-        signal(SIGQUIT, SIG_IGN);
-        
-        waitpid(pid, &status, 0);
-        
-        signal(SIGINT, SIG_DFL);
-        signal(SIGQUIT, SIG_DFL);
-        
-        if (WIFEXITED(status))
-		{
-            if (WEXITSTATUS(status) != 0) 
-			{
-                close(pipefd[0]);
-                return -1;
-            }
-        } 
-		else if (WIFSIGNALED(status))
-		{
-            close(pipefd[0]);
-            return -1;
-        }
-        return pipefd[0];
+        t_heredoc_child data ={
+            .write_fd = pipefd[1],
+            .delimiter = delimiter,
+            .quoted = quoted,
+            .last_status = last_status,
+            .env = env
+        };
+        child_heredoc(&data);
+    } else {
+        return parent_heredoc(pid, pipefd);
     }
+    return -1; // Never reached
 }
  int process_all_heredocs(t_command *cmds, int last_status, t_env **env)
  {
@@ -373,51 +389,53 @@ int apply_redirection(t_command *curr) {
     return 1;
 }
 
-void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
+void creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 {
-	char	*d = NULL;
+    char *d = NULL;
 
-	ctx->pid = fork();
-	if (ctx->pid == -1)
+    ctx->pid = fork();
+    if (ctx->pid == -1)
     {
-		perror("fork");
-		exit(1);
-	}
+        perror("fork");
+        exit(1);
+    }
 
-	if (ctx->pid == 0)
+    if (ctx->pid == 0)
     {
-		if (curr->next || ctx->prev_fd != -1)
-			dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
-		
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		
-		if (!apply_redirection(curr))
-			exit(1);
-
-		// if (curr->cmd == NULL || curr->cmd[0] == '\0')
-        // {
-		// 	fprintf(stderr, "minishell: : command not found\n");
-		// 	exit(127);
-		// }
-		
-		d = check_if_exist(*env, curr);
-		if (is_builtins(curr->args))
+        if (curr->next || ctx->prev_fd != -1)
+            dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
+        
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
+        
+        if (!apply_redirection(curr))
+            exit(1);
+        if (curr->cmd == NULL || curr->cmd[0] == '\0') 
         {
-			exit(builtins(env, curr->args, ctx->prev_pwd));
-		}
-		
-		ft_execve(curr, env, d);
-	}
-	else {
-		close_fd(ctx->prev_fd);
-		ctx->last_pid = ctx->pid;
-		
-		if (curr->next) {
-			close_fd(ctx->pipe_fd[1]);
-			ctx->prev_fd = ctx->pipe_fd[0];
-		}
-	}
+            if (curr->redirections != NULL) 
+            {
+                exit(0);
+            }
+            fprintf(stderr, "minishell: : command not found\n");
+            exit(127);
+        }
+
+        d = check_if_exist(*env, curr);
+        if (is_builtins(curr->args))
+        {
+            exit(builtins(env, curr->args, ctx->prev_pwd));
+        }
+        
+        ft_execve(curr, env, d);
+    } else {
+        close_fd(ctx->prev_fd);
+        ctx->last_pid = ctx->pid;
+        
+        if (curr->next) {
+            close_fd(ctx->pipe_fd[1]);
+            ctx->prev_fd = ctx->pipe_fd[0];
+        }
+    }
 }
 void	ft_wait(t_exec *ctx)
 {
@@ -456,12 +474,7 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 	curr = cmds;
 	signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
-    // if ((cmds->cmd == NULL || cmds->cmd[0] == '\0')
-    //     && cmds->redirections != NULL)
-    // {
-    //     ctx->last_status = 0;
-    //     return;
-    // }
+
     if (is_builtins(curr->args) && !curr->next)
 	{
         int saved_stdin = dup(STDIN_FILENO);
@@ -512,5 +525,20 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
 		curr = curr->next;
 	}
 	close_fd(ctx->prev_fd);
+    t_command *c = cmds;
+    while (c)
+    {
+        t_redirection *r = c->redirections;
+        while (r)
+        {
+            if (r->type == TOKEN_HEREDOC && r->heredoc_fd >= 0)
+            {
+                close(r->heredoc_fd);
+                r->heredoc_fd = -1;
+            }
+            r = r->next;
+        }
+        c = c->next;
+    }
 	ft_wait(ctx);
 }
