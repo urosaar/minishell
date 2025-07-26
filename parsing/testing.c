@@ -21,29 +21,37 @@ void free_tokens(char **tokens)
 		free(tokens[i++]);
 	free(tokens);
 }
-
-void free_commands(t_command *cmd)
+void free_strarray(char **arr)
 {
-	t_command *next;
-	int       i;
-
-	while (cmd)
-	{
-		next = cmd->next;
-		i = 0;
-		while (cmd->args[i])
-			free(cmd->args[i++]);
-		free(cmd->args);
-		cmd->args = NULL;
-		if (cmd->infile)
-			free(cmd->infile);
-		if (cmd->outfile)
-			free(cmd->outfile);
-		if (cmd->cmd)
-			free(cmd->cmd);
-		free(cmd);
-		cmd = next;
-	}
+    if (!arr) return;
+    
+    for (int i = 0; arr[i]; i++)
+        free(arr[i]);
+    free(arr);
+}
+void free_commands(t_command *cmds)
+{
+    while (cmds) {
+        t_command *next = cmds->next;
+        
+        // Free all command components
+        free(cmds->cmd);
+        free_strarray(cmds->args);
+        free(cmds->infile);
+        free(cmds->outfile);
+        
+        // Free redirection list
+        t_redirection *redir = cmds->redirections;
+        while (redir) {
+            t_redirection *next_redir = redir->next;
+            free(redir->filename);
+            free(redir);
+            redir = next_redir;
+        }
+        
+        free(cmds);
+        cmds = next;
+    }
 }
 int ft_exit_status(int status)
 {
@@ -140,6 +148,7 @@ int main(int ac, char **av, char **envp)
         {
             exec->last_status = 2;
             free_tokens(tokens);
+			free(raw);
             continue;
         }
 
