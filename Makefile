@@ -5,29 +5,33 @@ CFLAG = -Wall -Werror -Wextra -g
 # hado lflags dreadline library 3ndi flmac
 O_READLINE_DIR := readline/install
 O_LDFLAGS += -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
-O_CFLAG = -I$(O_READLINE_DIR)/include # zdt readline library (MAC) #-Wall -Wextra -Werror
+O_CFLAG = -I$(O_READLINE_DIR)/include -Ilibft  # zdt readline library (MAC) #-Wall -Wextra -Werror
 #------------------------------------------------------------------------------
-
+LIBFT_SRC = ./libft/helpers1.c ./libft/helpers2.c ./libft/helpers3.c ./libft/helpers4.c ./libft/helpers5.c ./libft/helpers6.c 
+LIBFT_OBJ = $(LIBFT_SRC:.c=.o)
 READLINE_INC =# -I$(shell brew --prefix readline)/include
 READLINE_LIB =# -L$(shell brew --prefix readline)/lib -lreadline
 
-SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c  ./builtins/pwd.c ./builtins/exit.c\
-		./builtins/cd.c ./builtins/split.c ./builtins/unset.c ./builtins/export.c ./builtins/utils.c\
+SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c ./builtins/pwd.c ./builtins/exit.c\
+		./builtins/cd.c ./builtins/unset.c ./builtins/export.c\
 		./builtins/ft_malloc.c ./builtins/ft_malloc_utils.c ./execution/exec.c ./builtins/builtins.c\
-		./parsing/lexer.c ./parsing/parser.c ./parsing/shell_utils.c ./parsing/syntax.c ./parsing/testing.c ./parsing/utils.c ./parsing/expand.c
+		./parsing/lexer.c ./parsing/parser.c ./parsing/shell_utils.c ./parsing/syntax.c ./parsing/testing.c ./parsing/expand.c
 OBJ = $(SRC:.c=.o)
-HEAD = fractol.h
+ALL_OBJ = $(OBJ) $(LIBFT_OBJ)
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CC) $(OBJ) $(CFLAGS) $(SANITIZE) $(O_CFLAG) $(O_LDFLAGS) -lreadline -o $(NAME) $(READLINE_LIB)
+$(NAME): $(ALL_OBJ)
+	$(CC) $(ALL_OBJ) $(CFLAGS) $(SANITIZE) $(O_CFLAG) $(O_LDFLAGS) -lreadline -o $(NAME) $(READLINE_LIB)
 
 %.o: %.c minishell.h Makefile
 	$(CC) $(CFLAGS) $(SANITIZE) $(O_CFLAG) $(READLINE_INC) -c $< -o $@
 
+libft/%.o: libft/%.c libft/libft.h Makefile
+	$(CC) $(CFLAGS) -Ilibft -c $< -o $@
+
 clean:
-	$(RM) $(OBJ)
+	$(RM) $(ALL_OBJ)
 
 fclean: clean
 	$(RM) $(NAME) 

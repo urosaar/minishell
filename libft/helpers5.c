@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils5.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/09 17:15:27 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/21 17:10:52 by skhallou         ###   ########.fr       */
+/*   Created: 2025/07/28 16:20:27 by jesse             #+#    #+#             */
+/*   Updated: 2025/07/28 17:09:56 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "libft.h"
 
 t_env	*ft_newnode(char *line, char c)
 {
@@ -68,15 +68,6 @@ void	ft_lstadd_back(t_env **env, t_env *new)
 	last->next = new;
 }
 
-// int	ft_strlen(char *s)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (s[i])
-// 		i++;
-// 	return (i);
-// }
 
 void	ft_putstr_fd(char *s, int fd)
 {
@@ -92,20 +83,6 @@ void	ft_putstr_fd(char *s, int fd)
 	}
 }
 
-// int ft_strcmp(char *s1, char *s2)
-// {
-// 	int i = 0;
-
-// 	if (!s1 && !s2)
-// 		return 0;
-// 	while (s1[i] || s2[i])
-// 	{
-// 		if (s1[i] != s2[i])
-// 			return (s1[i] - s2[i]);
-// 		i++;
-// 	}
-// 	return (s1[i] - s2[i]);
-// }
 
 char	*ft_strchr(char *s, int c)
 {
@@ -121,25 +98,7 @@ char	*ft_strchr(char *s, int c)
 	return (NULL);
 }
 
-char	*ft_strdup(char *src)
-{
-	char	*dest;
-	int		i;
 
-	i = 0;
-	if (!src)
-		return (NULL);
-	dest = ft_malloc(ft_strlen(src) + 1, MALLOC);
-	if (!dest)
-		return (0);
-	while (src[i])
-	{
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = 0;
-	return (dest);
-}
 
 char	*ft_join(char *s1, char *s2)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:02:33 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/22 11:02:36 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/07/28 16:05:45 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,46 +61,7 @@ char *append_char(char *result, int *rlen, char c)
     free(result);
     return tmp;
 }
-static int	ft_numlen(int n)
-{
-	int	len = 0;
 
-	if (n <= 0)
-		len++;
-	while (n)
-	{
-		n /= 10;
-		len++;
-	}
-	return (len);
-}
-
-char	*ft_itoa(int n)
-{
-	char	*str;
-	int		len;
-	long	num;
-
-	num = n;
-	len = ft_numlen(n);
-	str = malloc(len + 1);
-	if (!str)
-		return (NULL);
-	str[len--] = '\0';
-	if (num == 0)
-		str[0] = '0';
-	if (num < 0)
-	{
-		str[0] = '-';
-		num = -num;
-	}
-	while (num)
-	{
-		str[len--] = '0' + (num % 10);
-		num /= 10;
-	}
-	return (str);
-}
 char *ft_getenv(const char *name, t_env *env)
 {
     int i = 0;
@@ -157,36 +118,3 @@ char **splice_tokens(char **tokens, int pos, char **pieces)
     return out;
 }
 
-
-// char **split_all_args(char **args)
-// {
-//     int i = 0;
-//     while (args[i])
-//     {
-//         char **pieces = ft_split(args[i], ' ');
-//         if (!pieces)
-//         {
-//             i++;
-//             continue;
-//         }
-//         if (!pieces[1])
-//         {
-//             free(args[i]);
-//             args[i] = pieces[0];
-//             free(pieces);
-//             i++;
-//         }
-//         else
-//         {
-//             free(args[i]);
-//             args = splice_tokens(args, i, pieces);
-//             free(pieces);
-
-//             int cnt = 0;
-//             while (args[i + cnt])
-//                 cnt++;
-//             i += (cnt - 1);
-//         }
-//     }
-//     return args;
-// }
