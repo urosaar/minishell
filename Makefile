@@ -1,5 +1,5 @@
 NAME = minishell
-SANITIZE =# -fsanitize=address
+SANITIZE = #-fsanitize=address
 CC = cc
 CFLAG = -Wall -Werror -Wextra -g
 # hado lflags dreadline library 3ndi flmac

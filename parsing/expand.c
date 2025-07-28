@@ -490,7 +490,7 @@ static bool	*create_no_split_map(char **args)
 	orig_argc = 0;
 	while (args[orig_argc])
 		orig_argc++;
-	no_split = calloc(orig_argc, sizeof(bool));
+	no_split = calloc(orig_argc + 1, sizeof(bool));
 	if (!no_split)
 		return (NULL);
 	idx = 0;
@@ -713,3 +713,4 @@ void	expand_tokens(char **tokens, int last_status, t_env **env)
 		i++;
 	}
 }
+
