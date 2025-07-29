@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/29 16:01:51 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/29 20:02:59 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,14 +178,6 @@ void handler_heredoc()
 	exit(1);
 }
 
-typedef struct s_heredoc_child {
-    int write_fd;
-    char *delimiter;
-    int quoted;
-    int last_status; 
-    t_env **env;
-} t_heredoc_child;
-
 static void process_heredoc_line(t_heredoc_child *data, char *line)
 {
     if (!data->quoted) {
@@ -212,7 +204,8 @@ static void child_heredoc(t_heredoc_child *data)
     char *line;
     int line_count = 0;
     
-    while (1) {
+    while (1)
+    {
         if (line_count >= HEREDOC_MAX_LINES)
         {
             ft_putstr_fd("minishell: heredoc limit exceeded\n", STDERR_FILENO);
@@ -294,6 +287,7 @@ int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
     }
     return -1; // Never reached
 }
+
  int process_all_heredocs(t_command *cmds, int last_status, t_env **env)
  {
      t_command     *curr = cmds;
@@ -363,26 +357,33 @@ void	dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd)
 	}
 }
 
-int apply_redirection(t_command *curr) {
+int apply_redirection(t_command *curr)
+{
     t_redirection *tmp = curr->redirections;
-    while (tmp) {
-        if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0) {
-            if (dup2(tmp->heredoc_fd, STDIN_FILENO) == -1) {
+    while (tmp)
+    {
+        if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0)
+        {
+            if (dup2(tmp->heredoc_fd, STDIN_FILENO) == -1)
+            {
                 perror("minishell: dup2 heredoc");
                 return 0;
             }
             close(tmp->heredoc_fd);
             tmp->heredoc_fd = -1;
         }
-        else if (tmp->type == TOKEN_REDIRECT_IN) {
+        else if (tmp->type == TOKEN_REDIRECT_IN)
+        {
             if (!redirect_input(tmp->filename))
                 return 0;
         }
-        else if (tmp->type == TOKEN_REDIRECT_OUT) {
+        else if (tmp->type == TOKEN_REDIRECT_OUT)
+        {
             if (!redirect_output(tmp->filename))
                 return 0;
         }
-        else if (tmp->type == TOKEN_REDIRECT_APPEND) {
+        else if (tmp->type == TOKEN_REDIRECT_APPEND)
+        {
             if (!append_mode(tmp->filename))
                 return 0;
         }
@@ -433,12 +434,14 @@ void creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
         close_fd(ctx->prev_fd);
         ctx->last_pid = ctx->pid;
         
-        if (curr->next) {
+        if (curr->next)
+        {
             close_fd(ctx->pipe_fd[1]);
             ctx->prev_fd = ctx->pipe_fd[0];
         }
     }
 }
+
 void	ft_wait(t_exec *ctx)
 {
 	int	status;
@@ -463,71 +466,74 @@ void	ft_wait(t_exec *ctx)
 	// printf("STATUS = %d\n", ctx->last_status);
 }
 
-void execution(t_command *cmds, t_env **env, t_exec *ctx) 
+static int exec_init(t_command *cmds, t_exec *ctx, t_env **env)
 {
-	if (!process_all_heredocs(cmds, ctx->last_status, env))
-	{
+    if (!process_all_heredocs(cmds, ctx->last_status, env))
+    {
         ctx->last_status = 1;
-        return;
+        return 0;
     }
-    t_command	*curr;
-
-	ctx->prev_fd = -1;
-	curr = cmds;
-	signal(SIGINT, SIG_IGN);
+    ctx->prev_fd = -1;
+    signal(SIGINT, SIG_IGN);
     signal(SIGQUIT, SIG_IGN);
+    return 1;
+}
 
-    if (is_builtins(curr->args) && !curr->next)
-	{
-        int saved_stdin = dup(STDIN_FILENO);
-        int saved_stdout = dup(STDOUT_FILENO);
-        int redir_success = 1;
-
-        if (saved_stdin == -1 || saved_stdout == -1)
-		{
-            perror("minishell: dup");
-            redir_success = 0;
-        }
-        if (redir_success)
-            redir_success = apply_redirection(curr);
-        if (redir_success)
-            ctx->last_status = builtins(env, curr->args, ctx->prev_pwd);
-		else 
-            ctx->last_status = 1;
-        if (saved_stdin != -1)
-		{
-            dup2(saved_stdin, STDIN_FILENO);
-            close(saved_stdin);
-        }
-        if (saved_stdout != -1)
-		{
-            dup2(saved_stdout, STDOUT_FILENO);
-            close(saved_stdout);
-        }
-        t_redirection *r = curr->redirections;
-        while (r)
-		{
-            if (r->type == TOKEN_HEREDOC && r->heredoc_fd != -1)
-			{
-                close(r->heredoc_fd);
-                r->heredoc_fd = -1;
-            }
-            r = r->next;
-        }
-        return;
+static int exec_builtin(t_command *curr, t_env **env, t_exec *ctx)
+{
+    if (!is_builtins(curr->args) || curr->next)
+    return 1;
+    int saved_in = dup(STDIN_FILENO);
+    int saved_out = dup(STDOUT_FILENO);
+    int ok = (saved_in != -1 && saved_out != -1);
+    if (!ok)
+    {
+        perror("minishell: dup");
+        ctx->last_status = 1;
+    } else 
+    {
+        if (!apply_redirection(curr))
+        ctx->last_status = 1;
+        else
+        ctx->last_status = builtins(env, curr->args, ctx->prev_pwd);
+        dup2(saved_in, STDIN_FILENO);
+        dup2(saved_out, STDOUT_FILENO);
+        close(saved_in);
+        close(saved_out);
     }
-	while (curr)
-	{
-		if (curr->next && pipe(ctx->pipe_fd) == -1)
-		{
-			perror("pipe");
-			break;
-		}
-		creat_a_child(curr, env, ctx);
-		curr = curr->next;
-	}
-	close_fd(ctx->prev_fd);
-    t_command *c = cmds;
+    t_redirection *r = curr->redirections;
+    while (r)
+    {
+        if (r->type == TOKEN_HEREDOC && r->heredoc_fd != -1)
+        {
+            close(r->heredoc_fd);
+            r->heredoc_fd = -1;
+        }
+        r = r->next;
+    }
+    
+    return 0;
+}
+
+static void exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
+{
+    while (curr)
+    {
+        if (curr->next && pipe(ctx->pipe_fd) == -1)
+        {
+            perror("pipe");
+            break;
+        }
+        creat_a_child(curr, env, ctx);
+        curr = curr->next;
+    }
+    close_fd(ctx->prev_fd);
+}
+
+
+static void exec_finalize(t_command *start, t_exec *ctx)
+{
+    t_command *c = start;
     while (c)
     {
         t_redirection *r = c->redirections;
@@ -542,6 +548,99 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
         }
         c = c->next;
     }
-	ft_wait(ctx);
+    ft_wait(ctx);
 }
 
+void execution(t_command *cmds, t_env **env, t_exec *ctx)
+{
+    if (!exec_init(cmds, ctx, env))
+    return;
+    t_command *curr = cmds;
+    if (!exec_builtin(curr, env, ctx))
+    return;
+    exec_pipeline(curr, env, ctx);
+    exec_finalize(cmds, ctx);
+}
+
+
+// void execution(t_command *cmds, t_env **env, t_exec *ctx) 
+// {
+// 	if (!process_all_heredocs(cmds, ctx->last_status, env))
+// 	{
+//         ctx->last_status = 1;
+//         return;
+//     }
+//     t_command	*curr;
+
+// 	ctx->prev_fd = -1;
+// 	curr = cmds;
+// 	signal(SIGINT, SIG_IGN);
+//     signal(SIGQUIT, SIG_IGN);
+
+//     if (is_builtins(curr->args) && !curr->next)
+// 	{
+//         int saved_stdin = dup(STDIN_FILENO);
+//         int saved_stdout = dup(STDOUT_FILENO);
+//         int redir_success = 1;
+
+//         if (saved_stdin == -1 || saved_stdout == -1)
+// 		{
+//             perror("minishell: dup");
+//             redir_success = 0;
+//         }
+//         if (redir_success)
+//             redir_success = apply_redirection(curr);
+//         if (redir_success)
+//             ctx->last_status = builtins(env, curr->args, ctx->prev_pwd);
+// 		else 
+//             ctx->last_status = 1;
+//         if (saved_stdin != -1)
+// 		{
+//             dup2(saved_stdin, STDIN_FILENO);
+//             close(saved_stdin);
+//         }
+//         if (saved_stdout != -1)
+// 		{
+//             dup2(saved_stdout, STDOUT_FILENO);
+//             close(saved_stdout);
+//         }
+//         t_redirection *r = curr->redirections;
+//         while (r)
+// 		{
+//             if (r->type == TOKEN_HEREDOC && r->heredoc_fd != -1)
+// 			{
+//                 close(r->heredoc_fd);
+//                 r->heredoc_fd = -1;
+//             }
+//             r = r->next;
+//         }
+//         return;
+//     }
+// 	while (curr)
+// 	{
+// 		if (curr->next && pipe(ctx->pipe_fd) == -1)
+// 		{
+// 			perror("pipe");
+// 			break;
+// 		}
+// 		creat_a_child(curr, env, ctx);
+// 		curr = curr->next;
+// 	}
+// 	close_fd(ctx->prev_fd);
+//     t_command *c = cmds;
+//     while (c)
+//     {
+//         t_redirection *r = c->redirections;
+//         while (r)
+//         {
+//             if (r->type == TOKEN_HEREDOC && r->heredoc_fd >= 0)
+//             {
+//                 close(r->heredoc_fd);
+//                 r->heredoc_fd = -1;
+//             }
+//             r = r->next;
+//         }
+//         c = c->next;
+//     }
+// 	ft_wait(ctx);
+// }

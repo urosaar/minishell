@@ -6,11 +6,421 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 09:00:30 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/29 16:17:31 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/29 20:22:25 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+
+static int grow_buffer(t_state *st, int extra)
+{
+    char *new_buf = malloc(st->rlen + extra + 1);
+    if (!new_buf)
+	{
+        free(st->res);
+        return 0;
+    }
+    if (st->res)
+	{
+        memcpy(new_buf, st->res, st->rlen);
+        free(st->res);
+    }
+    st->res = new_buf;
+    st->res[st->rlen + extra] = '\0';
+    return 1;
+}
+
+static int str_append_char(t_state *st, char c)
+{
+    if (!grow_buffer(st, 1))
+		return 0;
+    st->res[st->rlen++] = c;
+   		return 1;
+}
+
+static int insert_string(t_state *st, const char *s, int len)
+ {
+    if (!len)
+		return 1;
+    if (!grow_buffer(st, len))
+		return 0;
+    memcpy(st->res + st->rlen, s, len);
+    st->rlen += len;
+    return 1;
+}
+
+static int handle_exit_status(t_state *st)
+{
+    char *num = ft_itoa(st->last_status);
+    if (!num) return 0;
+    int len = strlen(num);
+    int success = insert_string(st, num, len);
+    free(num);
+    st->idx++;
+    return success;
+}
+
+static int handle_env_var(t_state *st)
+{
+    int start = st->idx;
+    int varlen = 0;
+    
+    while (isalnum((unsigned char)st->in[st->idx]) || 
+           st->in[st->idx] == '_'){
+        st->idx++;
+        varlen++;
+    }
+
+    if (varlen == 0) {
+        return str_append_char(st, '$');
+    }
+
+    char *var_name = strndup(st->in + start, varlen);
+    if (!var_name) return 0;
+    
+    char *val = ft_getenv(var_name, *st->env);
+    free(var_name);
+    
+    if (val)
+        return insert_string(st, val, strlen(val));
+	else 
+		return 1;
+	// {
+    //     if (!str_append_char(st, '$')) return 0;
+    //     return insert_string(st, st->in + start, varlen);
+    // }
+}
+
+static int handle_var_exp(t_state *st)
+{
+    st->idx++;
+    if (st->in[st->idx] == '?') {
+        return handle_exit_status(st);
+    } else {
+        return handle_env_var(st);
+    }
+}
+
+char *expand_variables(const char *input, int last_status, t_env **env)
+{
+    t_state st = {0};
+    st.in = input;
+    st.last_status = last_status;
+    st.env = env;
+    st.res = malloc(1);
+    if (!st.res) return NULL;
+    st.res[0] = '\0';
+
+    while (st.in[st.idx])
+    {
+        char c = st.in[st.idx];
+        if (c == '\'' && !st.in_double)
+        {
+            st.in_single = !st.in_single;
+            st.idx++;
+        } else if (c == '"' && !st.in_single)
+        {
+            st.in_double = !st.in_double;
+            st.idx++;
+        } else if (c == '$' && !st.in_single)
+        {
+            if (!handle_var_exp(&st))
+            {
+                free(st.res);
+                return NULL;
+            }
+        } else {
+            if (!str_append_char(&st, c))
+            {
+                free(st.res);
+                return NULL;
+            }
+            st.idx++;
+        }
+    }
+    return st.res;
+}
+
+char **split_selected_args(char **args, bool *no_split)
+{
+    int i = 0;
+    while (args[i])
+    {
+        if (!no_split[i] && strchr(args[i], ' '))
+        {
+            char **pieces = ft_split(args[i], ' ');
+            free(args[i]);
+            args = splice_tokens(args, i, pieces);
+            free(pieces);
+            
+            // skip past newly inserted pieces
+            int k = 0;
+            while (args[i + k])
+                k++;
+            i += k;
+        }
+        else
+        {
+            i++;
+        }
+    }
+    return args;
+}
+static int	count(char **args)
+{
+	int	count;
+
+	count = 0;
+	if (!args)
+		return (0);
+	while (args[count])
+		count++;
+	return (count);
+}
+
+static bool	is_assignment(char *str)
+{
+	int	i;
+
+	i = 1;
+	while (str[i])
+	{
+		if (str[i] == '=')
+			return (true);
+		if (!(isalnum(str[i]) || str[i] == '_'))
+			break ;
+		i++;
+	}
+	return (false);
+}
+
+static void	free_strarray(char **arr)
+{
+	int	i;
+
+	if (!arr)
+		return ;
+	i = 0;
+	while (arr[i])
+		free(arr[i++]);
+	free(arr);
+}
+
+static bool	*create_no_split_map(char **args)
+{
+	bool	*no_split;
+	int		idx;
+	int		len;
+	int		orig_argc;
+
+	orig_argc = 0;
+	while (args[orig_argc])
+		orig_argc++;
+	no_split = calloc(orig_argc + 1, sizeof(bool));
+	if (!no_split)
+		return (NULL);
+	idx = 0;
+	while (idx < orig_argc)
+	{
+		len = strlen(args[idx]);
+		no_split[idx] = (len >= 2 && ((args[idx][0] == '"'
+						&& args[idx][len - 1] == '"') || (args[idx][0] == '\''
+						&& args[idx][len - 1] == '\'')));
+		if (!no_split[idx] && (isalpha(args[idx][0]) || args[idx][0] == '_'))
+			no_split[idx] = is_assignment(args[idx]);
+		idx++;
+	}
+	return (no_split);
+}
+
+static t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **env)
+{
+	t_cmd_exp	exp;
+
+	exp.expanded_str = NULL;
+	exp.tokens = NULL;
+	exp.token_count = 0;
+	if (!cmd_str || !*cmd_str)
+		return (exp);
+	exp.expanded_str = expand_variables(cmd_str, last_status, env);
+	if (!exp.expanded_str)
+		return (exp);
+	exp.tokens = ft_split(exp.expanded_str, ' ');
+	if (exp.tokens)
+		while (exp.tokens[exp.token_count])
+			exp.token_count++;
+	return (exp);
+}
+
+static char **expand_arguments(char **args, int arg_count, int last_status, t_env **env)
+{
+    char    **expanded;
+    int      i;
+
+    if (!args || arg_count == 0)
+        return (NULL);
+    expanded = malloc(sizeof(char *) * (arg_count + 1));
+    if (!expanded)
+        return (NULL);
+    i = 0;
+    while (i < arg_count)
+    {
+        char *raw = expand_variables(args[i], last_status, env);
+        if (!raw)
+            expanded[i] = NULL;
+        else
+        {
+            expanded[i] = strip_quotes(raw);
+            free(raw);
+        }
+        i++;
+    }
+    expanded[arg_count] = NULL;
+    return (expanded);
+}
+
+static void	expand_redirections(t_command *cmd, int last_status, t_env **env)
+{
+	char	*tmp;
+
+	if (cmd->infile)
+	{
+		tmp = expand_variables(cmd->infile, last_status, env);
+		free(cmd->infile);
+		cmd->infile = tmp;
+	}
+	if (cmd->outfile)
+	{
+		tmp = expand_variables(cmd->outfile, last_status, env);
+		free(cmd->outfile);
+		cmd->outfile = tmp;
+	}
+	// if (cmd->heredoc_delimiter)
+	// {
+	// 	tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
+	// 	free(cmd->heredoc_delimiter);
+	// 	cmd->heredoc_delimiter = tmp;
+	// }
+}
+
+static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,char **exp_args, bool *no_split)
+{
+	char	**new_args;
+	int		new_count;
+	int		i[2];
+
+	new_count = exp->token_count + (count(exp_args) - 1);
+	new_args = malloc(sizeof(char *) * (new_count + 1));
+	memset(i, 0, sizeof(i));
+	while (i[0] < exp->token_count)
+		new_args[i[1]++] = exp->tokens[i[0]++];
+	i[0] = 1;
+	while (exp_args && exp_args[i[0]])
+		new_args[i[1]++] = exp_args[i[0]++];
+	new_args[i[1]] = NULL;
+	free(exp->tokens);
+	free(exp->expanded_str);
+	cmd->cmd = ft_strdup(new_args[0]);
+	free_strarray(cmd->args);
+	cmd->args = new_args;
+	if (exp_args && exp_args[0])
+		free(exp_args[0]);
+	free(exp_args);
+	if (cmd->args)
+		cmd->args = split_selected_args(cmd->args, no_split);
+}
+
+static void	rebuild_without_tokens(t_command *cmd, char **exp_args,
+	bool *no_split, char *exp_cmd)
+{
+	int	i;
+	int	arg_count;
+
+	cmd->cmd = exp_cmd;
+	if (!cmd->args || !exp_args)
+		return ;
+	arg_count = count(cmd->args);
+	i = 0;
+	while (i < arg_count)
+	{
+		free(cmd->args[i]);
+		cmd->args[i] = exp_args[i];
+		i++;
+	}
+	free(exp_args);
+	if (cmd->args)
+		cmd->args = split_selected_args(cmd->args, no_split);
+}
+
+void	expand_command_vars(t_command *cmd, int last_status, t_env **env)
+{
+	t_cmd_exp	exp;
+	bool		*no_split;
+	char		**exp_args;
+	int			arg_count;
+
+	if (cmd->args)
+		no_split = create_no_split_map(cmd->args);
+	else
+		no_split = NULL;
+	if (cmd->args)
+		arg_count = count(cmd->args);
+	else
+		arg_count = 0;
+	exp = expand_command_string(cmd->cmd, last_status, env);
+	free(cmd->cmd);
+	cmd->cmd = NULL;
+	exp_args = expand_arguments(cmd->args, arg_count, last_status, env);
+	if (exp.token_count > 0)
+	{
+		rebuild_with_tokens(cmd, &exp, exp_args, no_split);
+		exp.tokens = NULL;
+	}
+	else
+	{
+		rebuild_without_tokens(cmd, exp_args, no_split, exp.expanded_str);
+		exp.expanded_str = NULL;
+	}
+   	if (exp.tokens)
+		{
+            free(exp.tokens);  // Free the array allocated by ft_split
+            exp.tokens = NULL;
+        }
+	free(no_split);
+	expand_redirections(cmd, last_status, env);
+}
+
+void	expand_tokens(char **tokens, int last_status, t_env **env)
+{
+	int		i;
+	int		skip_next;
+	char	*expanded;
+
+	i = 0;
+	skip_next = 0;
+	while (tokens && tokens[i])
+	{
+		if (skip_next)
+		{
+			skip_next = 0;
+			i++;
+			continue;
+		}
+		if (ft_strcmp(tokens[i], "<<") == 0)
+			skip_next = 1;
+		else
+		{
+			expanded = expand_variables(tokens[i], last_status, env);
+			if (expanded)
+			{
+				free(tokens[i]);
+				tokens[i] = expanded;
+			}
+		}
+		i++;
+	}
+}
 
 // char *expand_variables(const char *input, int last_status, t_env **env)
 // {
@@ -274,445 +684,3 @@
 // }
 
 /**********************************************************************************/
-
-typedef struct s_state {
-    char        *res;
-    int         rlen;
-    const char  *in;
-    int         idx;
-    int         last_status;
-    t_env       **env;
-    int         in_single;
-    int         in_double;
-}               t_state;
-
-static int grow_buffer(t_state *st, int extra)
-{
-    char *new_buf = malloc(st->rlen + extra + 1);
-    if (!new_buf) {
-        free(st->res);
-        return 0;
-    }
-    if (st->res) {
-        memcpy(new_buf, st->res, st->rlen);
-        free(st->res);
-    }
-    st->res = new_buf;
-    st->res[st->rlen + extra] = '\0';
-    return 1;
-}
-
-static int str_append_char(t_state *st, char c)
-{
-    if (!grow_buffer(st, 1)) return 0;
-    st->res[st->rlen++] = c;
-    return 1;
-}
-
-static int insert_string(t_state *st, const char *s, int len)
- {
-    if (!len) return 1;
-    if (!grow_buffer(st, len)) return 0;
-    memcpy(st->res + st->rlen, s, len);
-    st->rlen += len;
-    return 1;
-}
-
-static int handle_exit_status(t_state *st)
-{
-    char *num = ft_itoa(st->last_status);
-    if (!num) return 0;
-    int len = strlen(num);
-    int success = insert_string(st, num, len);
-    free(num);
-    st->idx++;
-    return success;
-}
-
-static int handle_env_var(t_state *st)
-{
-    int start = st->idx;
-    int varlen = 0;
-    
-    while (isalnum((unsigned char)st->in[st->idx]) || 
-           st->in[st->idx] == '_'){
-        st->idx++;
-        varlen++;
-    }
-
-    if (varlen == 0) {
-        return str_append_char(st, '$');
-    }
-
-    char *var_name = strndup(st->in + start, varlen);
-    if (!var_name) return 0;
-    
-    char *val = ft_getenv(var_name, *st->env);
-    free(var_name);
-    
-    if (val)
-        return insert_string(st, val, strlen(val));
-	else 
-		return 1;
-	// {
-    //     if (!str_append_char(st, '$')) return 0;
-    //     return insert_string(st, st->in + start, varlen);
-    // }
-}
-
-static int handle_var_exp(t_state *st)
-{
-    st->idx++;
-    if (st->in[st->idx] == '?') {
-        return handle_exit_status(st);
-    } else {
-        return handle_env_var(st);
-    }
-}
-
-char *expand_variables(const char *input, int last_status, t_env **env)
-{
-    t_state st = {0};
-    st.in = input;
-    st.last_status = last_status;
-    st.env = env;
-    st.res = malloc(1);
-    if (!st.res) return NULL;
-    st.res[0] = '\0';
-
-    while (st.in[st.idx])
-    {
-        char c = st.in[st.idx];
-        if (c == '\'' && !st.in_double)
-        {
-            st.in_single = !st.in_single;
-            st.idx++;
-        } else if (c == '"' && !st.in_single)
-        {
-            st.in_double = !st.in_double;
-            st.idx++;
-        } else if (c == '$' && !st.in_single)
-        {
-            if (!handle_var_exp(&st))
-            {
-                free(st.res);
-                return NULL;
-            }
-        } else {
-            if (!str_append_char(&st, c))
-            {
-                free(st.res);
-                return NULL;
-            }
-            st.idx++;
-        }
-    }
-    return st.res;
-}
-
-
-typedef struct s_cmd_exp {
-	char	*expanded_str;
-	char	**tokens;
-	int		token_count;
-}	t_cmd_exp;
-
-char **split_selected_args(char **args, bool *no_split)
-{
-    int i = 0;
-    while (args[i])
-    {
-        if (!no_split[i] && strchr(args[i], ' '))
-        {
-            char **pieces = ft_split(args[i], ' ');
-            free(args[i]);
-            args = splice_tokens(args, i, pieces);
-            free(pieces);
-            
-            // skip past newly inserted pieces
-            int k = 0;
-            while (args[i + k])
-                k++;
-            i += k;
-        }
-        else
-        {
-            i++;
-        }
-    }
-    return args;
-}
-static int	count(char **args)
-{
-	int	count;
-
-	count = 0;
-	if (!args)
-		return (0);
-	while (args[count])
-		count++;
-	return (count);
-}
-
-static bool	is_assignment(char *str)
-{
-	int	i;
-
-	i = 1;
-	while (str[i])
-	{
-		if (str[i] == '=')
-			return (true);
-		if (!(isalnum(str[i]) || str[i] == '_'))
-			break ;
-		i++;
-	}
-	return (false);
-}
-
-static void	free_strarray(char **arr)
-{
-	int	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-		free(arr[i++]);
-	free(arr);
-}
-
-static bool	*create_no_split_map(char **args)
-{
-	bool	*no_split;
-	int		idx;
-	int		len;
-	int		orig_argc;
-
-	orig_argc = 0;
-	while (args[orig_argc])
-		orig_argc++;
-	no_split = calloc(orig_argc + 1, sizeof(bool));
-	if (!no_split)
-		return (NULL);
-	idx = 0;
-	while (idx < orig_argc)
-	{
-		len = strlen(args[idx]);
-		no_split[idx] = (len >= 2 && ((args[idx][0] == '"'
-						&& args[idx][len - 1] == '"') || (args[idx][0] == '\''
-						&& args[idx][len - 1] == '\'')));
-		if (!no_split[idx] && (isalpha(args[idx][0]) || args[idx][0] == '_'))
-			no_split[idx] = is_assignment(args[idx]);
-		idx++;
-	}
-	return (no_split);
-}
-
-static t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **env)
-{
-	t_cmd_exp	exp;
-
-	exp.expanded_str = NULL;
-	exp.tokens = NULL;
-	exp.token_count = 0;
-	if (!cmd_str || !*cmd_str)
-		return (exp);
-	exp.expanded_str = expand_variables(cmd_str, last_status, env);
-	if (!exp.expanded_str)
-		return (exp);
-	exp.tokens = ft_split(exp.expanded_str, ' ');
-	if (exp.tokens)
-		while (exp.tokens[exp.token_count])
-			exp.token_count++;
-	return (exp);
-}
-
-// static char	**expand_arguments(char **args, int arg_count, int last_status, t_env **env)
-// {
-// 	char	**expanded;
-// 	int		i;
-
-// 	if (!args || arg_count == 0)
-// 		return (NULL);
-// 	expanded = malloc(sizeof(char *) * (arg_count + 1));
-// 	if (!expanded)
-// 		return (NULL);
-// 	i = 0;
-// 	while (i < arg_count)
-// 	{
-// 		expanded[i] = strip_quotes(expand_variables(args[i], last_status, env));
-// 		i++;
-// 	}
-// 	expanded[arg_count] = NULL;
-// 	return (expanded);
-// }
-static char **expand_arguments(char **args, int arg_count, int last_status, t_env **env)
-{
-    char    **expanded;
-    int      i;
-
-    if (!args || arg_count == 0)
-        return (NULL);
-    expanded = malloc(sizeof(char *) * (arg_count + 1));
-    if (!expanded)
-        return (NULL);
-    i = 0;
-    while (i < arg_count)
-    {
-        char *raw = expand_variables(args[i], last_status, env);
-        if (!raw)
-            expanded[i] = NULL;
-        else
-        {
-            expanded[i] = strip_quotes(raw);
-            free(raw);
-        }
-        i++;
-    }
-    expanded[arg_count] = NULL;
-    return (expanded);
-}
-
-static void	expand_redirections(t_command *cmd, int last_status, t_env **env)
-{
-	char	*tmp;
-
-	if (cmd->infile)
-	{
-		tmp = expand_variables(cmd->infile, last_status, env);
-		free(cmd->infile);
-		cmd->infile = tmp;
-	}
-	if (cmd->outfile)
-	{
-		tmp = expand_variables(cmd->outfile, last_status, env);
-		free(cmd->outfile);
-		cmd->outfile = tmp;
-	}
-	// if (cmd->heredoc_delimiter)
-	// {
-	// 	tmp = expand_variables(cmd->heredoc_delimiter, last_status, env);
-	// 	free(cmd->heredoc_delimiter);
-	// 	cmd->heredoc_delimiter = tmp;
-	// }
-}
-
-static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,char **exp_args, bool *no_split)
-{
-	char	**new_args;
-	int		new_count;
-	int		i[2];
-
-	new_count = exp->token_count + (count(exp_args) - 1);
-	new_args = malloc(sizeof(char *) * (new_count + 1));
-	memset(i, 0, sizeof(i));
-	while (i[0] < exp->token_count)
-		new_args[i[1]++] = exp->tokens[i[0]++];
-	i[0] = 1;
-	while (exp_args && exp_args[i[0]])
-		new_args[i[1]++] = exp_args[i[0]++];
-	new_args[i[1]] = NULL;
-	free(exp->tokens);
-	free(exp->expanded_str);
-	cmd->cmd = ft_strdup(new_args[0]);
-	free_strarray(cmd->args);
-	cmd->args = new_args;
-	if (exp_args && exp_args[0])
-		free(exp_args[0]);
-	free(exp_args);
-	if (cmd->args)
-		cmd->args = split_selected_args(cmd->args, no_split);
-}
-
-static void	rebuild_without_tokens(t_command *cmd, char **exp_args,
-	bool *no_split, char *exp_cmd)
-{
-	int	i;
-	int	arg_count;
-
-	cmd->cmd = exp_cmd;
-	if (!cmd->args || !exp_args)
-		return ;
-	arg_count = count(cmd->args);
-	i = 0;
-	while (i < arg_count)
-	{
-		free(cmd->args[i]);
-		cmd->args[i] = exp_args[i];
-		i++;
-	}
-	free(exp_args);
-	if (cmd->args)
-		cmd->args = split_selected_args(cmd->args, no_split);
-}
-
-void	expand_command_vars(t_command *cmd, int last_status, t_env **env)
-{
-	t_cmd_exp	exp;
-	bool		*no_split;
-	char		**exp_args;
-	int			arg_count;
-
-	if (cmd->args)
-		no_split = create_no_split_map(cmd->args);
-	else
-		no_split = NULL;
-	if (cmd->args)
-		arg_count = count(cmd->args);
-	else
-		arg_count = 0;
-	exp = expand_command_string(cmd->cmd, last_status, env);
-	free(cmd->cmd);
-	cmd->cmd = NULL;
-	exp_args = expand_arguments(cmd->args, arg_count, last_status, env);
-	if (exp.token_count > 0)
-	{
-		rebuild_with_tokens(cmd, &exp, exp_args, no_split);
-		exp.tokens = NULL;
-	}
-	else
-	{
-		rebuild_without_tokens(cmd, exp_args, no_split, exp.expanded_str);
-		exp.expanded_str = NULL;
-	}
-   	if (exp.tokens)
-		{
-            free(exp.tokens);  // Free the array allocated by ft_split
-            exp.tokens = NULL;
-        }
-	free(no_split);
-	expand_redirections(cmd, last_status, env);
-}
-
-void	expand_tokens(char **tokens, int last_status, t_env **env)
-{
-	int		i;
-	int		skip_next;
-	char	*expanded;
-
-	i = 0;
-	skip_next = 0;
-	while (tokens && tokens[i])
-	{
-		if (skip_next)
-		{
-			skip_next = 0;
-			i++;
-			continue;
-		}
-		if (ft_strcmp(tokens[i], "<<") == 0)
-			skip_next = 1;
-		else
-		{
-			expanded = expand_variables(tokens[i], last_status, env);
-			if (expanded)
-			{
-				free(tokens[i]);
-				tokens[i] = expanded;
-			}
-		}
-		i++;
-	}
-}
-

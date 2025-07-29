@@ -34,6 +34,7 @@ typedef enum e_type
 	MALLOC
 }	t_type;
 
+
 typedef enum e_token_type
 {
 	TOKEN_WORD,
@@ -66,6 +67,14 @@ typedef struct s_env
 	char *value;
 	struct s_env *next;
 }	t_env;
+typedef struct s_heredoc_child
+{
+	int write_fd;
+	char *delimiter;
+	int quoted;
+	int last_status; 
+	t_env **env;
+} t_heredoc_child;
 
 typedef struct s_command {
 	char            *cmd;       // Command name (e.g. "ls")
@@ -90,6 +99,25 @@ typedef struct s_exec
 	int		pipe_fd[2];
     char	*prev_pwd;
 } t_exec;
+
+typedef struct s_state
+{
+    char        *res;
+    int         rlen;
+    const char  *in;
+    int         idx;
+    int         last_status;
+    t_env       **env;
+    int         in_single;
+    int         in_double;
+}               t_state;
+
+typedef struct s_cmd_exp
+{
+	char	*expanded_str;
+	char	**tokens;
+	int		token_count;
+}	t_cmd_exp;
 
 char    **lexer(const char *input);
 int     count_tokens(const char *input);
