@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 09:00:30 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/22 11:00:58 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/07/29 16:17:31 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,12 +350,14 @@ static int handle_env_var(t_state *st)
     char *val = ft_getenv(var_name, *st->env);
     free(var_name);
     
-    if (val) {
+    if (val)
         return insert_string(st, val, strlen(val));
-    } else {
-        if (!str_append_char(st, '$')) return 0;
-        return insert_string(st, st->in + start, varlen);
-    }
+	else 
+		return 1;
+	// {
+    //     if (!str_append_char(st, '$')) return 0;
+    //     return insert_string(st, st->in + start, varlen);
+    // }
 }
 
 static int handle_var_exp(t_state *st)
