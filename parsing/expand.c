@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 09:00:30 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/29 20:22:25 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/29 21:44:14 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int handle_exit_status(t_state *st)
 {
     char *num = ft_itoa(st->last_status);
     if (!num) return 0;
-    int len = strlen(num);
+    int len = ft_strlen(num);
     int success = insert_string(st, num, len);
     free(num);
     st->idx++;
@@ -66,7 +66,7 @@ static int handle_env_var(t_state *st)
     int start = st->idx;
     int varlen = 0;
     
-    while (isalnum((unsigned char)st->in[st->idx]) || 
+    while (ft_isalnum((unsigned char)st->in[st->idx]) || 
            st->in[st->idx] == '_'){
         st->idx++;
         varlen++;
@@ -76,14 +76,14 @@ static int handle_env_var(t_state *st)
         return str_append_char(st, '$');
     }
 
-    char *var_name = strndup(st->in + start, varlen);
+    char *var_name = ft_strndup(st->in + start, varlen);
     if (!var_name) return 0;
     
     char *val = ft_getenv(var_name, *st->env);
     free(var_name);
     
     if (val)
-        return insert_string(st, val, strlen(val));
+        return insert_string(st, val, ft_strlen(val));
 	else 
 		return 1;
 	// {
@@ -147,7 +147,7 @@ char **split_selected_args(char **args, bool *no_split)
     int i = 0;
     while (args[i])
     {
-        if (!no_split[i] && strchr(args[i], ' '))
+        if (!no_split[i] && ft_strchr(args[i], ' '))
         {
             char **pieces = ft_split(args[i], ' ');
             free(args[i]);
@@ -188,7 +188,7 @@ static bool	is_assignment(char *str)
 	{
 		if (str[i] == '=')
 			return (true);
-		if (!(isalnum(str[i]) || str[i] == '_'))
+		if (!(ft_isalnum(str[i]) || str[i] == '_'))
 			break ;
 		i++;
 	}
@@ -217,17 +217,17 @@ static bool	*create_no_split_map(char **args)
 	orig_argc = 0;
 	while (args[orig_argc])
 		orig_argc++;
-	no_split = calloc(orig_argc + 1, sizeof(bool));
+	no_split = ft_calloc(orig_argc + 1, sizeof(bool));
 	if (!no_split)
 		return (NULL);
 	idx = 0;
 	while (idx < orig_argc)
 	{
-		len = strlen(args[idx]);
+		len = ft_strlen(args[idx]);
 		no_split[idx] = (len >= 2 && ((args[idx][0] == '"'
 						&& args[idx][len - 1] == '"') || (args[idx][0] == '\''
 						&& args[idx][len - 1] == '\'')));
-		if (!no_split[idx] && (isalpha(args[idx][0]) || args[idx][0] == '_'))
+		if (!no_split[idx] && (ft_isalpha(args[idx][0]) || args[idx][0] == '_'))
 			no_split[idx] = is_assignment(args[idx]);
 		idx++;
 	}
@@ -312,7 +312,7 @@ static void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,char **exp_args, 
 
 	new_count = exp->token_count + (count(exp_args) - 1);
 	new_args = malloc(sizeof(char *) * (new_count + 1));
-	memset(i, 0, sizeof(i));
+	ft_memset(i, 0, sizeof(i));
 	while (i[0] < exp->token_count)
 		new_args[i[1]++] = exp->tokens[i[0]++];
 	i[0] = 1;

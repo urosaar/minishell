@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <limits.h>
-#include <string.h>
 #include <fcntl.h>
 #include <stdint.h>
 #include <signal.h>

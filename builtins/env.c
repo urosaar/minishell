@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:38 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/26 15:47:47 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/29 21:14:37 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	ft_env(t_env **env, char **arg)
 	tmp = *env;
 	while (tmp)
 	{
-		if (strchr(tmp->line, '='))
+		if (ft_strchr(tmp->line, '='))
 			printf("%s\n", tmp->line);
 		tmp = tmp->next;
 	}

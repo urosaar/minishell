@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 09:40:34 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/24 19:35:09 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/29 21:45:41 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ char	*extract_operator(const char *input, int *i)
 	{
 		start = *i;
 		*i += 2;
-		return (substr(input, start, *i));
+		return (ft_substr(input, start, *i));
 	}
-	return (substr(input, (*i)++, *i));
+	return (ft_substr(input, (*i)++, *i));
 }
 
 bool	is_in_quote(bool in_quote, char *quote_char, char current_char)
@@ -61,7 +61,7 @@ char	*extract_word(const char *input, int *i)
 			(*i)++;
 		}
 	}
-	return (substr(input, start, *i));
+	return (ft_substr(input, start, *i));
 }
 
 static void	skip_quoted(const char *input, int *i)

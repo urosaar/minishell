@@ -6,12 +6,11 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:02:33 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/29 21:05:59 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/30 19:02:19 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include<ctype.h>
 
 char *get_input(void)
 {

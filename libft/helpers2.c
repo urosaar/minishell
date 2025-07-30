@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils2.c                                           :+:      :+:    :+:   */
+/*   helpers2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:07:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/28 16:07:54 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/29 21:45:12 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char *substr(const char *src, int start, int end)
+char *ft_substr(const char *src, int start, int end)
 {
     int len = end - start;
     char *s = malloc(len + 1);

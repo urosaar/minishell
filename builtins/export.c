@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/21 17:55:13 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/07/29 21:15:55 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ void	without_plus(t_env **env, char *arg)
 			free(key);
 			return ;
 		}
-		if (strchr(arg, '='))
+		if (ft_strchr(arg, '='))
 			update_found_node(found, arg);
 	}
 	else if (!found && ft_strcmp(key, "_"))
@@ -192,7 +192,7 @@ void	with_plus(t_env **env, char *arg)
 	{
 		if (!ft_strcmp(found->key, "_"))
 			return(remove_if(*env), free(key));
-		value = strchr(arg, '=');
+		value = ft_strchr(arg, '=');
 		if (value)
 			append_to_found(found, key, value + 1);
 	}

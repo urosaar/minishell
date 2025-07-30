@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/29 20:02:59 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/29 21:36:39 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ char *ft_check1(char *cmd)
     }
 
     if (access(cmd, X_OK) == 0)
-        return (strdup(cmd));
+        return (ft_strdup(cmd));
 
-    if (strchr(cmd, '/'))
+    if (ft_strchr(cmd, '/'))
         fprintf(stderr, "minishell: %s: No such file or directory\n", cmd);
 
     return (NULL);
@@ -180,17 +180,23 @@ void handler_heredoc()
 
 static void process_heredoc_line(t_heredoc_child *data, char *line)
 {
-    if (!data->quoted) {
+    if (!data->quoted)
+    {
         char *expanded = expand_variables(line, data->last_status, data->env);
-        if (expanded) {
+        if (expanded)
+        {
             write(data->write_fd, expanded, ft_strlen(expanded));
             write(data->write_fd, "\n", 1);
             free(expanded);
-        } else {
+        } 
+        else
+        {
             write(data->write_fd, line, ft_strlen(line));
             write(data->write_fd, "\n", 1);
         }
-    } else {
+    } 
+    else
+    {
         write(data->write_fd, line, ft_strlen(line));
         write(data->write_fd, "\n", 1);
     }
@@ -266,13 +272,15 @@ int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
         return -1;
     
     pid_t pid = fork();
-    if (pid == -1) {
+    if (pid == -1)
+    {
         close(pipefd[0]);
         close(pipefd[1]);
         return -1;
     }
     
-    if (pid == 0) {
+    if (pid == 0)
+    {
         close(pipefd[0]);
         t_heredoc_child data ={
             .write_fd = pipefd[1],
@@ -282,7 +290,9 @@ int handle_heredoc(char *delimiter, int quoted, int last_status, t_env **env)
             .env = env
         };
         child_heredoc(&data);
-    } else {
+    }
+    else
+    {
         return parent_heredoc(pid, pipefd);
     }
     return -1; // Never reached
@@ -327,7 +337,7 @@ void	ft_execve(t_command *curr, t_env **env, char *d)
 
 	if (!d)
 	{
-		if (!strchr(curr->cmd, '/'))
+		if (!ft_strchr(curr->cmd, '/'))
 			fprintf(stderr, "minishell: %s: command not found\n", curr->cmd);
 		exit(127);
 	}
