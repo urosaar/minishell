@@ -1,23 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils1.c                                           :+:      :+:    :+:   */
+/*   helpers1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:02:38 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/28 16:23:05 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/31 21:06:45 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t ft_strlen(const char *str)
+size_t	ft_strlen(const char *str)
 {
-    size_t i = 0;
-    while (str[i])
-        i++;
-    return (i);
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
 
 char	*ft_strdup(const char *src)
@@ -40,21 +42,22 @@ char	*ft_strdup(const char *src)
 	return (dest);
 }
 
-
-int ft_strcmp(const char *s1, const char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
-    size_t i = 0;
-    while (s1[i] && s1[i] == s2[i])
-        i++;
-    return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+	size_t	i;
+
+	i = 0;
+	while (s1[i] && s1[i] == s2[i])
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-int is_space(char c)
+int	is_space(char c)
 {
-    return (c == ' ' || c == '\t' || c == '\n');
+	return (c == ' ' || c == '\t' || c == '\n');
 }
 
-int is_operator(char c)
+int	is_operator(char c)
 {
-    return (c == '|' || c == '<' || c == '>');
+	return (c == '|' || c == '<' || c == '>');
 }

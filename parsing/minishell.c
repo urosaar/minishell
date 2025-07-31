@@ -6,65 +6,73 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:03:46 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/29 20:28:13 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/31 16:38:51 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int g_status = 0;
+int	g_status = 0;
 
-void free_tokens(char **tokens)
+void	free_tokens(char **tokens)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (tokens[i])
 		free(tokens[i++]);
 	free(tokens);
 }
-void free_strarray(char **arr)
+
+void	free_strarray(char **arr)
 {
-    if (!arr)
-        return;
-    
-    int i = 0;
-    while (arr[i])
-    {
-        free(arr[i]);
-        i++;
-    }
-    free(arr);
+	int	i;
+
+	if (!arr)
+		return ;
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
 }
-void free_commands(t_command *cmds)
+
+void	free_commands(t_command *cmds)
 {
-    while (cmds)
-    {
-        t_command *next = cmds->next;
-        
-        free(cmds->cmd);
-        free_strarray(cmds->args);
-        free(cmds->infile);
-        free(cmds->outfile);
-        
-        t_redirection *redir = cmds->redirections;
-        while (redir)
-        {
-            t_redirection *next_redir = redir->next;
-            free(redir->filename);
-            free(redir);
-            redir = next_redir;
-        }
-        
-        free(cmds);
-        cmds = next;
-    }
+	t_command		*next;
+	t_redirection	*redir;
+	t_redirection	*next_redir;
+
+	while (cmds)
+	{
+		next = cmds->next;
+		free(cmds->cmd);
+		free_strarray(cmds->args);
+		free(cmds->infile);
+		free(cmds->outfile);
+		redir = cmds->redirections;
+		while (redir)
+		{
+			next_redir = redir->next;
+			free(redir->filename);
+			free(redir);
+			redir = next_redir;
+		}
+		free(cmds);
+		cmds = next;
+	}
 }
-int ft_exit_status(int status)
+
+int	ft_exit_status(int status)
 {
 	if (status == 1)
 		return (1);
 	return (0);
 }
-void handler_eof(t_command *cmds, t_env *env, int last_status)
+
+void	handler_eof(t_command *cmds, t_env *env, int last_status)
 {
 	if (cmds)
 		free_commands(cmds);
@@ -75,6 +83,7 @@ void handler_eof(t_command *cmds, t_env *env, int last_status)
 	printf("exit\n");
 	exit(last_status);
 }
+
 void	handler(int signal)
 {
 	if (signal == SIGINT)
@@ -87,134 +96,155 @@ void	handler(int signal)
 	}
 }
 
-void signals()
+void	signals(void)
 {
 	signal(SIGINT, handler);
-	signal(SIGQUIT, SIG_IGN); /* [ctrl + \] */
-}
-static t_exec *init_exec_env(char **envp, t_env **env)
-{
-    t_exec *exec = ft_malloc(sizeof(t_exec), MALLOC);
-    if (!exec)
-    {
-        perror("minishell");
-        return NULL;
-    }
-    exec->last_status = 0;
-    exec->prev_pwd = NULL;
-    g_status = 0;
-    copy_env(envp, env);
-    return exec;
+	signal(SIGQUIT, SIG_IGN);
 }
 
-static int handle_args_error(int ac, char **av, t_exec *exec)
+static t_exec	*init_exec_env(char **envp, t_env **env)
 {
-    (void)ac;
-    if (av[1])
-    {
-        fprintf(stderr, "minishell: %s: No such file or directory\n", av[1]);
-        exec->last_status = 127;
-        return 127;
-    }
-    return 0;
+	t_exec	*exec;
+
+	exec = ft_malloc(sizeof(t_exec), MALLOC);
+	if (!exec)
+	{
+		perror("minishell");
+		return (NULL);
+	}
+	exec->last_status = 0;
+	exec->prev_pwd = NULL;
+	g_status = 0;
+	copy_env(envp, env);
+	return (exec);
 }
 
-static char *read_and_preprocess(t_command *cmds, t_env *env, t_exec *exec)
+static int	handle_args_error(int ac, char **av, t_exec *exec)
 {
-    char *raw = get_input();
-    if (!raw)
-        handler_eof(cmds, env, g_status);
-    if (is_only_whitespace(raw))
-    {
-        free(raw);
-        return NULL;
-    }
-    if (check_unclosed_quotes(raw))
-    {
-        printf("minishell: syntax error: unclosed quotes\n");
-        exec->last_status = 258;
-        free(raw);
-        return NULL;
-    }
-    return raw;
+	(void)ac;
+	if (av[1])
+	{
+		fprintf(stderr, "minishell: %s: No such file or directory\n", av[1]);
+		exec->last_status = 127;
+		return (127);
+	}
+	return (0);
 }
 
-static char **lex_and_validate(char *raw, t_exec *exec)
+static char	*read_and_preprocess(t_command *cmds, t_env *env, t_exec *exec)
 {
-    char **tokens = lexer(raw);
-    if (!tokens)
-    {
-        exec->last_status = 1;
-        return NULL;
-    }
-    if (check_syntax_errors(raw, tokens))
-    {
-        exec->last_status = 2;
-        free_tokens(tokens);
-        return NULL;
-    }
-    return tokens;
+	char	*raw;
+
+	raw = get_input();
+	if (!raw)
+		handler_eof(cmds, env, g_status);
+	if (is_only_whitespace(raw))
+	{
+		free(raw);
+		return (NULL);
+	}
+	if (check_unclosed_quotes(raw))
+	{
+		printf("minishell: syntax error: unclosed quotes\n");
+		exec->last_status = 258;
+		free(raw);
+		return (NULL);
+	}
+	return (raw);
 }
 
-static void parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
+static char	**lex_and_validate(char *raw, t_exec *exec)
 {
-    t_command *cmds = parse_tokens(tokens);
-    free_tokens(tokens);
-    if (!cmds)
-    {
-        exec->last_status = 2;
-        return;
-    }
+	char	**tokens;
 
-    g_status = 0;
-    t_command *c = cmds;
-    while (c)
-    { 
-        expand_command_vars(c, exec->last_status, env);
-        c = c->next;
-    }
-
-    if (cmds && cmds->redirections && cmds->redirections->type == TOKEN_HEREDOC)
-    {
-        exec->last_status = 0;
-        g_status = 1;
-    }
-
-    check_for_pwd(&exec->prev_pwd);
-    execution(cmds, env, exec);
-    free_commands(cmds);
+	tokens = lexer(raw);
+	if (!tokens)
+	{
+		exec->last_status = 1;
+		return (NULL);
+	}
+	if (check_syntax_errors(raw, tokens))
+	{
+		exec->last_status = 2;
+		free_tokens(tokens);
+		return (NULL);
+	}
+	return (tokens);
 }
 
-
-int main(int ac, char **av, char **envp)
+static int	has_heredoc(t_command *cmds)
 {
-    t_env *env = NULL;
-    t_exec *exec;
-    char *raw;
-    char **tokens;
-    int ret;
+	if (cmds && cmds->redirections
+		&& cmds->redirections->type == TOKEN_HEREDOC)
+		return (1);
+	return (0);
+}
 
-    exec = init_exec_env(envp, &env);
-    if (!exec)
-        return 1;
-    ret = handle_args_error(ac, av, exec);
-    if (ret)
-        return ret;
-    while (1)
-    {
-        signals();
-        raw = read_and_preprocess(NULL, env, exec);
-        if (!raw)
-            continue;
-        tokens = lex_and_validate(raw, exec);
-        free(raw);
-        if (!tokens)
-            continue;
-        parse_expand_execute(tokens, &env, exec);
-        g_status = exec->last_status;
-    }
-    ft_malloc(0, FREE);
-    return exec->last_status;
+static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
+{
+	t_command	*cmds;
+	t_command	*c;
+
+	cmds = parse_tokens(tokens);
+	free_tokens(tokens);
+	if (!cmds)
+	{
+		exec->last_status = 2;
+		return ;
+	}
+	g_status = 0;
+	c = cmds;
+	while (c)
+	{
+		expand_command_vars(c, exec->last_status, env);
+		c = c->next;
+	}
+	if (has_heredoc(cmds))
+	{
+		exec->last_status = 0;
+		g_status = 1;
+	}
+	check_for_pwd(&exec->prev_pwd);
+	execution(cmds, env, exec);
+	free_commands(cmds);
+}
+
+static void	run_shell(t_env **env, t_exec *exec)
+{
+	char	*raw;
+	char	**tokens;
+
+	while (1)
+	{
+		signals();
+		raw = read_and_preprocess(NULL, *env, exec);
+		if (!raw)
+			continue ;
+		tokens = lex_and_validate(raw, exec);
+		free(raw);
+		if (!tokens)
+			continue ;
+		parse_expand_execute(tokens, env, exec);
+		g_status = exec->last_status;
+	}
+}
+
+int	main(int ac, char **av, char **envp)
+{
+	t_env	*env;
+	t_exec	*exec;
+	int		ret;
+
+	env = NULL;
+	exec = init_exec_env(envp, &env);
+	if (!exec)
+		return (1);
+	ret = handle_args_error(ac, av, exec);
+	if (ret)
+		return (ret);
+	run_shell(&env, exec);
+	ft_malloc(0, FREE);
+	return (exec->last_status);
 }
 
 // int main(int ac, char **av, char **envp)
@@ -242,8 +272,6 @@ int main(int ac, char **av, char **envp)
 // 		return (127);
 // 	}
 // 	copy_env(envp, &env);
-
-
 // 	while (1)
 //     {
 //         signals();
@@ -266,7 +294,6 @@ int main(int ac, char **av, char **envp)
 //         }
 //         tokens = lexer(raw);
 //         // free(raw); 
-        
 //         if (!tokens)
 //         {
 //             exec->last_status = 1;
@@ -297,7 +324,8 @@ int main(int ac, char **av, char **envp)
 //         c = c->next;
 //     }
 
-//     if (cmds && cmds->redirections && cmds->redirections->type == TOKEN_HEREDOC)
+//     if (cmds && cmds->redirections && 
+//cmds->redirections->type == TOKEN_HEREDOC)
 //     {
 //         exec->last_status = 0;
 //         g_status = 1;

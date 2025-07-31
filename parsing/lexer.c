@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 09:40:34 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/29 21:45:41 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/31 16:40:04 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ static void	skip_quoted(const char *input, int *i)
 		else if (input[*i] == quote)
 		{
 			(*i)++;
-			break;
+			break ;
 		}
 		else
 			(*i)++;
@@ -185,7 +185,8 @@ char	**lexer(const char *input)
 //             in_quote = 0;
 //             (*i)++;
 //         }
-//         else if (!in_quote && (is_space(input[*i]) || is_operator(input[*i])))
+//         else if (!in_quote && (is_space(input[*i])
+//|| is_operator(input[*i])))
 //         {
 //             break;
 //         }

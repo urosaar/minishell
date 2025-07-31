@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils5.c                                           :+:      :+:    :+:   */
+/*   helpers5.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:20:27 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/28 17:09:56 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/31 21:12:38 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,21 +68,19 @@ void	ft_lstadd_back(t_env **env, t_env *new)
 	last->next = new;
 }
 
-
 void	ft_putstr_fd(char *s, int fd)
 {
 	int	i;
 
 	i = 0;
 	if (!s)
-		return;
+		return ;
 	while (s[i])
 	{
 		write(fd, &s[i], 1);
 		i++;
 	}
 }
-
 
 char	*ft_strchr(char *s, int c)
 {
@@ -97,8 +95,6 @@ char	*ft_strchr(char *s, int c)
 	}
 	return (NULL);
 }
-
-
 
 char	*ft_join(char *s1, char *s2)
 {
@@ -116,14 +112,11 @@ char	*ft_join(char *s1, char *s2)
 	if (!s2)
 		return (ft_strdup(s1));
 	len = ft_strlen(s1) + ft_strlen(s2);
-	newstring = ft_malloc(len + 1 , MALLOC);
+	newstring = ft_malloc(len + 1, MALLOC);
 	if (!newstring)
 		return (free(s1), NULL);
 	while (s1[i])
-	{
-		newstring[i] = s1[i];
-		i++;
-	}
+		newstring[i] = s1[i++];
 	while (s2[j])
 		newstring[i++] = s2[j++];
 	newstring[i] = 0;

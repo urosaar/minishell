@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:26:14 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/30 16:46:19 by jesse            ###   ########.fr       */
+/*   Updated: 2025/07/31 21:14:27 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,9 @@ char	*ft_strndup(const char *s1, size_t n)
 
 void	*ft_memset(void *s, int c, size_t n)
 {
-	unsigned char	*p = s;
+	unsigned char	*p;
+
+	p = (unsigned char *)s;
 	while (n--)
 		*p++ = (unsigned char)c;
 	return (s);
@@ -53,9 +55,11 @@ void	*ft_memset(void *s, int c, size_t n)
 
 char	*ft_strpbrk(const char *s, const char *accept)
 {
+	const char	*a;
+
 	while (*s)
 	{
-		const char *a = accept;
+		a = accept;
 		while (*a)
 		{
 			if (*s == *a)
@@ -65,4 +69,18 @@ char	*ft_strpbrk(const char *s, const char *accept)
 		s++;
 	}
 	return (NULL);
+}
+
+void	ft_bzero(void *s, size_t n)
+{
+	size_t			i;
+	unsigned char	*ptr;
+
+	ptr = (unsigned char *)s;
+	i = 0;
+	while (i < n)
+	{
+		ptr[i] = 0;
+		i++;
+	}
 }
