@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 21:40:52 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/01 21:42:57 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static void	exec_finalize(t_command *start, t_exec *ctx)
 		c = c->next;
 	}
 	ft_wait(ctx);
-    restore_shell_termios();
+    restore_shell_term();
 }
 
 void	execution(t_command *cmds, t_env **env, t_exec *ctx)

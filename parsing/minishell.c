@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:03:46 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/01 21:26:44 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/01 21:43:10 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -242,7 +242,7 @@ int	main(int ac, char **av, char **envp)
 	ret = handle_args_error(ac, av, exec);
 	if (ret)
 		return (ret);
-	save_shell_termios();
+	save_shell_term();
 	run_shell(&env, exec);
 	ft_malloc(0, FREE);
 	return (exec->last_status);

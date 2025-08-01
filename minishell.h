@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/01 21:33:55 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/01 21:43:10 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,8 +177,8 @@ void		free_all(t_malloc **head);
 char		*expand_variables(const char *input, int last_status, t_env **env);
 void		expand_command_vars(t_command *cmd, int last_status, t_env **env);
 void		expand_tokens(char **tokens, int last_status, t_env **env);
-void		save_shell_termios(void);
-void		restore_shell_termios(void);
+void		save_shell_term(void);
+void		restore_shell_term(void);
 
 /* Export_helpers */
 void		swap_line(t_env **head);

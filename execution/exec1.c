@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 21:40:37 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/01 21:42:57 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 		dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-    restore_shell_termios();
+    restore_shell_term();
 	if (!apply_redirection(curr))
 		exit(1);
 	if (curr->cmd == NULL || curr->cmd[0] == '\0')
