@@ -103,8 +103,6 @@ char	*ft_join(char *s1, char *s2)
 	int		j;
 	int		len;
 
-	i = 0;
-	j = 0;
 	if (!s1 && !s2)
 		return (NULL);
 	if (!s1)
@@ -115,13 +113,12 @@ char	*ft_join(char *s1, char *s2)
 	newstring = ft_malloc(len + 1, MALLOC);
 	if (!newstring)
 		return (free(s1), NULL);
-	while (s1[i])
-	{
+	i = -1;
+	while (s1[++i])
 		newstring[i] = s1[i];
-		i++;	
-	}
+	j = 0;
 	while (s2[j])
 		newstring[i++] = s2[j++];
-	newstring[i] = 0;
+	newstring[i] = '\0';
 	return (newstring);
 }
