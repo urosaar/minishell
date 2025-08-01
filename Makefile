@@ -13,8 +13,9 @@ READLINE_INC =# -I$(shell brew --prefix readline)/include
 READLINE_LIB =# -L$(shell brew --prefix readline)/lib -lreadline
 
 SRC = ./builtins/builtins_utils.c ./builtins/echo.c ./builtins/env.c ./builtins/pwd.c ./builtins/exit.c\
-		./builtins/cd.c ./builtins/unset.c ./builtins/export.c\
-		./builtins/ft_malloc.c ./builtins/ft_malloc_utils.c ./execution/exec.c ./builtins/builtins.c\
+		./builtins/cd.c ./builtins/unset.c ./builtins/export.c ./builtins/export_helpers1.c ./builtins/export_helpers2.c\
+		./builtins/ft_malloc.c ./builtins/ft_malloc_utils.c ./builtins/builtins.c ./execution/exec.c ./execution/exec1.c\
+		./execution/exec2.c ./execution/exec_helper.c ./execution/heredoc1.c ./execution/heredoc2.c ./execution/redirections.c\
 		./parsing/lexer.c ./parsing/parser.c ./parsing/shell_utils.c ./parsing/syntax.c ./parsing/minishell.c ./parsing/expand.c
 OBJ = $(SRC:.c=.o)
 ALL_OBJ = $(OBJ) $(LIBFT_OBJ)

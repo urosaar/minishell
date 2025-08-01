@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers5.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:20:27 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/31 21:12:38 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/01 19:28:59 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,10 @@ char	*ft_join(char *s1, char *s2)
 	if (!newstring)
 		return (free(s1), NULL);
 	while (s1[i])
-		newstring[i] = s1[i++];
+	{
+		newstring[i] = s1[i];
+		i++;	
+	}
 	while (s2[j])
 		newstring[i++] = s2[j++];
 	newstring[i] = 0;

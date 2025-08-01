@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:03:46 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/31 16:38:51 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/01 21:26:44 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,7 +165,7 @@ static char	**lex_and_validate(char *raw, t_exec *exec)
 	}
 	if (check_syntax_errors(raw, tokens))
 	{
-		exec->last_status = 2;
+		exec->last_status = 258;
 		free_tokens(tokens);
 		return (NULL);
 	}
@@ -242,6 +242,7 @@ int	main(int ac, char **av, char **envp)
 	ret = handle_args_error(ac, av, exec);
 	if (ret)
 		return (ret);
+	save_shell_termios();
 	run_shell(&env, exec);
 	ft_malloc(0, FREE);
 	return (exec->last_status);

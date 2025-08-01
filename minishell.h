@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/31 22:28:20 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/01 21:33:55 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <signal.h>
 # include <sys/wait.h>
 # include <errno.h>
+# include <termios.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
@@ -32,6 +33,8 @@
 # define CTRLD "\033[A\033[2C"
 
 extern int	g_status;
+
+struct termios shell_termios;
 
 typedef struct s_malloc
 {
@@ -174,5 +177,31 @@ void		free_all(t_malloc **head);
 char		*expand_variables(const char *input, int last_status, t_env **env);
 void		expand_command_vars(t_command *cmd, int last_status, t_env **env);
 void		expand_tokens(char **tokens, int last_status, t_env **env);
+void		save_shell_termios(void);
+void		restore_shell_termios(void);
+
+/* Export_helpers */
+void		swap_line(t_env **head);
+char		*key_full(char *line, char c);
+void		remove_if(t_env *env);
+void		without_plus(t_env **env, char *arg);
+void		with_plus(t_env **env, char *arg);
+
+/* Exection */
+char		**build_env_array(t_env **env);
+void		free_envp(char **envp);
+char		*check_if_exist(t_env *env, t_command *cmds);
+void		creat_a_child(t_command *curr, t_env **env, t_exec *ctx);
+void		ft_wait(t_exec *ctx);
+void		restore_std_fds(int saved_in, int saved_out);
+void		close_fd(int fd);
+void		ft_execve(t_command *curr, t_env **env, char *d);
+void		dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd);
+int			process_all_heredocs(t_command *cmds, int last_status, t_env **env);
+void		close_heredoc_fds(t_redirection *r);
+void		handler_heredoc(int sig);
+int			heredoc_iteration(t_heredoc_child *data, int *line_count);
+int			apply_redirection(t_command *curr);
+
 
 #endif
