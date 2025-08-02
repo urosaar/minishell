@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:10 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/24 18:40:02 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 00:41:06 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	ft_pwd(t_env *env)
 	node = env;
 	pwd = getcwd(NULL,0);
 	if (!pwd)
-		pwd = if_pwd_null(env);
+		pwd = if_pwd_null(node);
 	if (!pwd)
 	{
 		printf("pwd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");

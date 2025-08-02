@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:02:33 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/31 18:56:45 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 00:44:31 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,6 @@ char	*append_char(char *result, int *rlen, char c)
 
 char	*ft_getenv(const char *name, t_env *env)
 {
-	size_t	len;
-
 	if (!name || !env)
 		return (NULL);
 	while (env != NULL)

@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 09:00:30 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/07/31 21:01:06 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 00:44:01 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ static void	free_strarray(char **arr)
 	free(arr);
 }
 
-static bool	*create_no_split_map(char **args)
+bool	*create_no_split_map(char **args)
 {
 	bool	*no_split;
 	int		idx;

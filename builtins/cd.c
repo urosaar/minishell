@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:22 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/21 16:58:11 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 00:40:52 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ int    ft_cd(t_env **env, char **arg, char *prev_pwd)
 	char    *path;
 	int        i;
 
+	i = 0;
 	path = NULL;
 	if (!arg[1] || !ft_strcmp(arg[1], "~"))
 		i = change_to_home(*env, path, i);

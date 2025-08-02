@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/01 21:43:10 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 00:40:25 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,8 @@ void		close_heredoc_fds(t_redirection *r);
 void		handler_heredoc(int sig);
 int			heredoc_iteration(t_heredoc_child *data, int *line_count);
 int			apply_redirection(t_command *curr);
+void		expand_wildcards(t_command *cmd, bool *no_expand);
+bool		*create_no_split_map(char **args);
 
 
 #endif
