@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 15:14:15 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 16:23:11 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,4 +220,14 @@ void		rebuild_without_tokens(t_command *cmd, char **exp_args, bool *no_split, ch
 void		rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp, char **exp_args, bool *no_split);
 int			str_append_char(t_state *st, char c);
 void		free_strarray(char **arr);
+void		free_tokens(char **tokens);
+void		free_commands(t_command *cmds);
+void		handler_eof(t_command *cmds, t_env *env, int last_status);
+void		handler(int signal);
+void		signals(void);
+t_exec		*init_exec_env(char **envp, t_env **env);
+int			handle_args_error(int ac, char **av, t_exec *exec);
+char		*read_and_preprocess(t_command *cmds, t_env *env, t_exec *exec);
+char		**lex_and_validate(char *raw, t_exec *exec);
+
 #endif

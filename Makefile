@@ -17,7 +17,8 @@ SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
       execution/exec.c execution/exec1.c execution/exec2.c \
       execution/exec_helper.c execution/heredoc1.c execution/heredoc2.c \
       execution/redirections.c parsing/lexer.c parsing/parser.c \
-      parsing/shell_utils.c parsing/syntax.c parsing/minishell.c \
+      parsing/shell_utils.c parsing/syntax.c main/shell_cleanup.c\
+	  main/shell_execution.c main/shell_init_input.c\
       expand/args_split_utils.c expand/expand_buffer_utils.c \
 	  expand/expand_command_utils.c expand/expand_command_vars.c expand/expand_variable_handler.c \
 
@@ -29,7 +30,8 @@ BNS_SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
 		execution/exec.c execution/exec1.c execution/exec2.c \
 		execution/exec_helper.c execution/heredoc1.c execution/heredoc2.c \
 		execution/redirections.c parsing/lexer.c parsing/parser.c \
-		parsing/shell_utils.c parsing/syntax.c bonus/minishell_bonus.c \
+		parsing/shell_utils.c parsing/syntax.c main/shell_cleanup.c\
+	    bonus/shell_execution_bonus.c main/shell_init_input.c\
 		bonus/wild_card.c  expand/args_split_utils.c expand/expand_buffer_utils.c \
 		expand/expand_command_utils.c expand/expand_command_vars.c expand/expand_variable_handler.c \
 		
