@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:02:33 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/03 00:44:31 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 17:10:30 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,44 +88,4 @@ char	*ft_getenv(const char *name, t_env *env)
 		env = env->next;
 	}
 	return (NULL);
-}
-
-static void	copy_spliced_tokens(char **tokens, char **pieces,
-				char **out, int pos)
-{
-	int	i;
-	int	j;
-	int	out_i;
-
-	i = 0;
-	j = 0;
-	out_i = 0;
-	while (i < pos)
-		out[out_i++] = tokens[i++];
-	while (pieces[j])
-		out[out_i++] = pieces[j++];
-	i = pos + 1;
-	while (tokens[i])
-		out[out_i++] = tokens[i++];
-	out[out_i] = NULL;
-}
-
-char	**splice_tokens(char **tokens, int pos, char **pieces)
-{
-	int		old_n;
-	int		new_n;
-	char	**out;
-
-	old_n = 0;
-	while (tokens[old_n])
-		old_n++;
-	new_n = 0;
-	while (pieces[new_n])
-		new_n++;
-	out = malloc(sizeof(char *) * (old_n - 1 + new_n + 1));
-	if (!out)
-		return (NULL);
-	copy_spliced_tokens(tokens, pieces, out, pos);
-	free(tokens);
-	return (out);
 }

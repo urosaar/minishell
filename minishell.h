@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 16:23:11 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 18:16:39 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,5 +229,25 @@ t_exec		*init_exec_env(char **envp, t_env **env);
 int			handle_args_error(int ac, char **av, t_exec *exec);
 char		*read_and_preprocess(t_command *cmds, t_env *env, t_exec *exec);
 char		**lex_and_validate(char *raw, t_exec *exec);
+void		free_args(char **args);
+void		free_redirections(t_redirection *redir);
+void		free_command_partial(t_command *cmd);
+t_command	*init_command(int argc);
+int			setup_redir(t_redirection **redir, char *token);
+int			process_redir(char **tokens, int *idx, t_command *cmd, t_redirection **last);
+int			process_arg(char **tokens, int *idx, t_command *cmd, int *arg_i);
+void		finalize_command(t_command *cmd, int arg_i);
+t_command	*parse_one_command(char **tokens, int *idx);
+int			process_and_link(char **tokens, int *i, t_command **head, t_command **current);
+int			count_actual_args(char **tokens, int start);
+bool		is_redir_token(const char *tok);
+int			process_redir(char **tokens, int *idx, t_command *cmd, t_redirection **last);
+int			count_total_heredocs(char **tokens);
+int			skip_quotedd(const char *line, int *i, char q);
+char		*extract_operator(const char *input, int *i);
+bool		is_in_quote(bool in_quote, char *quote_char, char current_char);
+
+
+
 
 #endif
