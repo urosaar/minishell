@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   shell_cleanup.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:09:46 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 16:10:42 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 20:07:17 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	g_status = 0;
 
 void	free_tokens(char **tokens)
 {

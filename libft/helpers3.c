@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:09:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/01 21:43:10 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:36:32 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,12 @@ char	*ft_itoa(int n)
 	return (str);
 }
 //for command "top"
-void save_shell_term(void)
+void save_shell_term(t_exec *exec)
 {
-    if (tcgetattr(STDIN_FILENO, &shell_termios) == -1)
-        perror("tcgetattr");
+    tcgetattr(STDIN_FILENO, &exec->shell_termios);
 }
 
-void restore_shell_term(void)
+void restore_shell_term(t_exec *exec)
 {
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &shell_termios) == -1)
-        perror("tcsetattr");
+    tcsetattr(STDIN_FILENO, TCSANOW, &exec->shell_termios);
 }

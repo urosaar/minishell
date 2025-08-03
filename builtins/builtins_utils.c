@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/25 17:53:00 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:42:45 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,16 @@ void	if_envp_empty(t_env **env)
 	char	*node1;
 	char	*node2;
 	char	*node3;
-	char	*node4;
 
 	printf("HEREEE\n");
-	node1 = "PWD=/mnt/homes/skhallou/Desktop/minishell";
-	node2 = "SHLVL=1";
-	node3 = "_=/usr/bin/env";
-	node4 = "PATH=/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.";
+	// node1 = "PWD=/mnt/homes/skhallou/Desktop/minishell";
+	node1 = "SHLVL=1";
+	node2 = "_=/usr/bin/env";
+	node3 = "PATH=/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.";
 	node = ft_newnode((node1), '=');
 	node->next = ft_newnode((node2), '=');
 	node->next->next = ft_newnode((node3), '=');
-	node->next->next->next = ft_newnode((node4), '=');
+	// node->next->next->next = ft_newnode((node4), '=');
 	ft_lstadd_back(env, node);
 }
 

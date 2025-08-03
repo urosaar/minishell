@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/26 20:42:42 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 15:26:30 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,16 @@ int	is_nbr(char *arg)
 	int	i;
 
 	i = 0;
+	printf("ARG = -%s-\n", arg);
 	while (arg[i])
 	{
-		if (arg[i] < '0' || arg[i] > '9')
+		// if ((arg[i] >= '0' && arg[i] <= '9') && !i)
+		// 	i++;
+		// if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
+		// 	i++;
+		// if (arg[i] != '\0' || !(arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)))
+		// 	return (0);
+		if ((arg[i] < '0' || arg[i] > '9' )&& arg[i] != '\0')
 			return (0);
 		i++;
 	}
@@ -44,6 +51,7 @@ long	calcul(t_env *env, char *arg, int sign)
 	r = 0;
 	while (arg[i] && arg[i] >= '0' && arg[i] <= '9')
 	{
+		
 		oldnbr = r;
 		r = r * 10 + (arg[i++] - '0');
 		if ((r < oldnbr && sign > 0) || (r < oldnbr && sign < 0))
@@ -62,15 +70,16 @@ long	ft_atoi(t_env *env, char *arg)
 	sign = 1;
 	if (!ft_strcmp(arg, "-9223372036854775808"))
 		return (0);
-	while (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
-		i++;
-	if (arg[i] == '+' || arg[i] == '-')
+	while (*arg == ' ' || (*arg >= 9 && *arg <= 13))
+		arg++;
+	if (*arg == '+' || *arg == '-')
 	{
-		if (arg[i++] == '-')
+		if (*arg == '-')
 			sign *= -1;
+		arg++;
 	}
-	if (is_nbr(&arg[i]))
-		r = calcul(env, &arg[i], sign);
+	if (is_nbr(arg))
+		r = calcul(env, arg, sign);
 	else
 		check_error(env, arg);
 	return (r * sign);

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 21:42:57 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 19:12:04 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 		dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-    restore_shell_term();
+    restore_shell_term(ctx);
 	if (!apply_redirection(curr))
 		exit(1);
 	if (curr->cmd == NULL || curr->cmd[0] == '\0')
@@ -47,18 +47,19 @@ static void	parent_process(t_command *curr, t_exec *ctx)
 	}
 }
 
-void	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
+int	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 {
 	ctx->pid = fork();
 	if (ctx->pid == -1)
 	{
 		perror("fork");
-		exit(1);
+		return(1);
 	}
 	if (ctx->pid == 0)
 		child_process(curr, env, ctx);
 	else
 		parent_process(curr, ctx);
+	return (0);
 }
 
 void	ft_wait(t_exec *ctx)
@@ -71,6 +72,7 @@ void	ft_wait(t_exec *ctx)
 	{
 		if (x == ctx->last_pid)
 		{
+    		restore_shell_term(ctx);
 			if (WIFEXITED(status))
 				ctx->last_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status) && g_status == 0)

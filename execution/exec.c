@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 21:42:57 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:57:26 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static int	exec_builtin(t_command *curr, t_env **env, t_exec *ctx)
 	return (0);
 }
 
-static void	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
+static int	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
 {
 	while (curr)
 	{
@@ -62,10 +62,12 @@ static void	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
 			perror("pipe");
 			break ;
 		}
-		creat_a_child(curr, env, ctx);
+		if (creat_a_child(curr, env, ctx) == 1)
+			return (1);
 		curr = curr->next;
 	}
 	close_fd(ctx->prev_fd);
+	return (0);
 }
 
 static void	exec_finalize(t_command *start, t_exec *ctx)
@@ -89,7 +91,6 @@ static void	exec_finalize(t_command *start, t_exec *ctx)
 		c = c->next;
 	}
 	ft_wait(ctx);
-    restore_shell_term();
 }
 
 void	execution(t_command *cmds, t_env **env, t_exec *ctx)
@@ -101,7 +102,8 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 	curr = cmds;
 	if (!exec_builtin(curr, env, ctx))
 		return ;
-	exec_pipeline(curr, env, ctx);
+	if (exec_pipeline(curr, env, ctx))
+		return ;
 	exec_finalize(cmds, ctx);
 }
 

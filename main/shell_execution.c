@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_execution.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:14:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 18:11:57 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 20:14:34 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,10 @@ static void	run_shell(t_env **env, t_exec *exec)
 	while (1)
 	{
 		signals();
+		if (g_status == 1)
+		{
+			exec->last_status = 1;
+		}
 		raw = read_and_preprocess(NULL, *env, exec);
 		if (!raw)
 			continue ;
@@ -82,7 +86,7 @@ int	main(int ac, char **av, char **envp)
 	ret = handle_args_error(ac, av, exec);
 	if (ret)
 		return (ret);
-	save_shell_term();
+	save_shell_term(exec);
 	run_shell(&env, exec);
 	ft_malloc(0, FREE);
 	return (exec->last_status);

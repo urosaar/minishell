@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 18:16:39 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 19:43:39 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,7 @@
 
 # define CTRLD "\033[A\033[2C"
 
-extern int	g_status;
-
-struct termios shell_termios;
+int	g_status;
 
 typedef struct s_malloc
 {
@@ -112,6 +110,7 @@ typedef struct s_exec
 	int		last_status;
 	int		pipe_fd[2];
 	char	*prev_pwd;
+	struct termios shell_termios;
 }	t_exec;
 
 typedef struct s_state
@@ -177,8 +176,9 @@ void		free_all(t_malloc **head);
 char		*expand_variables(const char *input, int last_status, t_env **env);
 void		expand_command_vars(t_command *cmd, int last_status, t_env **env);
 void		expand_tokens(char **tokens, int last_status, t_env **env);
-void		save_shell_term(void);
-void		restore_shell_term(void);
+void		save_shell_term(t_exec *exec);
+void		restore_shell_term(t_exec *exec);
+
 
 /* Export_helpers */
 void		swap_line(t_env **head);
@@ -191,7 +191,7 @@ void		with_plus(t_env **env, char *arg);
 char		**build_env_array(t_env **env);
 void		free_envp(char **envp);
 char		*check_if_exist(t_env *env, t_command *cmds);
-void		creat_a_child(t_command *curr, t_env **env, t_exec *ctx);
+int			creat_a_child(t_command *curr, t_env **env, t_exec *ctx);
 void		ft_wait(t_exec *ctx);
 void		restore_std_fds(int saved_in, int saved_out);
 void		close_fd(int fd);

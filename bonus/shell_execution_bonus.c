@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_bonus.c                                  :+:      :+:    :+:   */
+/*   shell_execution_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 00:00:31 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 16:28:35 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 20:10:29 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,11 @@ static void	run_shell(t_env **env, t_exec *exec)
 	while (1)
 	{
 		signals();
+		if (g_status == 1)
+		{
+			exec->last_status = 1;
+			g_status = 0;
+		}
 		raw = read_and_preprocess(NULL, *env, exec);
 		if (!raw)
 			continue ;
