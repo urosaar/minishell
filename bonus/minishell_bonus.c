@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 00:00:31 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 00:38:29 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 15:15:51 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,6 @@ void	free_tokens(char **tokens)
 	while (tokens[i])
 		free(tokens[i++]);
 	free(tokens);
-}
-
-void	free_strarray(char **arr)
-{
-	int	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
 }
 
 void	free_commands(t_command *cmds)

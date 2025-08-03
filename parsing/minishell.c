@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:03:46 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/01 21:43:10 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/03 15:15:40 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,6 @@ void	free_tokens(char **tokens)
 	while (tokens[i])
 		free(tokens[i++]);
 	free(tokens);
-}
-
-void	free_strarray(char **arr)
-{
-	int	i;
-
-	if (!arr)
-		return ;
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	free(arr);
 }
 
 void	free_commands(t_command *cmds)

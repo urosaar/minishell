@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 00:40:25 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 15:14:15 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,20 @@ int			heredoc_iteration(t_heredoc_child *data, int *line_count);
 int			apply_redirection(t_command *curr);
 void		expand_wildcards(t_command *cmd, bool *no_expand);
 bool		*create_no_split_map(char **args);
-
-
+char		*expand_variables(const char *input, int last_status, t_env **env);
+void		expand_tokens(char **tokens, int last_status, t_env **env);
+char		**split_selected_args(char **args, bool *no_split);
+bool		*create_no_split_map(char **args);
+t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **env);
+char		**expand_arguments(char **args, int arg_count, int last_status, t_env **env);
+void		expand_redirections(t_command *cmd, int last_status, t_env **env);
+void		expand_command_vars(t_command *cmd, int last_status, t_env **env);
+void		free_strarray(char **arr);
+int			count(char **args);
+int			handle_exit_status(t_state *st);
+int			handle_env_var(t_state *st);
+void		rebuild_without_tokens(t_command *cmd, char **exp_args, bool *no_split, char *exp_cmd);
+void		rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp, char **exp_args, bool *no_split);
+int			str_append_char(t_state *st, char c);
+void		free_strarray(char **arr);
 #endif
