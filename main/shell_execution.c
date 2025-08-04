@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:14:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 20:14:34 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/04 20:36:48 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,14 @@ static void	run_shell(t_env **env, t_exec *exec)
 	while (1)
 	{
 		signals();
-		if (g_status == 1)
-		{
-			exec->last_status = 1;
-		}
 		raw = read_and_preprocess(NULL, *env, exec);
 		if (!raw)
 			continue ;
+		if (g_status == 1)
+		{
+			exec->last_status = 1;
+			g_status = 0;
+		}
 		tokens = lex_and_validate(raw, exec);
 		free(raw);
 		if (!tokens)

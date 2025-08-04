@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 19:43:39 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/04 20:39:15 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,14 +103,14 @@ typedef struct s_command
 
 typedef struct s_exec
 {
-	pid_t	pid;
-	pid_t	last_pid;
-	int		status2;
-	int		prev_fd;
-	int		last_status;
-	int		pipe_fd[2];
-	char	*prev_pwd;
-	struct termios shell_termios;
+	pid_t			pid;
+	pid_t			last_pid;
+	int				status2;
+	int				prev_fd;
+	int				last_status;
+	int				pipe_fd[2];
+	char			*prev_pwd;
+	struct termios	shell_termios;
 }	t_exec;
 
 typedef struct s_state
@@ -150,7 +150,7 @@ void		free_tokens(char **tokens);
 void		free_commands(t_command *cmd);
 void		execution(t_command *cmds, t_env **env, t_exec *exec);
 void		handler(int signal);
-void		ft_exit(t_env *env, char **arg);
+int			ft_exit(t_env *env, char **arg);
 int			ft_echo(char **arg);
 int			ft_pwd(t_env *env);
 int			ft_cd(t_env **env, char **arg, char *prev_pwd);
@@ -178,7 +178,7 @@ void		expand_command_vars(t_command *cmd, int last_status, t_env **env);
 void		expand_tokens(char **tokens, int last_status, t_env **env);
 void		save_shell_term(t_exec *exec);
 void		restore_shell_term(t_exec *exec);
-
+int			is_nbr(char *arg);
 
 /* Export_helpers */
 void		swap_line(t_env **head);

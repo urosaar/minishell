@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:09:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 19:36:32 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/04 20:38:06 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,27 @@ char	*ft_itoa(int n)
 	}
 	return (str);
 }
+
+int	is_nbr(char *arg)
+{
+    int    i;
+    int    flag;
+
+    i = 0;
+    flag = 0;
+    while (arg[i])
+    {
+        if ((arg[i] < '0' || arg[i] > '9') && !(arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)))
+            return (0);
+        if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
+            flag = 1;
+        if ((arg[i] >= '0' && arg[i] <= '9') && flag == 1)
+            return (0);
+        i++;
+    }
+    return (1);
+}
+
 //for command "top"
 void save_shell_term(t_exec *exec)
 {

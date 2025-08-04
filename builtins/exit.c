@@ -6,32 +6,31 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/03 15:26:30 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/04 20:38:28 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	is_nbr(char *arg)
-{
-	int	i;
+// int	is_nbr(char *arg)
+// {
+//     int    i;
+//     int    flag;
 
-	i = 0;
-	printf("ARG = -%s-\n", arg);
-	while (arg[i])
-	{
-		// if ((arg[i] >= '0' && arg[i] <= '9') && !i)
-		// 	i++;
-		// if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
-		// 	i++;
-		// if (arg[i] != '\0' || !(arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)))
-		// 	return (0);
-		if ((arg[i] < '0' || arg[i] > '9' )&& arg[i] != '\0')
-			return (0);
-		i++;
-	}
-	return (1);
-}
+//     i = 0;
+//     flag = 0;
+//     while (arg[i])
+//     {
+//         if ((arg[i] < '0' || arg[i] > '9') && !(arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)))
+//             return (0);
+//         if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
+//             flag = 1;
+//         if ((arg[i] >= '0' && arg[i] <= '9') && flag == 1)
+//             return (0);
+//         i++;
+//     }
+//     return (1);
+// }
 
 void	check_error(t_env *env, char *arg)
 {
@@ -39,8 +38,9 @@ void	check_error(t_env *env, char *arg)
 	printf("minishell: exit: %s: numeric argument required\n", arg);
 	// if(env)
 		free_env(env);
-	exit(2);
+	exit(255);
 }
+
 long	calcul(t_env *env, char *arg, int sign)
 {
 	long long	oldnbr;
@@ -59,6 +59,7 @@ long	calcul(t_env *env, char *arg, int sign)
 	}
 	return (r);
 }
+
 long	ft_atoi(t_env *env, char *arg)
 {
 	long long	r;
@@ -95,13 +96,14 @@ void	ft_check_arg(t_env *env, char *arg)
 	exit(r);
 }
 
-void	ft_exit(t_env *env, char **arg)
+int	ft_exit(t_env *env, char **arg)
 {
 	int	i;
 
 	i = 0;
 	if (!arg[1])
 	{
+		printf("exit\n");
 		free_env(env);
 		exit(0);
 	}
@@ -111,9 +113,10 @@ void	ft_exit(t_env *env, char **arg)
 	{
 		printf("exit\n");
 		printf("minishell: exit: too many arguments\n");
-		return;
+		return (1);
 	}
 	else if (arg[1] && arg[2] && !is_nbr(arg[1]))
 		check_error(env, arg[1]);
 	ft_check_arg(env, arg[1]);
+	return (0);
 }
