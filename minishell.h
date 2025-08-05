@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/04 20:39:15 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 01:44:48 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,8 +246,7 @@ int			count_total_heredocs(char **tokens);
 int			skip_quotedd(const char *line, int *i, char q);
 char		*extract_operator(const char *input, int *i);
 bool		is_in_quote(bool in_quote, char *quote_char, char current_char);
-
-
+int			handle_quoted_command(t_command *cmd, t_cmd_exp *exp, bool *no_split);
 
 
 #endif

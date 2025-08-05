@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 14:16:27 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 15:04:11 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/05 01:59:42 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,33 +32,33 @@ t_cmd_exp	expand_command_string(char *cmd_str
 	return (exp);
 }
 
-char	**expand_arguments(char **args, int arg_count,
-		int last_status, t_env **env)
+char **expand_arguments(char **args, int arg_count,
+        int last_status, t_env **env)
 {
-	char	**expanded;
-	int		i;
-	char	*raw;
+    char    **expanded;
+    int     i;
+    char    *raw;
 
-	if (!args || arg_count == 0)
-		return (NULL);
-	expanded = malloc(sizeof(char *) * (arg_count + 1));
-	if (!expanded)
-		return (NULL);
-	i = 0;
-	while (i < arg_count)
-	{
-		raw = expand_variables(args[i], last_status, env);
-		if (!raw)
-			expanded[i] = NULL;
-		else
-		{
-			expanded[i] = strip_quotes(raw);
-			free(raw);
-		}
-		i++;
-	}
-	expanded[arg_count] = NULL;
-	return (expanded);
+    if (!args || arg_count == 0)
+        return (NULL);
+    expanded = malloc(sizeof(char *) * (arg_count + 1));
+    if (!expanded)
+        return (NULL);
+    i = 0;
+    while (i < arg_count)
+    {
+        raw = expand_variables(args[i], last_status, env);
+        if (!raw)
+            expanded[i] = NULL;
+        else
+        {
+            expanded[i] = ft_strdup(raw);
+            free(raw);
+        }
+        i++;
+    }
+    expanded[arg_count] = NULL;
+    return (expanded);
 }
 
 void	expand_redirections(t_command *cmd, int last_status, t_env **env)
@@ -86,6 +86,8 @@ void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp
 	int		new_count;
 	int		i[2];
 
+	if (handle_quoted_command(cmd, exp, no_split))
+			return;
 	new_count = exp->token_count + (count(exp_args) - 1);
 	new_args = malloc(sizeof(char *) * (new_count + 1));
 	ft_memset(i, 0, sizeof(i));

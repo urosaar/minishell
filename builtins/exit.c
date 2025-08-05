@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/04 20:38:28 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 00:48:02 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,10 @@ long	calcul(t_env *env, char *arg, int sign)
 long	ft_atoi(t_env *env, char *arg)
 {
 	long long	r;
-	int			i;
+	// int			i;
 	int			sign;
 
-	i = 0;
+	// i = 0;
 	r = 0;
 	sign = 1;
 	if (!ft_strcmp(arg, "-9223372036854775808"))

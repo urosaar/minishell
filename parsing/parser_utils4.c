@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 10:40:15 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 17:10:50 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/05 02:12:09 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ t_command	*parse_tokens(char **tokens)
 	}
 	return (head);
 }
+
 static void	copy_spliced_tokens(char **tokens, char **pieces,
 				char **out, int pos)
 {

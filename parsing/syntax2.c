@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 18:00:18 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 18:08:43 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/05 02:11:42 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int	check_unclosed_quotes(const char *line)
 	}
 	return (0);
 }
+
 int	skip_quotedd(const char *line, int *i, char q)
 {
 	while (line[*i] && line[*i] != q)
