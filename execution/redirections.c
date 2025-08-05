@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:50:47 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 20:49:34 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 16:54:45 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,36 +72,28 @@ int	redirect_output(const char *filename)
 	return (1);
 }
 
-static int	handle_single_redirection(t_redirection *tmp)
+int	apply_redirect(t_redirection *tmp, char *clean)
 {
-	if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0)
-	{
-		if (dup2(tmp->heredoc_fd, STDIN_FILENO) == -1)
-		{
-			perror("minishell: dup2 heredoc");
-			return (0);
-		}
-		close(tmp->heredoc_fd);
-		tmp->heredoc_fd = -1;
-		return (1);
-	}
-	if (tmp->type == TOKEN_REDIRECT_IN)
-		return (redirect_input(tmp->filename));
-	if (tmp->type == TOKEN_REDIRECT_OUT)
-		return (redirect_output(tmp->filename));
-	if (tmp->type == TOKEN_REDIRECT_APPEND)
-		return (append_mode(tmp->filename));
-	return (1);
-}
+	int	ok;
 
-int	apply_redirection(t_command *curr)
+	if (tmp->type == TOKEN_REDIRECT_IN)
+		ok = redirect_input(clean);
+	else if (tmp->type == TOKEN_REDIRECT_OUT)
+		ok = redirect_output(clean);
+	else if (tmp->type == TOKEN_REDIRECT_APPEND)
+		ok = append_mode(clean);
+	else
+		ok = 1;
+	return (ok);
+}
+int	apply_redirection(t_command *curr, t_env **env)
 {
 	t_redirection	*tmp;
 
 	tmp = curr->redirections;
 	while (tmp)
 	{
-		if (!handle_single_redirection(tmp))
+		if (!handle_single_redirection(tmp,env))
 			return (0);
 		tmp = tmp->next;
 	}

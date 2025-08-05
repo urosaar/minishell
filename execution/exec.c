@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/03 18:57:26 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:10:57 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	exec_builtin(t_command *curr, t_env **env, t_exec *ctx)
 	}
 	else
 	{
-		if (!apply_redirection(curr))
+		if (!apply_redirection(curr, env))
 			ctx->last_status = 1;
 		else
 			ctx->last_status = builtins(env, curr->args, ctx->prev_pwd);

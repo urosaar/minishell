@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/04 20:37:06 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 15:10:20 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
     restore_shell_term(ctx);
-	if (!apply_redirection(curr))
+	if (!apply_redirection(curr,env))
 		exit(1);
 	if (curr->cmd == NULL || curr->cmd[0] == '\0')
 	{
