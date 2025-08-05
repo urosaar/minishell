@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_execution_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 00:00:31 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/04 20:01:19 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 20:51:38 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,27 @@ static int	has_heredoc(t_command *cmds)
 	return (0);
 }
 
+static void	expand_commands(t_command *cmds, t_exec *exec, t_env **env)
+{
+	t_command	*c;
+	bool		*no_expand;
+
+	g_status = 0;
+	c = cmds;
+	while (c)
+	{
+		no_expand = create_no_split_map(c->args);
+		expand_command_vars(c, exec->last_status, env);
+		expand_wildcards(c, no_expand);
+		free(no_expand);
+		remove_leading_empty_args(c);
+		c = c->next;
+	}
+}
+
 static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
 {
 	t_command	*cmds;
-	t_command	*c;
 
 	cmds = parse_tokens(tokens);
 	free_tokens(tokens);
@@ -32,16 +49,7 @@ static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
 		exec->last_status = 2;
 		return ;
 	}
-	g_status = 0;
-	c = cmds;
-	while (c)
-	{
-		bool *no_expand = create_no_split_map(c->args);
-		expand_command_vars(c, exec->last_status, env);
-		expand_wildcards(c, no_expand);
-		free(no_expand);
-		c = c->next;
-	}
+	expand_commands(cmds, exec, env);
 	if (has_heredoc(cmds))
 	{
 		exec->last_status = 0;

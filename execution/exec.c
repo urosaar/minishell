@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/05 15:10:57 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/05 18:28:58 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,11 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 	if (!exec_init(cmds, ctx, env))
 		return ;
 	curr = cmds;
+	if (!curr->cmd || curr->cmd[0] == '\0')
+	{
+		ctx->last_status = 0; // Bash: success for empty command
+		return;
+	}
 	if (!exec_builtin(curr, env, ctx))
 		return ;
 	if (exec_pipeline(curr, env, ctx))

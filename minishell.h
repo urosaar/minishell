@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 16:55:02 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/05 20:50:33 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,7 @@ int			handle_quoted_command(t_command *cmd, t_cmd_exp *exp, bool *no_split);
 int			count_words_isspace(const char *s);
 int			handle_single_redirection(t_redirection *tmp, t_env **env);
 int			apply_redirect(t_redirection *tmp, char *clean);
+void	remove_leading_empty_args(t_command *cmd);
 
 
 #endif

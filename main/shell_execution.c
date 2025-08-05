@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_execution.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:14:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/04 20:36:48 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/05 20:51:15 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,23 @@ static int	has_heredoc(t_command *cmds)
 	return (0);
 }
 
+static void	expand_commands(t_command *cmds, t_exec *exec, t_env **env)
+{
+	t_command	*c;
+
+	g_status = 0;
+	c = cmds;
+	while (c)
+	{
+		expand_command_vars(c, exec->last_status, env);
+		remove_leading_empty_args(c);
+		c = c->next;
+	}
+}
+
 static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
 {
 	t_command	*cmds;
-	t_command	*c;
 
 	cmds = parse_tokens(tokens);
 	free_tokens(tokens);
@@ -32,13 +45,7 @@ static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
 		exec->last_status = 2;
 		return ;
 	}
-	g_status = 0;
-	c = cmds;
-	while (c)
-	{
-		expand_command_vars(c, exec->last_status, env);
-		c = c->next;
-	}
+	expand_commands(cmds, exec, env);
 	if (has_heredoc(cmds))
 	{
 		exec->last_status = 0;
@@ -48,6 +55,7 @@ static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
 	execution(cmds, env, exec);
 	free_commands(cmds);
 }
+
 
 static void	run_shell(t_env **env, t_exec *exec)
 {
