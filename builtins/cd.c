@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:22 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/03 19:27:29 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:07:18 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	replace(t_env *env, char *path, char *oldpath)
 
 int	change_to_home(t_env *env, char *path, int i)
 {
-	t_env *node;
+	t_env	*node;
 
 	node = env;
 	while (node)
@@ -49,7 +49,7 @@ int	change_to_home(t_env *env, char *path, int i)
 		if (!ft_strcmp(node->key, "HOME"))
 		{
 			path = ft_strdup(node->value);
-			break;
+			break ;
 		}
 		node = node->next;
 	}
@@ -72,25 +72,27 @@ void	check_prev_pwd(t_env **env, char *path, char *oldpath)
 	{
 		if (!path && !oldpath)
 		{
-			printf("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n");
+			ft_putstr_fd("cd: error retrieving current directory: getcwd:", 2);
+			ft_putstr_fd(" cannot access parent directories:", 2);
+			ft_putstr_fd(" No such file or directory\n", 2);
 		}
 		while (node)
 		{
 			if (node->line && !(ft_strcmp(node->key, "PWD")))
 			{
 				oldpath = ft_strdup(node->value);
-				break;
+				break ;
 			}
 			node = node->next;
 		}
 	}
 }
 
-int    ft_cd(t_env **env, char **arg, char *prev_pwd)
+int	ft_cd(t_env **env, char **arg, char *prev_pwd)
 {
-	char    *oldpath;
-	char    *path;
-	int        i;
+	char	*oldpath;
+	char	*path;
+	int		i;
 
 	i = 0;
 	path = NULL;

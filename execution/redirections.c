@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:50:47 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/05 16:54:45 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/06 18:00:15 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ int	apply_redirect(t_redirection *tmp, char *clean)
 		ok = 1;
 	return (ok);
 }
+
 int	apply_redirection(t_command *curr, t_env **env)
 {
 	t_redirection	*tmp;
@@ -93,7 +94,7 @@ int	apply_redirection(t_command *curr, t_env **env)
 	tmp = curr->redirections;
 	while (tmp)
 	{
-		if (!handle_single_redirection(tmp,env))
+		if (!handle_single_redirection(tmp, env))
 			return (0);
 		tmp = tmp->next;
 	}

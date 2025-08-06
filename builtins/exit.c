@@ -3,41 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/05 00:48:02 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/06 17:10:13 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-// int	is_nbr(char *arg)
-// {
-//     int    i;
-//     int    flag;
-
-//     i = 0;
-//     flag = 0;
-//     while (arg[i])
-//     {
-//         if ((arg[i] < '0' || arg[i] > '9') && !(arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)))
-//             return (0);
-//         if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
-//             flag = 1;
-//         if ((arg[i] >= '0' && arg[i] <= '9') && flag == 1)
-//             return (0);
-//         i++;
-//     }
-//     return (1);
-// }
-
 void	check_error(t_env *env, char *arg)
 {
 	printf("exit\n");
 	printf("minishell: exit: %s: numeric argument required\n", arg);
-	// if(env)
-		free_env(env);
+	free_env(env);
 	exit(255);
 }
 
@@ -45,13 +24,12 @@ long	calcul(t_env *env, char *arg, int sign)
 {
 	long long	oldnbr;
 	long long	r;
-	int	i;
+	int			i;
 
 	i = 0;
 	r = 0;
 	while (arg[i] && arg[i] >= '0' && arg[i] <= '9')
 	{
-		
 		oldnbr = r;
 		r = r * 10 + (arg[i++] - '0');
 		if ((r < oldnbr && sign > 0) || (r < oldnbr && sign < 0))
@@ -63,10 +41,8 @@ long	calcul(t_env *env, char *arg, int sign)
 long	ft_atoi(t_env *env, char *arg)
 {
 	long long	r;
-	// int			i;
 	int			sign;
 
-	// i = 0;
 	r = 0;
 	sign = 1;
 	if (!ft_strcmp(arg, "-9223372036854775808"))
@@ -107,7 +83,8 @@ int	ft_exit(t_env *env, char **arg)
 		free_env(env);
 		exit(0);
 	}
-	while ((arg[1][i] == ' ' || (arg[1][i] >= 9 && arg[1][i] <= 13)) && arg[1][i + 1] != '\0')
+	while ((arg[1][i] == ' ' || (arg[1][i] >= 9
+		&& arg[1][i] <= 13)) && arg[1][i + 1] != '\0')
 		i++;
 	if (arg[1] && arg[2] && (ft_atoi(env, arg[1]) || !ft_atoi(env, arg[1])))
 	{

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:59:46 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 20:48:49 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:59:39 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void	process_heredoc_line(t_heredoc_child *data, char *line)
 	}
 }
 
-int heredoc_iteration(t_heredoc_child *data, int *line_count)
+int	heredoc_iteration(t_heredoc_child *data, int *line_count)
 {
 	char	*line;
 

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:14 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/04 20:10:01 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 16:44:53 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	builtins(t_env **env, char **args, char *prev_pwd)
 {
-	int last_status;
+	int	last_status;
 
 	last_status = 0;
 	if (*args && !ft_strcmp(*args, "echo"))
@@ -41,14 +41,14 @@ int	is_builtins(char **args)
 	else if (*args && !ft_strcmp(*args, "pwd"))
 		return (1);
 	else if (*args && !ft_strcmp(*args, "cd"))
-		return (1);            
+		return (1);
 	else if (*args && !ft_strcmp(*args, "exit"))
-		return (1);            
+		return (1);
 	else if (*args && !ft_strcmp(*args, "env"))
-		return (1);        
+		return (1);
 	else if (*args && !ft_strcmp(*args, "unset"))
-		return (1);              
+		return (1);
 	else if (*args && !ft_strcmp(*args, "export"))
 		return (1);
-	return (0);             
+	return (0);
 }

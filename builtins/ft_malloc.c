@@ -6,10 +6,9 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 20:13:23 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/25 17:11:34 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:51:42 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../minishell.h"
 
@@ -24,7 +23,7 @@ void	ft_free_exit(void *ptr, t_malloc **head)
 void	*ft_malloc(size_t size, t_type type)
 {
 	static t_malloc	*head;
-	t_malloc			*tmp;
+	t_malloc		*tmp;
 	void			*ptr;
 
 	if (type == MALLOC)

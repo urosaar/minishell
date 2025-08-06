@@ -6,14 +6,14 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 18:49:23 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:50:52 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void sort_and_print(t_env **env)
-{	
+void	sort_and_print(t_env **env)
+{
 	t_env	*copy;
 	t_env	*tmp;
 
@@ -24,7 +24,7 @@ void sort_and_print(t_env **env)
 	{
 		printf("declare -x %s", tmp->key);
 		if (tmp->value)
-				printf("=\"%s\"", tmp->value);
+			printf("=\"%s\"", tmp->value);
 		printf("\n");
 		tmp = tmp->next;
 	}
@@ -33,20 +33,19 @@ void sort_and_print(t_env **env)
 
 int	ft_export(t_env **env, char **arg)
 {
-	int		valid;
 	int		i;
 	int		flag;
 
-	i = 1;
-	flag = 1;
+	1 && (i = 1, flag = 1);
 	if (!arg[1])
 		return (sort_and_print(env), 0);
 	while (arg[i])
 	{
-		valid = is_valid_identifier(arg[i]);
-		if (!valid)
+		if (!is_valid_identifier(arg[i]))
 		{
-			fprintf(stderr, "minishell: export: `%s': not a valid identifier\n", arg[i]);
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(arg[i], 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
 			flag = 0;
 		}
 		else if (is_valid_identifier(arg[i]) == 1)

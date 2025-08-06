@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/05 15:10:20 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/06 17:59:12 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 		dup_if_there_is_pipe(curr->next, ctx->pipe_fd, ctx->prev_fd);
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-    restore_shell_term(ctx);
-	if (!apply_redirection(curr,env))
+	restore_shell_term(ctx);
+	if (!apply_redirection(curr, env))
 		exit(1);
 	if (curr->cmd == NULL || curr->cmd[0] == '\0')
 	{
@@ -53,7 +53,7 @@ int	creat_a_child(t_command *curr, t_env **env, t_exec *ctx)
 	if (ctx->pid == -1)
 	{
 		perror("fork");
-		return(1);
+		return (1);
 	}
 	if (ctx->pid == 0)
 		child_process(curr, env, ctx);
@@ -72,7 +72,7 @@ void	ft_wait(t_exec *ctx)
 	{
 		if (x == ctx->last_pid)
 		{
-    		restore_shell_term(ctx);
+			restore_shell_term(ctx);
 			if (WIFEXITED(status))
 				ctx->last_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status) && g_status == 0)

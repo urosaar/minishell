@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/04 20:18:38 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 16:42:33 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	if_envp_empty(t_env **env)
 	ft_lstadd_back(env, node);
 }
 
-void	copy_env(char **envp, t_env **env) 
+void	copy_env(char **envp, t_env **env)
 {
 	t_env	*new_node;
 	int		i;
@@ -59,7 +59,7 @@ t_env	*copy_for_expo(t_env *env)
 		ft_lstadd_back(&copy, tmp);
 		env = env->next;
 	}
-	return copy;
+	return (copy);
 }
 
 void	free_env(t_env *env)
@@ -69,7 +69,6 @@ void	free_env(t_env *env)
 	while (env)
 	{
 		tmp = env->next;
-		if (env->line)
 		free(env->line);
 		free(env->key);
 		free(env->value);
@@ -81,12 +80,13 @@ void	free_env(t_env *env)
 void	check_for_pwd(char **prev_pwd)
 {
 	char	*pwd;
+	int		i;
 
 	pwd = getcwd(NULL, 0);
-	int i = chdir(pwd);
+	i = chdir(pwd);
 	if (!i)
 		*prev_pwd = ft_strdup(pwd);
 	if (i == -1)
-		return;
+		return ;
 	free(pwd);
 }

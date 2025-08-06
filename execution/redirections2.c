@@ -3,33 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   redirections2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 16:55:54 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/06 18:01:49 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int count_words_isspace(const char *s)
+int	count_words_isspace(const char *s)
 {
-    int i = 0, words = 0;
-    while (s[i])
-    {
-        while (s[i] && is_space(s[i]))
-            i++;
-        if (s[i] && !is_space(s[i]))
-        {
-            words++;
-            while (s[i] && !is_space(s[i]))
-                i++;
-        }
-    }
-    return words;
+	int	i;
+	int	words;
+
+	i = 0;
+	words = 0;
+	while (s[i])
+	{
+		while (s[i] && is_space(s[i]))
+			i++;
+		if (s[i] && !is_space(s[i]))
+		{
+			words++;
+			while (s[i] && !is_space(s[i]))
+				i++;
+		}
+	}
+	return (words);
 }
 
-static int heredoc(t_redirection *tmp)
+static int	heredoc(t_redirection *tmp)
 {
 	if (tmp->type == TOKEN_HEREDOC && tmp->heredoc_fd >= 0)
 	{

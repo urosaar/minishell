@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 18:45:19 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 18:54:09 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:43:48 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ t_env	*find_in_env(t_env *env, char *key)
 
 void	update_found_node(t_env *found, char *arg)
 {
-	char *value;
+	char	*value;
 
 	value = strchr(arg, '=');
 	free(found->line);
@@ -85,7 +85,7 @@ void	with_plus(t_env **env, char *arg)
 	if (found)
 	{
 		if (!ft_strcmp(found->key, "_"))
-			return(remove_if(*env), free(key));
+			return (remove_if(*env), free(key));
 		value = ft_strchr(arg, '=');
 		if (value)
 			append_to_found(found, key, value + 1);

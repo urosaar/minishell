@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:31 by skhallou          #+#    #+#             */
-/*   Updated: 2025/06/20 14:11:54 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 16:56:04 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,10 @@ void	check_option(char **args, int *flag, int *t)
 				}
 			}
 			else
-				return;
-		} 
+				return ;
+		}
 		if (!args[i][j] && args[i][j - 1] == '-')
-			return;
+			return ;
 		j = 0;
 		i++;
 	}
@@ -43,9 +43,11 @@ void	check_option(char **args, int *flag, int *t)
 
 int	ft_echo(char **args)
 {
-	int i = 1;
-	int flag = 1;
+	int	i;
+	int	flag;
 
+	i = 1;
+	flag = 1;
 	check_option(args, &flag, &i);
 	while (args[i])
 	{

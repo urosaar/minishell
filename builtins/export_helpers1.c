@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 18:45:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 18:54:18 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:41:43 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ static void	swap_nodes(t_env *a, t_env *b)
 
 void	swap_line(t_env **head)
 {
-	t_env *node;
+	t_env	*node;
 
 	if (!head || !*head)
-		return;
+		return ;
 	node = *head;
 	while (node && node->next)
 	{
@@ -91,9 +91,9 @@ void	remove_if(t_env *env)
 			free(node->line);
 			free(node->key);
 			free(node->value);
-			return;
+			return ;
 		}
-		prev = node;		
+		prev = node;
 		node = node->next;
 	}
 }
@@ -105,14 +105,19 @@ int	is_valid_identifier(char *str)
 	i = 0;
 	if (!str)
 		return (0);
-	if (!(str[i] == '_' || (str[i] >= 'A' && str[i] <= 'Z') || (str[i] >= 'a' && str[i] <= 'z')))
+	if (!(str[i] == '_' || (str[i] >= 'A' && str[i] <= 'Z')
+			|| (str[i] >= 'a' && str[i] <= 'z')))
 		return (0);
 	while (str[i] && str[i] != '=')
 	{
 		if (str[i] == '+' && str[i + 1] == '=')
 			return (2);
-		else if (!(str[i] == '_' || (str[i] >= 'A' && str[i] <= 'Z') || (str[i] >= 'a' && str[i] <= 'z') || (str[i] >= '0' && str[i] <= '9')))
+		else if (!(str[i] == '_' || (str[i] >= 'A' && str[i] <= 'Z')
+				|| (str[i] >= 'a' && str[i] <= 'z')
+				|| (str[i] >= '0' && str[i] <= '9')))
+		{
 			return (0);
+		}
 		i++;
 	}
 	return (1);

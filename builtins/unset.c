@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:18 by skhallou          #+#    #+#             */
-/*   Updated: 2025/07/21 18:46:29 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/06 17:55:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	unset_form_env(t_env **env, char *arg)
 			free(node->key);
 			free(node->value);
 			free(node);
-			break;
+			break ;
 		}
 		prev = node;
 		node = node->next;
@@ -54,7 +54,7 @@ int	ft_unset(t_env **env, char **arg)
 			printf("minishell: unset: `%s': not a valid identifier\n", arg[i]);
 			flag = 0;
 			i++;
-			continue;
+			continue ;
 		}
 		unset_form_env(env, arg[i]);
 		i++;
