@@ -6,38 +6,27 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 17:07:47 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/06 17:41:48 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/05 18:23:50 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int process_arg(char **tokens, int *idx, t_command *cmd, int *arg_i)
+int	process_arg(char **tokens, int *idx, t_command *cmd, int *arg_i)
 {
-    size_t  len;
-    bool    quoted;
-    char    *arg;
+	char	*arg;
 
-    len = ft_strlen(tokens[*idx]);
-    quoted = (len >= 2 && 
-             ((tokens[*idx][0] == '"' && tokens[*idx][len-1] == '"') ||
-              (tokens[*idx][0] == '\'' && tokens[*idx][len-1] == '\'')));
-
-    arg = strip_quotes(tokens[*idx]); // keep your strip logic here
-    if (!arg)
-        return (1);
-    cmd->args[*arg_i] = arg;
-    cmd->was_quoted[*arg_i] = quoted; // <-- store flag
-    (*arg_i)++;
-    (*idx)++;
-    return (0);
+	arg = ft_strdup(tokens[*idx]);
+	if (!arg)
+		return (1);
+	cmd->args[(*arg_i)++] = arg;
+	(*idx)++;
+	return (0);
 }
-
 
 void	finalize_command(t_command *cmd, int arg_i)
 {
 	cmd->args[arg_i] = NULL;
-	cmd->was_quoted[arg_i]  = false;
 	if (cmd->args[0])
 		cmd->cmd = ft_strdup(cmd->args[0]);
 }

@@ -1,6 +1,6 @@
 NAME = minishell
 NAME_BONUS = minishell_bonus
-SANITIZE = -fsanitize=address
+SANITIZE = #-fsanitize=address
 CC = cc
 CFLAGS = -Wall -Werror -Wextra -g
 O_READLINE_DIR = readline/install

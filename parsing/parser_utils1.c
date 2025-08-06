@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 17:02:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/06 17:41:02 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 17:49:55 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,13 @@ void	free_redirections(t_redirection *redir)
 	}
 }
 
-void    free_command_partial(t_command *cmd)
+void	free_command_partial(t_command *cmd)
 {
-    if (!cmd)
-        return ;
-    free_args(cmd->args);
-    free(cmd->was_quoted);
-    free_redirections(cmd->redirections);
-    free(cmd->infile);
-    free(cmd->outfile);
-    free(cmd);
+	if (!cmd)
+		return ;
+	free_args(cmd->args);
+	free_redirections(cmd->redirections);
+	free(cmd->infile);
+	free(cmd->outfile);
+	free(cmd);
 }
-

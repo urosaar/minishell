@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 16:28:24 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/06 19:21:07 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	exec_builtin(t_command *curr, t_env **env, t_exec *ctx)
 	}
 	else
 	{
-		if (!apply_redirection(curr,env))
+		if (!apply_redirection(curr, env))
 			ctx->last_status = 1;
 		else
 			ctx->last_status = builtins(env, curr->args, ctx->prev_pwd);
@@ -93,14 +93,14 @@ static void	exec_finalize(t_command *start, t_exec *ctx)
 	ft_wait(ctx);
 }
 
-void execution(t_command *cmds, t_env **env, t_exec *ctx)
+void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 {
-    t_command *curr;
+	t_command	*curr;
 
-    if (!exec_init(cmds, ctx, env))
-        return ;
-    curr = cmds;
-    if (!curr->cmd)
+	if (!exec_init(cmds, ctx, env))
+		return ;
+	curr = cmds;
+	  if (!curr->cmd)
         return ;
 
     if (curr->cmd[0] == '\0')
@@ -109,16 +109,12 @@ void execution(t_command *cmds, t_env **env, t_exec *ctx)
         ctx->last_status = 127;
         return ;
     }
-
-    if (!exec_builtin(curr, env, ctx))
-        return ;
-    if (exec_pipeline(curr, env, ctx))
-        return ;
-    exec_finalize(cmds, ctx);
+	if (!exec_builtin(curr, env, ctx))
+		return ;
+	if (exec_pipeline(curr, env, ctx))
+		return ;
+	exec_finalize(cmds, ctx);
 }
-
-
-
 
 // void execution(t_command *cmds, t_env **env, t_exec *ctx) 
 // {

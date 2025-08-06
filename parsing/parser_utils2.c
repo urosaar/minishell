@@ -6,35 +6,27 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 17:06:23 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/06 17:40:31 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/03 17:44:31 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_command    *init_command(int argc)
+t_command	*init_command(int argc)
 {
-    t_command    *cmd;
+	t_command	*cmd;
 
-    cmd = ft_calloc(1, sizeof(t_command));
-    if (!cmd)
-        return (NULL);
-    cmd->args = malloc(sizeof(char *) * (argc + 1));
-    if (!cmd->args)
-    {
-        free(cmd);
-        return (NULL);
-    }
-    cmd->was_quoted = calloc(argc + 1, sizeof(bool));
-    if (!cmd->was_quoted)
-    {
-        free(cmd->args);
-        free(cmd);
-        return (NULL);
-    }
-    return (cmd);
+	cmd = ft_calloc(1, sizeof(t_command));
+	if (!cmd)
+		return (NULL);
+	cmd->args = malloc(sizeof(char *) * (argc + 1));
+	if (!cmd->args)
+	{
+		free(cmd);
+		return (NULL);
+	}
+	return (cmd);
 }
-
 
 static int	handle_heredoc(t_redirection *redir, char *token, t_command *cmd)
 {
