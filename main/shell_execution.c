@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:14:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 20:51:15 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/06 16:25:17 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,37 @@ static int	has_heredoc(t_command *cmds)
 	return (0);
 }
 
+static void strip_quotes_on_all_args(t_command *c)
+{
+    int i = 0;
+    char *tmp;
+    while (c->args[i])
+    {
+        tmp = strip_quotes(c->args[i]);
+        free(c->args[i]);
+        c->args[i] = tmp;
+        i++;
+    }
+}
+
+static void cull_unquoted_empties(t_command *c)
+{
+    int i = 0, w = 0;
+    while (c->args[i])
+    {
+        if (c->args[i][0] == '\0' && c->was_quoted[i] == false)
+        {
+            free(c->args[i]);
+            i++;
+            continue;
+        }
+        c->args[w]         = c->args[i];
+        c->was_quoted[w++] = c->was_quoted[i++];
+    }
+    c->args[w]        = NULL;
+    c->was_quoted[w]  = false;
+}
+
 static void	expand_commands(t_command *cmds, t_exec *exec, t_env **env)
 {
 	t_command	*c;
@@ -28,8 +59,16 @@ static void	expand_commands(t_command *cmds, t_exec *exec, t_env **env)
 	c = cmds;
 	while (c)
 	{
-		expand_command_vars(c, exec->last_status, env);
-		remove_leading_empty_args(c);
+	     expand_command_vars(c, exec->last_status, env);
+
+        // 2) Strip the literal quotes off all args
+        strip_quotes_on_all_args(c);
+
+        // 3) Remove any empty args that were _not_ quoted
+        cull_unquoted_empties(c);
+
+        // 4) Trim leading "" only when >1 arg remains
+        remove_leading_empty_args(c);
 		c = c->next;
 	}
 }
