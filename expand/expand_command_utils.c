@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 14:16:27 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 01:59:42 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/08 00:45:32 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,8 @@ void	rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp
 	int		new_count;
 	int		i[2];
 
-	if (handle_quoted_command(cmd, exp, no_split))
-			return;
+	// if (handle_quoted_command(cmd, exp, no_split))
+	// 		return;
 	new_count = exp->token_count + (count(exp_args) - 1);
 	new_args = malloc(sizeof(char *) * (new_count + 1));
 	ft_memset(i, 0, sizeof(i));

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 20:10:28 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 00:44:11 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,24 +93,41 @@ static void	exec_finalize(t_command *start, t_exec *ctx)
 	ft_wait(ctx);
 }
 
-void	execution(t_command *cmds, t_env **env, t_exec *ctx)
+void execution(t_command *cmds, t_env **env, t_exec *ctx)
 {
-	t_command	*curr;
+    t_command *curr;
+    int        saved_in, saved_out;
 
-	if (!exec_init(cmds, ctx, env))
-		return ;
-	curr = cmds;
-	if (!curr->cmd)
-		return ;
-	if (curr->cmd[0] == '\0')
-	{
-		ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
-		ctx->last_status = 127;
-		return ;
-	}
-	if (!exec_builtin(curr, env, ctx))
-		return ;
-	if (exec_pipeline(curr, env, ctx))
-		return ;
-	exec_finalize(cmds, ctx);
+    if (!exec_init(cmds, ctx, env))
+        return;
+
+    saved_in  = dup(STDIN_FILENO);
+    saved_out = dup(STDOUT_FILENO);
+    curr = cmds;
+    if ((!curr->cmd || curr->cmd[0] == '\0') && curr->redirections)
+    {
+        if (apply_redirection(curr, env))
+            ctx->last_status = 0;
+        else
+            ctx->last_status = 1;
+
+        restore_std_fds(saved_in, saved_out);
+        return;
+    }
+
+    if (!curr->cmd || curr->cmd[0] == '\0')
+    {
+        ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
+        ctx->last_status = 127;
+        restore_std_fds(saved_in, saved_out);
+        return;
+    }
+    restore_std_fds(saved_in, saved_out);
+
+    if (!exec_builtin(curr, env, ctx))
+        return;
+
+    if (exec_pipeline(curr, env, ctx))
+        return;
+    exec_finalize(cmds, ctx);
 }
