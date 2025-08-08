@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:50:47 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/08 18:21:13 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 18:27:28 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ int	redirect_input(char *filename)
 	f = open(filename, O_RDONLY);
 	if (f == -1)
 	{
-		ft_putstr_fd("minishell: ", stderr);
-		ft_putstr_fd(filename, stderr);
-		ft_putstr_fd(": No such file or directory\n", stderr);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(filename, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		return (0);
 	}
 	if (dup2(f, STDIN_FILENO) == -1)
