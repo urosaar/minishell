@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 20:50:33 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/08 16:03:24 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ typedef struct s_redirection
 	int						type;
 	char					*filename;
 	struct s_redirection	*next;
+	bool                     quoted;
+	char                     quote_char;
 	int						heredoc_fd;
 }	t_redirection;
 

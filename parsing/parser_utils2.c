@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 17:06:23 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 17:44:31 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/08 16:05:28 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,19 @@ static int	handle_heredoc(t_redirection *redir, char *token, t_command *cmd)
 
 static int	handle_redir(t_redirection *redir, char *token, t_command *cmd)
 {
-	char	*filename;
+   char    *filename;
 
+   if ((token[0] == '"' && token[ft_strlen(token) - 1] == '"')
+    || (token[0] == '\'' && token[ft_strlen(token) - 1] == '\''))
+   {
+     redir->quoted    = true;
+     redir->quote_char = token[0];
+   }
+   else
+   {
+     redir->quoted    = false;
+     redir->quote_char = 0;
+   }
 	filename = strip_quotes(token);
 	if (!filename)
 		return (1);
