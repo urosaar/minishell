@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/08 16:07:29 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/08 17:00:48 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int	check_clean(char *clean, const char *filename)
 	int	words;
 
 	words = count_words_isspace(clean);
-	if (words > 1)
+	if (words > 1 || !words)
 	{
 		fprintf(stderr, "minishell: %s: ambiguous redirect\n",
 			filename);
@@ -73,20 +73,20 @@ int	handle_single_redirection(t_redirection *tmp, t_env **env)
 
 	if (heredoc(tmp))
 		return (1);
-   expanded = expand_variables(tmp->filename, g_status, env);
-   if (tmp->quoted && tmp->quote_char == '\'')
-       expanded = ft_strdup(tmp->filename);
-   else
-       expanded = expand_variables(tmp->filename, g_status, env);
+	expanded = expand_variables(tmp->filename, g_status, env);
+	if (tmp->quoted && tmp->quote_char == '\'')
+		expanded = ft_strdup(tmp->filename);
+	else
+		expanded = expand_variables(tmp->filename, g_status, env);
 	if (expanded == NULL)
 		return (0);
 	clean = strip_quotes(expanded);
 	free(expanded);
 	if (clean == NULL)
 		return (0);
-	if (ft_strchr(tmp->filename, '$'))
+	if (ft_strchr(tmp->filename, '$') || !clean)
 	{
-		 if (!tmp->quoted && !check_clean(clean, tmp->filename))
+		if (!tmp->quoted && !check_clean(clean, tmp->filename))
 			return (0);
 	}
 	ok = apply_redirect(tmp, clean);
