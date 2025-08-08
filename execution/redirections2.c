@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/08 17:00:48 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 17:37:54 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,16 @@ static int	heredoc(t_redirection *tmp)
 	return (0);
 }
 
-static int	check_clean(char *clean, const char *filename)
+static int	check_clean(char *clean, char *filename)
 {
 	int	words;
 
 	words = count_words_isspace(clean);
 	if (words > 1 || !words)
 	{
-		fprintf(stderr, "minishell: %s: ambiguous redirect\n",
-			filename);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(filename, 2);
+		ft_putstr_fd(": ambiguous redirect\n", 2);
 		free(clean);
 		g_status = 1;
 		return (0);

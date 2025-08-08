@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/08 16:33:10 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 17:42:51 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,13 +62,19 @@ char	*ft_check1(char *cmd)
 	if (dirfd >= 0)
 	{
 		close(dirfd);
-		fprintf(stderr, "minishell: %s: is a directory\n", cmd);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": is a directory\n", 2);
 		return (NULL);
 	}
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	if (ft_strchr(cmd, '/'))
-		fprintf(stderr, "minishell: %s: No such file or directory\n", cmd);
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+	}
 	return (NULL);
 }
 

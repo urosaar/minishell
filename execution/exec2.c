@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:20:28 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/01 20:40:34 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 18:19:49 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,11 @@ void	ft_execve(t_command *curr, t_env **env, char *d)
 	if (!d)
 	{
 		if (!ft_strchr(curr->cmd, '/'))
-			fprintf(stderr, "minishell: %s: command not found\n", curr->cmd);
+		{
+			ft_putstr_fd("minishell: ", stderr);
+			ft_putstr_fd(curr->cmd, stderr);
+			ft_putstr_fd(": command not found\n", stderr);
+		}
 		exit(127);
 	}
 	envp = build_env_array(env);

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 17:59:12 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 18:21:24 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 	restore_shell_term(ctx);
 	if (!apply_redirection(curr, env))
 		exit(1);
-	if (curr->cmd == NULL || curr->cmd[0] == '\0')
+	if (curr->cmd[0] == '\0')
 	{
 		if (curr->redirections != NULL)
 			exit(0);
-		fprintf(stderr, "minishell: : command not found\n");
+		ft_putstr_fd("minishell: : command not found\n", 2);
 		exit(127);
 	}
 	d = check_if_exist(*env, curr);
