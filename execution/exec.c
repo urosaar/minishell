@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/08 18:18:28 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 18:24:49 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,13 +113,9 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 		restore_std_fds(saved_in, saved_out);
 		return ;
 	}
-	if (!curr->cmd && curr->cmd[0] != '\0')
-	{
-		printf("HIII\n");
-	}
 	if ((!curr->cmd || curr->cmd[0] == '\0') && !curr->next)
 	{
-		ft_putstr_fd("minishellll: command not found\n", STDERR_FILENO);
+		ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
 		ctx->last_status = 127;
 		restore_std_fds(saved_in, saved_out);
 		return ;
