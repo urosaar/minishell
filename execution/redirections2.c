@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/06 18:01:49 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/08 15:27:31 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,11 @@ int	handle_single_redirection(t_redirection *tmp, t_env **env)
 	free(expanded);
 	if (clean == NULL)
 		return (0);
-	if (!check_clean(clean, tmp->filename))
-		return (0);
+	if (ft_strchr(tmp->filename, '$'))
+	{
+		if (!check_clean(clean, tmp->filename))
+			return (0);
+	}
 	ok = apply_redirect(tmp, clean);
 	free(clean);
 	return (ok);
