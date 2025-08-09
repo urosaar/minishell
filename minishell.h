@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/08 16:28:47 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/09 15:22:32 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,8 @@ typedef struct s_redirection
 	int						type;
 	char					*filename;
 	struct s_redirection	*next;
-	bool					quoted;
-	char					quote_char;
+	bool                     quoted;
+	char                     quote_char;
 	int						heredoc_fd;
 }	t_redirection;
 
@@ -252,7 +252,19 @@ int			handle_quoted_command(t_command *cmd, t_cmd_exp *exp, bool *no_split);
 int			count_words_isspace(const char *s);
 int			handle_single_redirection(t_redirection *tmp, t_env **env);
 int			apply_redirect(t_redirection *tmp, char *clean);
-void	remove_leading_empty_args(t_command *cmd);
+
+typedef struct s_empty
+{
+    char        *value;
+    struct s_empty *next;
+}   t_empty;
+
+void free_empty_list(t_empty *empty);
+int  add_empty_back(t_empty **head, char *str);
+char **empty_list_to_argv(t_empty *head);
+char    **empty_system(char **argv);
+bool empties_inside(char *str);
+bool one_empty(char *str);
 
 
 #endif

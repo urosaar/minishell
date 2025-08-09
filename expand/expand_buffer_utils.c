@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 14:12:52 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 15:12:13 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/09 15:09:45 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,3 +93,4 @@ int	handle_env_var(t_state *st)
 		return (insert_string(st, val, ft_strlen(val)));
 	return (1);
 }
+

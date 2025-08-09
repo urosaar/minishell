@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/08 18:21:24 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/09 21:18:01 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 		ft_putstr_fd("minishell: : command not found\n", 2);
 		exit(127);
 	}
+	curr->args = empty_system(curr->args);
+	free(curr->cmd);
+	curr->cmd = ft_strdup(curr->args[0]);
 	d = check_if_exist(*env, curr);
 	if (is_builtins(curr->args))
 		exit(builtins(env, curr->args, ctx->prev_pwd));

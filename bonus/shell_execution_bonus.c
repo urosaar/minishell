@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_execution_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 00:00:31 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 20:51:38 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/09 21:28:53 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ static void	expand_commands(t_command *cmds, t_exec *exec, t_env **env)
 		expand_command_vars(c, exec->last_status, env);
 		expand_wildcards(c, no_expand);
 		free(no_expand);
-		remove_leading_empty_args(c);
 		c = c->next;
 	}
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_variable_handler.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 14:14:26 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/03 14:24:02 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/09 21:27:19 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ static int	process_character(t_state *st)
 {
 	char	c;
 
+	if (st->in[0] == '\0')
+		return (0);
 	c = st->in[st->idx];
 	if (c == '\'' && !st->in_double)
 	{
@@ -46,6 +48,20 @@ static int	process_character(t_state *st)
 	return (1);
 }
 
+static int has_expandable(const char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 char	*expand_variables(const char *input, int last_status, t_env **env)
 {
 	t_state	st;
@@ -54,10 +70,11 @@ char	*expand_variables(const char *input, int last_status, t_env **env)
 	st.in = input;
 	st.last_status = last_status;
 	st.env = env;
-	st.res = malloc(1);
+	st.res = malloc(2);
 	if (!st.res)
 		return (NULL);
-	st.res[0] = '\0';
+	st.res[0] = (char)127; 
+	st.res[1] = '\0';
 	while (st.in[st.idx])
 	{
 		if (!process_character(&st))
@@ -66,6 +83,8 @@ char	*expand_variables(const char *input, int last_status, t_env **env)
 			return (NULL);
 		}
 	}
+	if (!has_expandable(st.in) && empties_inside(st.res))
+		return (free(st.res), ft_substr(st.res, 1, ft_strlen(st.res)));
 	return (st.res);
 }
 

@@ -22,6 +22,7 @@ SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
 	  main/shell_execution.c main/shell_init_input.c\
       expand/args_split_utils.c expand/expand_buffer_utils.c \
 	  expand/expand_command_utils.c expand/expand_command_vars.c expand/expand_variable_handler.c \
+	  expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c
 
 
 BNS_SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
@@ -36,7 +37,7 @@ BNS_SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
 	    bonus/shell_execution_bonus.c main/shell_init_input.c\
 		bonus/wild_card.c  expand/args_split_utils.c expand/expand_buffer_utils.c \
 		expand/expand_command_utils.c expand/expand_command_vars.c expand/expand_variable_handler.c \
-		
+		expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c
 
 
 OBJ = $(SRC:.c=.o)
