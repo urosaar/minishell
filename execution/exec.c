@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/10 19:51:10 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 20:46:22 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static int	exec_builtin(t_command *curr, t_env **env, t_exec *ctx)
 	return (0);
 }
 
-static int	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
+static void	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
 {
 	while (curr)
 	{
@@ -63,11 +63,10 @@ static int	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
 			break ;
 		}
 		if (creat_a_child(curr, env, ctx) == 1)
-			return (1);
+			break ;
 		curr = curr->next;
 	}
 	close_fd(ctx->prev_fd);
-	return (0);
 }
 
 static void	exec_finalize(t_command *start, t_exec *ctx)
@@ -113,7 +112,6 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 	restore_std_fds(saved_in, saved_out);
 	if (!exec_builtin(curr, env, ctx))
 		return ;
-	if (exec_pipeline(curr, env, ctx))
-		return ;
+	exec_pipeline(curr, env, ctx);
 	exec_finalize(cmds, ctx);
 }

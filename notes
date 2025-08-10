@@ -31,3 +31,41 @@ export expand(x)
 
 ctr + d in multiple heredoc
 
+
+-------------------------------------------------------------
+
+minishell> ls | ls < k | ls | exit
+minishell: k: No such file or directory
+exit
+
+bash-3.2$ ls | ls < k | ls | exit
+bash: k: No such file or directory
+
+
+
+
+minishell> << "" | ls
+> gfhfghfg
+>
+
+bash-3.2$ << "" | ls
+> gfhfghfg
+>
+f	ouiii
+
+
+minishell> export var+="| wc -l"
+minishell: export: `-l': not a valid identifier
+
+
+minishell> '''ls''' "-l" "|" | wc -l | exit | exit ""
+exit
+ls: |: No such file or directory
+minishell> echo $?
+0
+
+bash-3.2$ '''ls''' "-l" "|" | wc -l | exit | exit ""
+bash: exit: : numeric argument required
+ls: |: No such file or directory
+bash-3.2$ echo $?
+2556
