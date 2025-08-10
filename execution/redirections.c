@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:50:47 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/09 21:24:27 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:54:42 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int	redirect_input(char *filename)
 	int	f;
 
 	f = open(filename, O_RDONLY);
-		if (f == -1)
+	if (f == -1)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(filename, 2);
@@ -56,8 +56,8 @@ int	append_mode(const char *filename)
 
 int	redirect_output(char *filename)
 {
-	int	f;
-	char *temp;
+	int		f;
+	char	*temp;
 
 	if ((filename[0] == (char)127 && filename[1] == '\0'))
 	{

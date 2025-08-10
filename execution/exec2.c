@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec2.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:20:28 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/10 05:49:52 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:53:48 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	ft_execve(t_command *curr, t_env **env, char *d)
 		}
 		exit(127);
 	}
-	if (curr->cmd[0] == '\0') // $dfgdfgg ""
+	if (curr->cmd[0] == '\0')
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
 		exit (127);

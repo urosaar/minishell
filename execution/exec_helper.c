@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_helper.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/09 21:06:20 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:52:27 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,16 +40,23 @@ char	**build_env_array(t_env **env)
 	return (envp);
 }
 
-void	free_envp(char **envp)
+int	handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx)
 {
-	int	i;
-
-	i = 0;
-	if (!envp)
-		return ;
-	while (envp[i])
-		free(envp[i++]);
-	free(envp);
+	if (curr->redirections)
+	{
+		if (apply_redirection(curr, env))
+			ctx->last_status = 0;
+		else
+			ctx->last_status = 1;
+		return (1);
+	}
+	if (!curr->next)
+	{
+		ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
+		ctx->last_status = 127;
+		return (1);
+	}
+	return (0);
 }
 
 char	*ft_check1(char *cmd)

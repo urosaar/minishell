@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/09 21:12:46 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:51:10 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,19 +104,9 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 	saved_in = dup(STDIN_FILENO);
 	saved_out = dup(STDOUT_FILENO);
 	curr = cmds;
-	if ((!curr->cmd || curr->cmd[0] == '\0') && curr->redirections)
+	if ((!curr->cmd || curr->cmd[0] == '\0')
+		&& handle_empty_cmd(curr, env, ctx))
 	{
-		if (apply_redirection(curr, env))
-			ctx->last_status = 0;
-		else
-			ctx->last_status = 1;
-		restore_std_fds(saved_in, saved_out);
-		return ;
-	}
-	if ((!curr->cmd || curr->cmd[0] == '\0') && !curr->next)
-	{
-		ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
-		ctx->last_status = 127;
 		restore_std_fds(saved_in, saved_out);
 		return ;
 	}
