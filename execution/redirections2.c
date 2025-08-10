@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/09 21:30:24 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 16:20:57 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,48 +49,50 @@ static int	heredoc(t_redirection *tmp)
 	return (0);
 }
 
-static int	check_clean(char *clean, char *filename)
+int check_clean(char *clean, char *filename)
 {
-	int	words;
+    int words;
 
-	words = count_words_isspace(clean);
-	if (words > 1 || (clean[0] == (char)127 && clean[1] == '\0'))
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(filename, 2);
-		ft_putstr_fd(": ambiguous redirect\n", 2);
-		free(clean);
-		g_status = 1;
-		return (0);
-	}
-	return (1);
+    words = count_words_isspace(clean);
+    if (words != 1 || (clean[0] == (char)127 && clean[1] == '\0')) // export x="     "   ---->  > $x
+    {
+        ft_putstr_fd("minishell: ", 2);
+        ft_putstr_fd(filename, 2);
+        ft_putstr_fd(": ambiguous redirect\n", 2);
+        free(clean);
+        g_status = 1;
+        return (0);
+    }
+    return (1);
 }
 
-int	handle_single_redirection(t_redirection *tmp, t_env **env)
+int handle_single_redirection(t_redirection *tmp, t_env **env)
 {
-	char	*expanded;
-	char	*clean;
-	int		ok;
+    char *expanded;
+    char *clean;
+    int  ok;
 
-	if (heredoc(tmp))
-		return (1);
-   expanded = expand_variables(tmp->filename, g_status, env);
-   if (tmp->quoted && tmp->quote_char == '\'')
-       expanded = ft_strdup(tmp->filename);
-   else
-       expanded = expand_variables(tmp->filename, g_status, env);
-	if (expanded == NULL)
-		return (0);
-	clean = strip_quotes(expanded);
-	free(expanded);
-	if (clean == NULL)
-		return (0);
-	if (ft_strchr(tmp->filename, '$'))
-	{
-		 if (!tmp->quoted && !check_clean(clean, tmp->filename))
-			return (0);
-	}
-	ok = apply_redirect(tmp, clean);
-	free(clean);
-	return (ok);
+    if (heredoc(tmp))
+        return (1);
+    if (tmp->quoted && tmp->quote_char == '\'')
+        expanded = ft_strdup(tmp->filename);
+    else
+        expanded = expand_variables(tmp->filename, g_status, env);
+
+    if (expanded == NULL)
+        return (0);
+
+    clean = strip_quotes(expanded);
+    free(expanded);
+    if (clean == NULL)
+        return (0);
+    if (ft_strchr(tmp->filename, '$'))
+    {
+        if (!tmp->quoted && !check_clean(clean, tmp->filename))
+            return (0);
+    }
+    ok = apply_redirect(tmp, clean);
+    free(clean);
+    return (ok);
 }
+
