@@ -27,7 +27,7 @@ void free_empty_list(t_empty *empty)
         empty = tmp;
     }
 }
-// gets used in empty system
+
 int  add_empty_back(t_empty **head, char *str)
 {
     t_empty   *new;

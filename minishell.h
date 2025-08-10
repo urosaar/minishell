@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/09 15:22:32 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 05:19:14 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
+# include <dirent.h>
 # include "./libft/libft.h"
 
 # define HEREDOC_MAX_LINES 1000
@@ -134,6 +135,25 @@ typedef struct s_cmd_exp
 	int		token_count;
 }	t_cmd_exp;
 
+typedef struct s_empty
+{
+    char        *value;
+    struct s_empty *next;
+}   t_empty;
+
+typedef struct s_locals
+{
+    int     i;
+    int     count;
+    int     in_single;
+    int     in_double;
+    int     t;
+    int     start;
+    int     tokens;
+    char    **res;
+    char    **raw_tokens;
+}   t_locals;
+
 char		**lexer(const char *input);
 int			count_tokens(const char *input);
 char		*extract_operator(const char *input, int *i);
@@ -203,7 +223,7 @@ int			process_all_heredocs(t_command *cmds, int last_status, t_env **env);
 void		close_heredoc_fds(t_redirection *r);
 void		handler_heredoc(int sig);
 int			heredoc_iteration(t_heredoc_child *data, int *line_count);
-int	apply_redirection(t_command *curr, t_env **env);
+int			apply_redirection(t_command *curr, t_env **env);
 void		expand_wildcards(t_command *cmd, bool *no_expand);
 bool		*create_no_split_map(char **args);
 char		*expand_variables(const char *input, int last_status, t_env **env);
@@ -248,23 +268,20 @@ int			count_total_heredocs(char **tokens);
 int			skip_quotedd(const char *line, int *i, char q);
 char		*extract_operator(const char *input, int *i);
 bool		is_in_quote(bool in_quote, char *quote_char, char current_char);
-int			handle_quoted_command(t_command *cmd, t_cmd_exp *exp, bool *no_split);
 int			count_words_isspace(const char *s);
 int			handle_single_redirection(t_redirection *tmp, t_env **env);
 int			apply_redirect(t_redirection *tmp, char *clean);
-
-typedef struct s_empty
-{
-    char        *value;
-    struct s_empty *next;
-}   t_empty;
-
-void free_empty_list(t_empty *empty);
-int  add_empty_back(t_empty **head, char *str);
-char **empty_list_to_argv(t_empty *head);
-char    **empty_system(char **argv);
-bool empties_inside(char *str);
-bool one_empty(char *str);
-
+void		free_empty_list(t_empty *empty);
+int			add_empty_back(t_empty **head, char *str);
+char		**empty_list_to_argv(t_empty *head);
+char		**empty_system(char **argv);
+bool		empties_inside(char *str);
+bool		one_empty(char *str);
+int			has_expandable(const char *str);
+void		*ft_realloc(void *ptr, size_t old_size, size_t new_size);
+bool		wildcard_match(const char *pattern, const char *str);
+int			cmp_str(const void *a, const void *b);
+int			count_unquoted_tokens(const char *s);
+char		**split_unquoted_tokens(const char *s);
 
 #endif

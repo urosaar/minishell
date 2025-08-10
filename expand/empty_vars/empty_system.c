@@ -13,7 +13,6 @@ void    free_list(char **list)
     free(list);
 }
 
-// used in empty system
 bool empties_inside(char *str)
 {
     int i;

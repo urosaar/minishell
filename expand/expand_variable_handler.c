@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 14:14:26 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/09 21:27:19 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 05:11:42 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,23 +48,10 @@ static int	process_character(t_state *st)
 	return (1);
 }
 
-static int has_expandable(const char *str)
-{
-	int i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '$')
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
 char	*expand_variables(const char *input, int last_status, t_env **env)
 {
 	t_state	st;
+	char *ret;
 
 	ft_bzero(&st, sizeof(t_state));
 	st.in = input;
@@ -78,13 +65,13 @@ char	*expand_variables(const char *input, int last_status, t_env **env)
 	while (st.in[st.idx])
 	{
 		if (!process_character(&st))
-		{
-			free(st.res);
-			return (NULL);
-		}
+			return (free(st.res), NULL);
 	}
 	if (!has_expandable(st.in) && empties_inside(st.res))
-		return (free(st.res), ft_substr(st.res, 1, ft_strlen(st.res)));
+	{
+		ret = ft_substr(st.res, 1, ft_strlen(st.res));
+		return (free(st.res), ret);
+	}
 	return (st.res);
 }
 

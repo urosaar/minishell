@@ -21,7 +21,7 @@ SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
       parsing/shell_utils.c parsing/syntax.c parsing/syntax2.c main/shell_cleanup.c\
 	  main/shell_execution.c main/shell_init_input.c\
       expand/args_split_utils.c expand/expand_buffer_utils.c \
-	  expand/expand_command_utils.c expand/expand_command_vars.c expand/expand_variable_handler.c \
+	  expand/expand_command_utils.c expand/expand_command_utils2.c expand/expand_command_vars.c expand/expand_variable_handler.c \
 	  expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c
 
 
@@ -35,8 +35,8 @@ BNS_SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
 		parsing/parser_utils2.c parsing/parser_utils3.c parsing/parser_utils4.c\
 		parsing/shell_utils.c parsing/syntax.c parsing/syntax2.c main/shell_cleanup.c\
 	    bonus/shell_execution_bonus.c main/shell_init_input.c\
-		bonus/wild_card.c  expand/args_split_utils.c expand/expand_buffer_utils.c \
-		expand/expand_command_utils.c expand/expand_command_vars.c expand/expand_variable_handler.c \
+		bonus/wild_card.c bonus/wild_card2.c expand/args_split_utils.c expand/expand_buffer_utils.c \
+		expand/expand_command_utils.c expand/expand_command_utils2.c expand/expand_command_vars.c expand/expand_variable_handler.c \
 		expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c
 
 
