@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 21:15:01 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/31 21:23:08 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 19:50:42 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,5 +40,6 @@ char	*ft_strndup(const char *s1, size_t n);
 void	*ft_memset(void *s, int c, size_t n);
 char	*ft_strpbrk(const char *s, const char *accept);
 void	ft_bzero(void *s, size_t n);
+void	free_envp(char **envp);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:22:01 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 19:52:01 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,7 +206,7 @@ void		remove_if(t_env *env);
 void		without_plus(t_env **env, char *arg);
 void		with_plus(t_env **env, char *arg);
 char		**build_env_array(t_env **env);
-void		free_envp(char **envp);
+int			handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx);
 char		*check_if_exist(t_env *env, t_command *cmds);
 int			creat_a_child(t_command *curr, t_env **env, t_exec *ctx);
 void		ft_wait(t_exec *ctx);
