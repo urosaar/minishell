@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 17:06:23 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/08 16:05:28 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 19:15:37 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int	handle_heredoc(t_redirection *redir, char *token, t_command *cmd)
 		return (1);
 	redir->filename = stripped;
 	cmd->heredoc = 1;
-	if (strpbrk(token, "\"'") != NULL)
+	if (ft_strpbrk(token, "\"'") != NULL)
 		cmd->heredoc_quoted = 1;
 	else
 		cmd->heredoc_quoted = 0;
@@ -46,19 +46,19 @@ static int	handle_heredoc(t_redirection *redir, char *token, t_command *cmd)
 
 static int	handle_redir(t_redirection *redir, char *token, t_command *cmd)
 {
-   char    *filename;
+	char	*filename;
 
-   if ((token[0] == '"' && token[ft_strlen(token) - 1] == '"')
-    || (token[0] == '\'' && token[ft_strlen(token) - 1] == '\''))
-   {
-     redir->quoted    = true;
-     redir->quote_char = token[0];
-   }
-   else
-   {
-     redir->quoted    = false;
-     redir->quote_char = 0;
-   }
+	if ((token[0] == '"' && token[ft_strlen(token) - 1] == '"')
+		|| (token[0] == '\'' && token[ft_strlen(token) - 1] == '\''))
+	{
+		redir->quoted = true;
+		redir->quote_char = token[0];
+	}
+	else
+	{
+		redir->quoted = false;
+		redir->quote_char = 0;
+	}
 	filename = strip_quotes(token);
 	if (!filename)
 		return (1);
@@ -66,15 +66,9 @@ static int	handle_redir(t_redirection *redir, char *token, t_command *cmd)
 	if (redir->type == TOKEN_REDIRECT_IN)
 		cmd->infile = ft_strdup(filename);
 	else if (redir->type == TOKEN_REDIRECT_OUT)
-	{
-		cmd->outfile = ft_strdup(filename);
-		cmd->append = 0;
-	}
+		return (cmd->outfile = ft_strdup(filename), cmd->append = 0, 0);
 	else
-	{
-		cmd->outfile = ft_strdup(filename);
-		cmd->append = 1;
-	}
+		return (cmd->outfile = ft_strdup(filename), cmd->append = 1, 0);
 	return (0);
 }
 

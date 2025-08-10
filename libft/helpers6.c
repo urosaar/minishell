@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:26:14 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/31 21:14:27 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 19:11:25 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,18 +69,4 @@ char	*ft_strpbrk(const char *s, const char *accept)
 		s++;
 	}
 	return (NULL);
-}
-
-void	ft_bzero(void *s, size_t n)
-{
-	size_t			i;
-	unsigned char	*ptr;
-
-	ptr = (unsigned char *)s;
-	i = 0;
-	while (i < n)
-	{
-		ptr[i] = 0;
-		i++;
-	}
 }

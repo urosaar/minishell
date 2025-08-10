@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers3.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:09:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/04 20:38:06 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:10:26 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,31 +56,31 @@ char	*ft_itoa(int n)
 
 int	is_nbr(char *arg)
 {
-    int    i;
-    int    flag;
+	int	i;
+	int	flag;
 
-    i = 0;
-    flag = 0;
-    while (arg[i])
-    {
-        if ((arg[i] < '0' || arg[i] > '9') && !(arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)))
-            return (0);
-        if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
-            flag = 1;
-        if ((arg[i] >= '0' && arg[i] <= '9') && flag == 1)
-            return (0);
-        i++;
-    }
-    return (1);
+	i = 0;
+	flag = 0;
+	while (arg[i])
+	{
+		if ((arg[i] < '0' || arg[i] > '9') && !(arg[i] == ' '
+				|| (arg[i] >= 9 && arg[i] <= 13)))
+			return (0);
+		if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13))
+			flag = 1;
+		if ((arg[i] >= '0' && arg[i] <= '9') && flag == 1)
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-//for command "top"
-void save_shell_term(t_exec *exec)
+void	save_shell_term(t_exec *exec)
 {
-    tcgetattr(STDIN_FILENO, &exec->shell_termios);
+	tcgetattr(STDIN_FILENO, &exec->shell_termios);
 }
 
-void restore_shell_term(t_exec *exec)
+void	restore_shell_term(t_exec *exec)
 {
-    tcsetattr(STDIN_FILENO, TCSANOW, &exec->shell_termios);
+	tcsetattr(STDIN_FILENO, TCSANOW, &exec->shell_termios);
 }

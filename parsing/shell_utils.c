@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 11:02:33 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/05 14:38:02 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/10 19:15:53 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*append_char(char *result, int *rlen, char c)
 		free(result);
 		return (NULL);
 	}
-	memcpy(tmp, result, *rlen);
+	ft_memcpy(tmp, result, *rlen);
 	tmp[*rlen] = c;
 	(*rlen)++;
 	tmp[*rlen] = '\0';

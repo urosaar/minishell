@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_variable_handler.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 14:14:26 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 05:11:42 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:08:23 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static int	process_character(t_state *st)
 char	*expand_variables(const char *input, int last_status, t_env **env)
 {
 	t_state	st;
-	char *ret;
+	char	*ret;
 
 	ft_bzero(&st, sizeof(t_state));
 	st.in = input;
@@ -60,7 +60,7 @@ char	*expand_variables(const char *input, int last_status, t_env **env)
 	st.res = malloc(2);
 	if (!st.res)
 		return (NULL);
-	st.res[0] = (char)127; 
+	st.res[0] = (char)127;
 	st.res[1] = '\0';
 	while (st.in[st.idx])
 	{

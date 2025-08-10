@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 05:19:14 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:22:01 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,8 @@ typedef struct s_redirection
 	int						type;
 	char					*filename;
 	struct s_redirection	*next;
-	bool                     quoted;
-	char                     quote_char;
+	bool					quoted;
+	char					quote_char;
 	int						heredoc_fd;
 }	t_redirection;
 
@@ -137,29 +137,28 @@ typedef struct s_cmd_exp
 
 typedef struct s_empty
 {
-    char        *value;
-    struct s_empty *next;
-}   t_empty;
+	char			*value;
+	struct s_empty	*next;
+}	t_empty;
 
 typedef struct s_locals
 {
-    int     i;
-    int     count;
-    int     in_single;
-    int     in_double;
-    int     t;
-    int     start;
-    int     tokens;
-    char    **res;
-    char    **raw_tokens;
-}   t_locals;
+	int		i;
+	int		count;
+	int		in_single;
+	int		in_double;
+	int		t;
+	int		start;
+	int		tokens;
+	char	**res;
+	char	**raw_tokens;
+}	t_locals;
 
 char		**lexer(const char *input);
 int			count_tokens(const char *input);
 char		*extract_operator(const char *input, int *i);
 char		*extract_word(const char *input, int *i);
 t_command	*parse_tokens(char **tokens);
-int			count_args(char **tokens, int start);
 int			check_syntax_errors(char *line, char **tokens);
 int			check_consecutive_operators(char **tokens);
 int			check_redirection_without_filename(char **tokens);
@@ -201,15 +200,11 @@ void		expand_tokens(char **tokens, int last_status, t_env **env);
 void		save_shell_term(t_exec *exec);
 void		restore_shell_term(t_exec *exec);
 int			is_nbr(char *arg);
-
-/* Export_helpers */
 void		swap_line(t_env **head);
 char		*key_full(char *line, char c);
 void		remove_if(t_env *env);
 void		without_plus(t_env **env, char *arg);
 void		with_plus(t_env **env, char *arg);
-
-/* Exection */
 char		**build_env_array(t_env **env);
 void		free_envp(char **envp);
 char		*check_if_exist(t_env *env, t_command *cmds);
@@ -231,15 +226,18 @@ void		expand_tokens(char **tokens, int last_status, t_env **env);
 char		**split_selected_args(char **args, bool *no_split);
 bool		*create_no_split_map(char **args);
 t_cmd_exp	expand_command_string(char *cmd_str, int last_status, t_env **env);
-char		**expand_arguments(char **args, int arg_count, int last_status, t_env **env);
+char		**expand_arguments(char **args, int arg_count,
+				int last_status, t_env **env);
 void		expand_redirections(t_command *cmd, int last_status, t_env **env);
 void		expand_command_vars(t_command *cmd, int last_status, t_env **env);
 void		free_strarray(char **arr);
 int			count(char **args);
 int			handle_exit_status(t_state *st);
 int			handle_env_var(t_state *st);
-void		rebuild_without_tokens(t_command *cmd, char **exp_args, bool *no_split, char *exp_cmd);
-void		rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp, char **exp_args, bool *no_split);
+void		rebuild_without_tokens(t_command *cmd, char **exp_args,
+				bool *no_split, char *exp_cmd);
+void		rebuild_with_tokens(t_command *cmd, t_cmd_exp *exp,
+				char **exp_args, bool *no_split);
 int			str_append_char(t_state *st, char c);
 void		free_strarray(char **arr);
 void		free_tokens(char **tokens);
@@ -256,14 +254,17 @@ void		free_redirections(t_redirection *redir);
 void		free_command_partial(t_command *cmd);
 t_command	*init_command(int argc);
 int			setup_redir(t_redirection **redir, char *token);
-int			process_redir(char **tokens, int *idx, t_command *cmd, t_redirection **last);
+int			process_redir(char **tokens, int *idx,
+				t_command *cmd, t_redirection **last);
 int			process_arg(char **tokens, int *idx, t_command *cmd, int *arg_i);
 void		finalize_command(t_command *cmd, int arg_i);
 t_command	*parse_one_command(char **tokens, int *idx);
-int			process_and_link(char **tokens, int *i, t_command **head, t_command **current);
+int			process_and_link(char **tokens, int *i,
+				t_command **head, t_command **current);
 int			count_actual_args(char **tokens, int start);
 bool		is_redir_token(const char *tok);
-int			process_redir(char **tokens, int *idx, t_command *cmd, t_redirection **last);
+int			process_redir(char **tokens, int *idx,
+				t_command *cmd, t_redirection **last);
 int			count_total_heredocs(char **tokens);
 int			skip_quotedd(const char *line, int *i, char q);
 char		*extract_operator(const char *input, int *i);

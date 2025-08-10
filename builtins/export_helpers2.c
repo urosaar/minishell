@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_helpers2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 18:45:19 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 17:43:48 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:15:09 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	update_found_node(t_env *found, char *arg)
 {
 	char	*value;
 
-	value = strchr(arg, '=');
+	value = ft_strchr(arg, '=');
 	free(found->line);
 	found->line = ft_strdup(arg);
 	if (found->value)

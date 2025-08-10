@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_execution.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:14:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/09 21:27:56 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/10 18:53:25 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ static void	parse_expand_execute(char **tokens, t_env **env, t_exec *exec)
 	execution(cmds, env, exec);
 	free_commands(cmds);
 }
-
 
 static void	run_shell(t_env **env, t_exec *exec)
 {

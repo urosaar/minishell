@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers5.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:20:27 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/01 19:28:59 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/10 19:12:00 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,20 +66,6 @@ void	ft_lstadd_back(t_env **env, t_env *new)
 	}
 	last = ft_lstlast(*env);
 	last->next = new;
-}
-
-void	ft_putstr_fd(char *s, int fd)
-{
-	int	i;
-
-	i = 0;
-	if (!s)
-		return ;
-	while (s[i])
-	{
-		write(fd, &s[i], 1);
-		i++;
-	}
 }
 
 char	*ft_strchr(char *s, int c)

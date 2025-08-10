@@ -8,7 +8,7 @@ O_LDFLAGS = -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
 O_CFLAG = -I$(O_READLINE_DIR)/include -Ilibft
 
 LIBFT_SRC = libft/helpers1.c libft/helpers2.c libft/helpers3.c \
-            libft/helpers4.c libft/helpers5.c libft/helpers6.c
+            libft/helpers4.c libft/helpers5.c libft/helpers6.c libft/helpers7.c 
 LIBFT_OBJ = $(LIBFT_SRC:.c=.o)
 SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
       builtins/pwd.c builtins/exit.c builtins/cd.c builtins/unset.c \
@@ -37,7 +37,7 @@ BNS_SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
 	    bonus/shell_execution_bonus.c main/shell_init_input.c\
 		bonus/wild_card.c bonus/wild_card2.c expand/args_split_utils.c expand/expand_buffer_utils.c \
 		expand/expand_command_utils.c expand/expand_command_utils2.c expand/expand_command_vars.c expand/expand_variable_handler.c \
-		expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c
+		expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c 
 
 
 OBJ = $(SRC:.c=.o)
