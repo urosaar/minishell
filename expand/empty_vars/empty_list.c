@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 18:55:43 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:00:11 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/11 18:33:31 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,4 +91,14 @@ char	**empty_list_to_argv(t_empty *head)
 	}
 	argv[i] = NULL;
 	return (argv);
+}
+
+void	check_args_and_exit(char **args, t_exec *ctx)
+{
+	if (!args || !args[0])
+	{
+		if (ctx->last_status == 0)
+			exit(0);
+		exit(1);
+	}
 }

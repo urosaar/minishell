@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/11 16:24:25 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/11 18:34:52 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -276,7 +276,7 @@ int			apply_redirect(t_redirection *tmp, char *clean);
 void		free_empty_list(t_empty *empty);
 int			add_empty_back(t_empty **head, char *str);
 char		**empty_list_to_argv(t_empty *head);
-char		**empty_system(char **argv);
+char		**empty_system(char **argv, t_exec *ctx);
 bool		empties_inside(char *str);
 bool		one_empty(char *str);
 int			has_expandable(const char *str);
@@ -285,5 +285,6 @@ bool		wildcard_match(const char *pattern, const char *str);
 int			cmp_str(const void *a, const void *b);
 int			count_unquoted_tokens(const char *s);
 char		**split_unquoted_tokens(const char *s);
+void		check_args_and_exit(char **args, t_exec *ctx);
 
 #endif

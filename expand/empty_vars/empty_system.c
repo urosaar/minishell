@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   empty_system.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 18:55:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/11 16:24:06 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/11 18:34:23 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,29 @@ bool	one_empty(char *str)
 	return (false);
 }
 
-char	**empty_system(char **argv)
+bool	all_empty_check(char **argv)
+{
+	int i;
+
+	i = 0;
+	while (argv[i])
+	{
+		if (!empties_inside(argv[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+char	**empty_system(char **argv, t_exec *ctx)
 {
 	t_empty	*args;
 	char	**new_argv;
 	int		i;
 
 	args = NULL;
+	if (all_empty_check(argv))
+		return (ctx->last_status = 0, NULL);
 	i = 0;
 	while (argv[i])
 	{
