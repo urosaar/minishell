@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers3.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:09:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:10:26 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/11 15:10:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ int	is_nbr(char *arg)
 
 	i = 0;
 	flag = 0;
+	if (!arg)
+		return (0);
 	while (arg[i])
 	{
 		if ((arg[i] < '0' || arg[i] > '9') && !(arg[i] == ' '

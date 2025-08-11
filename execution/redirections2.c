@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:56:04 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/11 12:35:27 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,10 @@ static int	heredoc(t_redirection *tmp)
 		if (dup2(tmp->heredoc_fd, STDIN_FILENO) == -1)
 		{
 			perror("minishell: dup2 heredoc");
-			return (0);
+			return (1);
 		}
 		close(tmp->heredoc_fd);
 		tmp->heredoc_fd = -1;
-		return (1);
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:05 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 16:42:33 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/11 16:14:32 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ void	if_envp_empty(t_env **env)
 	char	*node2;
 	char	*node3;
 
-	printf("HEREEE\n");
 	node1 = "SHLVL=1";
 	node2 = "_=/usr/bin/env";
 	node3 = "PATH=/usr/gnu/bin:/usr/local/bin:/bin:/usr/bin:.";

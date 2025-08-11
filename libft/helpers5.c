@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers5.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:20:27 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:12:00 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/11 16:14:38 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ t_env	*ft_lstlast(t_env *env)
 {
 	if (!env)
 	{
-		printf("HELLO\n");
 		return (0);
 	}
 	while (env && env->next)

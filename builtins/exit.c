@@ -6,21 +6,22 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:52 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 17:10:13 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/11 16:13:26 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	check_error(t_env *env, char *arg)
+void	check_error(t_env *env, char *arg, int flag)
 {
-	printf("exit\n");
+	if (flag)
+		printf("exit\n");
 	printf("minishell: exit: %s: numeric argument required\n", arg);
 	free_env(env);
 	exit(255);
 }
 
-long	calcul(t_env *env, char *arg, int sign)
+long	calcul(t_env *env, char *arg, int sign, int falg)
 {
 	long long	oldnbr;
 	long long	r;
@@ -33,12 +34,12 @@ long	calcul(t_env *env, char *arg, int sign)
 		oldnbr = r;
 		r = r * 10 + (arg[i++] - '0');
 		if ((r < oldnbr && sign > 0) || (r < oldnbr && sign < 0))
-			check_error(env, arg);
+			check_error(env, arg, falg);
 	}
 	return (r);
 }
 
-long	ft_atoi(t_env *env, char *arg)
+long	ft_atoi(t_env *env, char *arg, int flag)
 {
 	long long	r;
 	int			sign;
@@ -56,44 +57,47 @@ long	ft_atoi(t_env *env, char *arg)
 		arg++;
 	}
 	if (is_nbr(arg))
-		r = calcul(env, arg, sign);
+		r = calcul(env, arg, sign, flag);
 	else
-		check_error(env, arg);
+		check_error(env, arg, flag);
 	return (r * sign);
 }
 
-void	ft_check_arg(t_env *env, char *arg)
+void	ft_check_arg(t_env *env, char *arg, int flag)
 {
 	long	r;
 
-	r = ft_atoi(env, arg);
-	printf("exit\n");
+	r = ft_atoi(env, arg, flag);
+	if (arg[0] == '\0' || (arg[0] == ' ' && r == 0))
+		check_error(env, arg, flag);
+	else if (flag)
+		printf("exit\n");
 	free_env(env);
 	exit(r);
 }
 
-int	ft_exit(t_env *env, char **arg)
+int	ft_exit(t_env *env, char **arg, int flag)
 {
 	int	i;
 
 	i = 0;
 	if (!arg[1])
 	{
-		printf("exit\n");
+		if (flag)
+			printf("exit\n");
 		free_env(env);
 		exit(0);
 	}
-	while ((arg[1][i] == ' ' || (arg[1][i] >= 9
-		&& arg[1][i] <= 13)) && arg[1][i + 1] != '\0')
-		i++;
-	if (arg[1] && arg[2] && (ft_atoi(env, arg[1]) || !ft_atoi(env, arg[1])))
+	if (arg[1] && arg[2] && (ft_atoi(env, arg[1], flag)
+			|| !ft_atoi(env, arg[1], flag)))
 	{
-		printf("exit\n");
+		if (flag)
+			printf("exit\n");
 		printf("minishell: exit: too many arguments\n");
 		return (1);
 	}
 	else if (arg[1] && arg[2] && !is_nbr(arg[1]))
-		check_error(env, arg[1]);
-	ft_check_arg(env, arg[1]);
+		check_error(env, arg[1], flag);
+	ft_check_arg(env, arg[1], flag);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/10 20:47:57 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/11 16:17:06 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,10 @@ int	handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx)
 		if (apply_redirection(curr, env))
 			ctx->last_status = 0;
 		else
+		{
 			ctx->last_status = 1;
-		return (1);
+		}
+		return (0);
 	}
 	if (!curr->next)
 	{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec1.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:07:08 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/10 05:38:14 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/11 16:24:19 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 	curr->cmd = ft_strdup(curr->args[0]);
 	d = check_if_exist(*env, curr);
 	if (is_builtins(curr->args))
-		exit(builtins(env, curr->args, ctx->prev_pwd));
+		exit(builtins(env, curr->args, ctx->prev_pwd, ctx->f));
 	ft_execve(curr, env, d);
 }
 

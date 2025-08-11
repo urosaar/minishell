@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:52:01 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/11 16:24:25 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ typedef struct s_exec
 	int				prev_fd;
 	int				last_status;
 	int				pipe_fd[2];
+	int				f;
 	char			*prev_pwd;
 	struct termios	shell_termios;
 }	t_exec;
@@ -171,14 +172,14 @@ void		free_tokens(char **tokens);
 void		free_commands(t_command *cmd);
 void		execution(t_command *cmds, t_env **env, t_exec *exec);
 void		handler(int signal);
-int			ft_exit(t_env *env, char **arg);
+int			ft_exit(t_env *env, char **arg, int flag);
 int			ft_echo(char **arg);
 int			ft_pwd(t_env *env);
 int			ft_cd(t_env **env, char **arg, char *prev_pwd);
 int			ft_env(t_env **env, char **arg);
 int			ft_unset(t_env **env, char **arg);
 int			ft_export(t_env **env, char **arg);
-int			builtins(t_env **env, char **args, char *prev_pwd);
+int			builtins(t_env **env, char **args, char *prev_pwd, int flag);
 int			is_builtins(char **args);
 void		copy_env(char **envp, t_env **env);
 t_env		*copy_for_expo(t_env *env);

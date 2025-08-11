@@ -6,13 +6,13 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:14 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/06 16:44:53 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/11 12:42:51 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	builtins(t_env **env, char **args, char *prev_pwd)
+int	builtins(t_env **env, char **args, char *prev_pwd, int flag)
 {
 	int	last_status;
 
@@ -24,7 +24,7 @@ int	builtins(t_env **env, char **args, char *prev_pwd)
 	else if (*args && !ft_strcmp(*args, "cd"))
 		last_status = ft_cd(env, args, prev_pwd);
 	else if (*args && !ft_strcmp(*args, "exit"))
-		last_status = ft_exit(*env, args);
+		last_status = ft_exit(*env, args, flag);
 	else if (*args && !ft_strcmp(*args, "env"))
 		last_status = ft_env(env, args);
 	else if (*args && !ft_strcmp(*args, "unset"))
