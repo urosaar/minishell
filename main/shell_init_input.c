@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/03 16:12:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/05 01:26:44 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/12 12:58:08 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,9 @@ int	handle_args_error(int ac, char **av, t_exec *exec)
 	(void)ac;
 	if (av[1])
 	{
-		fprintf(stderr, "minishell: %s: No such file or directory\n", av[1]);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(av[1], 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
 		exec->last_status = 127;
 		return (127);
 	}

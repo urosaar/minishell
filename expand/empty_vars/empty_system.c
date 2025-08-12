@@ -6,7 +6,7 @@
 /*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 18:55:34 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/11 18:34:23 by jesse            ###   ########.fr       */
+/*   Updated: 2025/08/12 12:58:57 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ bool	one_empty(char *str)
 
 bool	all_empty_check(char **argv)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (argv[i])
