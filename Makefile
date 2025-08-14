@@ -1,6 +1,6 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -g
+CFLAGS = -Wall -Werror -Wextra
 O_READLINE_DIR = readline/install
 O_LDFLAGS = -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
 O_CFLAG = -I$(O_READLINE_DIR)/include -Ilibft
