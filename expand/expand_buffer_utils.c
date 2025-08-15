@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_buffer_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/03 14:12:52 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/10 19:02:36 by jesse            ###   ########.fr       */
+/*   Created: 2025/08/12 21:07:31 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/08/15 19:51:19 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	insert_string(t_state *st, const char *s, int len)
 		return (1);
 	if (!grow_buffer(st, len))
 		return (0);
-	memcpy(st->res + st->rlen, s, len);
+	ft_memcpy(st->res + st->rlen, s, len);
 	st->rlen += len;
 	return (1);
 }

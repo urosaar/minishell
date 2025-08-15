@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/11 16:17:06 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/15 15:27:00 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int	handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx)
 	return (0);
 }
 
-char	*ft_check1(char *cmd)
+char	*ft_check1(char *cmd, t_exec *ctx)
 {
 	int	dirfd;
 
@@ -71,11 +71,14 @@ char	*ft_check1(char *cmd)
 	if (dirfd >= 0)
 	{
 		close(dirfd);
+		ctx->last_status = 126;
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd, 2);
 		ft_putstr_fd(": is a directory\n", 2);
 		return (NULL);
 	}
+	if (access(cmd, F_OK) == 0)
+		return (ft_strdup(cmd));
 	if (access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	if (ft_strchr(cmd, '/'))
@@ -110,17 +113,13 @@ char	*ft_check2(char **path, char *cmd)
 	return (NULL);
 }
 
-char	*check_if_exist(t_env *env, t_command *cmds)
+char	*check_if_exist(t_env *env, t_command *cmds, t_exec *ctx)
 {
 	char	**path;
 	char	*d;
 	t_env	*tmp;
 
-	path = NULL;
-	tmp = env;
-	d = ft_check1(cmds->cmd);
-	if (d)
-		return (d);
+	1 && (path = NULL, tmp = env, d = NULL);
 	while (tmp)
 	{
 		if (!ft_strcmp(tmp->key, "PATH"))
@@ -130,9 +129,14 @@ char	*check_if_exist(t_env *env, t_command *cmds)
 		}
 		tmp = tmp->next;
 	}
-	if (!path)
+	if (!path || ft_strchr(cmds->cmd, '/'))
+		d = ft_check1(cmds->cmd, ctx);
+	if (d)
+		return (d);
+	else if (!d && ft_strchr(cmds->cmd, '/'))
 		return (NULL);
-	d = ft_check2(path, cmds->cmd);
+	if (path)
+		d = ft_check2(path, cmds->cmd);
 	if (d)
 		return (d);
 	return (free_array(path), NULL);

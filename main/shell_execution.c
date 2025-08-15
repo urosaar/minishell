@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_execution.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/03 16:14:09 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/12 20:41:07 by jesse            ###   ########.fr       */
+/*   Created: 2025/08/12 21:09:04 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/08/14 12:51:10 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,8 @@ int	main(int ac, char **av, char **envp)
 	t_exec	*exec;
 	int		ret;
 
+	if (isatty(STDIN_FILENO) == 0 || isatty(STDOUT_FILENO) == 0)
+		exit(1);
 	env = NULL;
 	exec = init_exec_env(envp, &env);
 	if (!exec)

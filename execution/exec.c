@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/11 14:42:39 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/15 15:47:14 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,36 +121,3 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 	exec_pipeline(curr, env, ctx);
 	exec_finalize(cmds, ctx);
 }
-// void	execution(t_command *cmds, t_env **env, t_exec *ctx)
-// {
-// 	t_command	*curr;
-// 	int			saved_in;
-// 	int			saved_out;
-
-// 	if (!exec_init(cmds, ctx, env))
-// 		return ;
-// 	saved_in = dup(STDIN_FILENO);
-// 	saved_out = dup(STDOUT_FILENO);
-// 	curr = cmds;
-// 	if ((!curr->cmd || curr->cmd[0] == '\0') && curr->redirections)
-// 	{
-// 		if (apply_redirection(curr, env))
-// 			ctx->last_status = 0;
-// 		else
-// 			ctx->last_status = 1;
-// 		restore_std_fds(saved_in, saved_out);
-// 		// return ;
-// 	}
-// 	if ((!curr->cmd || curr->cmd[0] == '\0') && !curr->next)
-// 	{
-// 		ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
-// 		ctx->last_status = 127;
-// 		restore_std_fds(saved_in, saved_out);
-// 		return ;
-// 	}
-// 	restore_std_fds(saved_in, saved_out);
-// 	if (!exec_builtin(curr, env, ctx))
-// 		return ;
-// 	exec_pipeline(curr, env, ctx);
-// 	exec_finalize(cmds, ctx);
-// }

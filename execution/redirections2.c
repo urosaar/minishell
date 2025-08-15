@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/05 15:42:07 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/11 12:35:27 by skhallou         ###   ########.fr       */
+/*   Created: 2025/08/12 21:06:53 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/08/15 19:48:55 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,11 @@ int	handle_single_redirection(t_redirection *tmp, t_env **env)
 	free(expanded);
 	if (clean == NULL)
 		return (0);
-	if (ft_strchr(tmp->filename, '$'))
-	{
-		if (!tmp->quoted && !check_clean(clean, tmp->filename))
-			return (0);
-	}
+	if (tmp->type != TOKEN_HEREDOC && ft_strchr(tmp->filename, '$'))
+    {
+        if (!tmp->quoted && !check_clean(clean, tmp->filename))
+            return (0);
+    }
 	ok = apply_redirect(tmp, clean);
 	free(clean);
 	return (ok);

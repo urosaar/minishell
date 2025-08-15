@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/31 22:14:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/12 20:45:11 by jesse            ###   ########.fr       */
+/*   Created: 2025/08/12 21:10:22 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/08/15 19:51:55 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,12 @@
 # include <fcntl.h>
 # include <stdint.h>
 # include <signal.h>
-# include <sys/wait.h>
 # include <errno.h>
+# include <sys/wait.h>
 # include <termios.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <stdbool.h>
-# include <dirent.h>
 # include "./libft/libft.h"
 
 # define HEREDOC_MAX_LINES 1000
@@ -208,12 +207,12 @@ void		without_plus(t_env **env, char *arg);
 void		with_plus(t_env **env, char *arg);
 char		**build_env_array(t_env **env);
 int			handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx);
-char		*check_if_exist(t_env *env, t_command *cmds);
+char		*check_if_exist(t_env *env, t_command *cmds, t_exec *ctx);
 int			creat_a_child(t_command *curr, t_env **env, t_exec *ctx);
 void		ft_wait(t_exec *ctx);
 void		restore_std_fds(int saved_in, int saved_out);
 void		close_fd(int fd);
-void		ft_execve(t_command *curr, t_env **env, char *d);
+void		ft_execve(t_command *curr, t_env **env, t_exec *ctx, char *d);
 void		dup_if_there_is_pipe(t_command *curr, int *pipe_fd, int prev_fd);
 int			process_all_heredocs(t_command *cmds, int last_status, t_env **env);
 void		close_heredoc_fds(t_redirection *r);
@@ -280,9 +279,6 @@ char		**empty_system(char **argv, t_exec *ctx);
 bool		empties_inside(char *str);
 bool		one_empty(char *str);
 int			has_expandable(const char *str);
-void		*ft_realloc(void *ptr, size_t old_size, size_t new_size);
-bool		wildcard_match(const char *pattern, const char *str);
-int			cmp_str(const void *a, const void *b);
 int			count_unquoted_tokens(const char *s);
 char		**split_unquoted_tokens(const char *s);
 void		check_args_and_exit(char **args, t_exec *ctx);

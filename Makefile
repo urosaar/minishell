@@ -1,12 +1,13 @@
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g -fsanitize=address
 O_READLINE_DIR = readline/install
 O_LDFLAGS = -L$(O_READLINE_DIR)/lib -lreadline -lhistory -lncurses
 O_CFLAG = -I$(O_READLINE_DIR)/include -Ilibft
 
 LIBFT_SRC = libft/helpers1.c libft/helpers2.c libft/helpers3.c \
-            libft/helpers4.c libft/helpers5.c libft/helpers6.c libft/helpers7.c 
+            libft/helpers4.c libft/helpers5.c libft/helpers6.c libft/helpers7.c \
+			libft/helpers8.c
 LIBFT_OBJ = $(LIBFT_SRC:.c=.o)
 SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
       builtins/pwd.c builtins/exit.c builtins/cd.c builtins/unset.c \

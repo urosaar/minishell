@@ -1,0 +1,39 @@
+echo a s f g h j >> t
+cat t
+
+
+
+cat  << f
+"$USER"
+'$USER'
+ $USER
+
+ << $r   << $"r"   << $'r' 
+
+
+ minishell> export x="       "
+minishell> > $x
+minishell: $x: ambiguous redirect
+
+
+
+minishell> export a="           "
+minishell> cat << $a
+> $a
+minishell: $a: ambiguous redirect
+minishell> 
+
+
+
+
+
+
+minishell> export a="           ls              -la             "
+minishell> """"""$a""""""
+minishell:              ls              -la             : command not found
+minishell> 
+
+minishell> ./builtins
+minishell: ./builtins: is a directory
+minishell> $?
+minishell: 127: command not found

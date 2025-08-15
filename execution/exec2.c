@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:20:28 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/11 14:30:44 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/15 19:26:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,20 +24,25 @@ void	perror_and_exit(const char *msg)
 	exit(1);
 }
 
-void	ft_execve(t_command *curr, t_env **env, char *d)
+void	ft_check_error(t_command *curr, t_exec *ctx)
+{
+	if (!ft_strchr(curr->cmd, '/'))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(curr->cmd, 2);
+		ft_putstr_fd(": command not found\n", 2);
+	}
+	else if (ft_strchr(curr->cmd, '/') && ctx->last_status == 126)
+		exit(126);
+	exit(127);
+}
+
+void	ft_execve(t_command *curr, t_env **env, t_exec *ctx, char *d)
 {
 	char	**envp;
 
 	if (!d)
-	{
-		if (!ft_strchr(curr->cmd, '/'))
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(curr->cmd, 2);
-			ft_putstr_fd(": command not found\n", 2);
-		}
-		exit(127);
-	}
+		ft_check_error(curr, ctx);
 	if (curr->cmd[0] == '\0')
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
@@ -46,8 +51,15 @@ void	ft_execve(t_command *curr, t_env **env, char *d)
 	envp = build_env_array(env);
 	if (execve(d, curr->args, envp) == -1)
 	{
+		if (errno == ENOEXEC)
+		{
+			ft_errno(curr->args, envp);
+			exit(126);
+		}
 		free_envp(envp);
 		perror("minishell: execve");
+		if (errno == EACCES)
+			exit(126);
 		exit(1);
 	}
 }

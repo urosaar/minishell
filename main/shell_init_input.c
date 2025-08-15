@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_init_input.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/03 16:12:28 by jesse             #+#    #+#             */
-/*   Updated: 2025/08/12 12:58:08 by jesse            ###   ########.fr       */
+/*   Created: 2025/08/12 21:09:09 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/08/15 16:29:02 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,7 @@ char	**lex_and_validate(char *raw, t_exec *exec)
 		free_tokens(tokens);
 		return (NULL);
 	}
+	if (check_pipe(tokens))
+		exec->last_status = 0;
 	return (tokens);
 }

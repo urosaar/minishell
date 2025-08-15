@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers4.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/28 16:18:14 by jesse             #+#    #+#             */
-/*   Updated: 2025/07/31 21:09:55 by jesse            ###   ########.fr       */
+/*   Created: 2025/08/12 21:08:23 by oukhanfa          #+#    #+#             */
+/*   Updated: 2025/08/14 17:39:56 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ char	**free_array(char **array)
 	int	i;
 
 	i = 0;
+	if (!array)
+		return (NULL);
 	while (array[i])
 	{
 		free(array[i]);
