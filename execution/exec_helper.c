@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 15:27:00 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/15 21:44:27 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx)
 		{
 			ctx->last_status = 1;
 		}
-		return (0);
+		return (1);
 	}
 	if (!curr->next)
 	{

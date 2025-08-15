@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:13:29 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/15 14:02:33 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/15 21:41:48 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	child_process(t_command *curr, t_env **env, t_exec *ctx)
 	restore_shell_term(ctx);
 	if (!apply_redirection(curr, env))
 		exit(1);
-	if (curr->cmd[0] == '\0')
+	if (!curr->cmd || curr->cmd[0] == '\0')
 	{
 		if (curr->redirections != NULL)
 			exit(0);

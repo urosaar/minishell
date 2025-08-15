@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 15:47:14 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/15 21:41:11 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	execution(t_command *cmds, t_env **env, t_exec *ctx)
 	saved_in = dup(STDIN_FILENO);
 	saved_out = dup(STDOUT_FILENO);
 	curr = cmds;
-	if ((!curr->cmd || curr->cmd[0] == '\0')
+	if (!curr->next && (!curr->cmd || curr->cmd[0] == '\0')
 		&& handle_empty_cmd(curr, env, ctx))
 	{
 		restore_std_fds(saved_in, saved_out);
