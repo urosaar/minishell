@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 20:20:28 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 19:26:02 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 17:17:45 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	ft_execve(t_command *curr, t_env **env, t_exec *ctx, char *d)
 
 	if (!d)
 		ft_check_error(curr, ctx);
-	if (curr->cmd[0] == '\0')
+	if (!curr->cmd || curr->cmd[0] == '\0')
 	{
 		ft_putstr_fd("minishell: : command not found\n", 2);
 		exit (127);

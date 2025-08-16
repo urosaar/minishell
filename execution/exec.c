@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 21:41:11 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 15:03:55 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ static void	exec_pipeline(t_command *curr, t_env **env, t_exec *ctx)
 		{
 			close(ctx->pipe_fd[0]);
 			close(ctx->pipe_fd[1]);
+			ctx->last_status = 1;
+			g_status = 1;
 			break ;
 		}
 		curr = curr->next;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:08:52 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/16 06:11:36 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/16 17:52:23 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 # include "../minishell.h"
 
-typedef struct s_env	t_env;
+typedef struct s_env		t_env;
+typedef struct s_command	t_command;
 
 size_t	ft_strlen(const char *str);
 char	*ft_strdup(const char *src);
@@ -44,5 +45,6 @@ void	free_envp(char **envp);
 int		check_pipe(char **token);
 void	ft_errno(char **args, char **envp);
 void	*ft_memmove(void *dst, const void *src, size_t n);
+void	there_is_redir(t_command *curr);
 
 #endif

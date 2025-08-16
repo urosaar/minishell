@@ -6,7 +6,7 @@
 /*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 21:44:27 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 17:12:48 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,19 @@ char	**build_env_array(t_env **env)
 
 int	handle_empty_cmd(t_command *curr, t_env **env, t_exec *ctx)
 {
+	int	flag;
+
 	if (curr->redirections)
 	{
-		if (apply_redirection(curr, env))
+		flag = apply_redirection(curr, env);
+		if (flag)
 			ctx->last_status = 0;
 		else
-		{
 			ctx->last_status = 1;
+		if ((curr->cmd && curr->cmd[0] == '\0') && flag)
+		{
+			ft_putstr_fd("minishell: command not found\n", STDERR_FILENO);
+			ctx->last_status = 127;
 		}
 		return (1);
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers8.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:29:54 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/16 06:30:50 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/16 17:54:30 by skhallou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,4 +63,16 @@ void	*ft_memmove(void *dst, const void *src, size_t n)
 			*--d = *--s;
 	}
 	return (dst);
+}
+
+void	there_is_redir(t_command *curr)
+{
+	if (curr->redirections != NULL)
+	{
+		if (!curr->cmd || curr->cmd[0] == '\0')
+		{
+			ft_putstr_fd("minishell: : command not found\n", 2);
+			exit(127);
+		}
+	}
 }
