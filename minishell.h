@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:10:22 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/16 06:27:51 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/16 07:54:33 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,5 +294,7 @@ char		*handle_dollar(char *out, const char *line, size_t *i,
 bool		is_assignment(char *str);
 bool		is_simple_dollar_var_str(const char *s);
 char		*strip_empty_quotes(const char *s);
+bool		contains_whitespace(const char *s);
+void		normalize_tabs_to_spaces(char *s);
 
 #endif

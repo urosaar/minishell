@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:09:23 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/12 21:09:29 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/16 08:01:32 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,31 @@ bool	is_in_quote(bool in_quote, char *quote_char, char current_char)
 		return (false);
 	}
 	return (in_quote);
+}
+
+bool	contains_whitespace(const char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s && s[i])
+	{
+		if (is_space(s[i]))
+			return (true);
+		i++;
+	}
+	return (false);
+}
+
+void	normalize_tabs_to_spaces(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s && s[i])
+	{
+		if (s[i] == '\t')
+			s[i] = ' ';
+		i++;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:07:46 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/12 21:07:49 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/16 07:59:12 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ int	count_unquoted_tokens(const char *s)
 	ft_bzero(&v, sizeof(v));
 	while (s[v.i])
 	{
-		while (s[v.i] && s[v.i] == ' ')
+		while (s[v.i] && is_space(s[v.i]))
 			v.i++;
 		if (!s[v.i])
 			break ;
 		v.count++;
-		while (s[v.i] && ((v.in_single || v.in_double) || s[v.i] != ' '))
+		while (s[v.i] && ((v.in_single || v.in_double) || !is_space(s[v.i])))
 		{
 			if (s[v.i] == '\'' && !v.in_double)
 				v.in_single = !v.in_single;
@@ -56,10 +56,10 @@ char	**split_unquoted_tokens(const char *s)
 		return (NULL);
 	while (s[v.i] && v.t < v.tokens)
 	{
-		while (s[v.i] && s[v.i] == ' ')
+		while (s[v.i] && is_space(s[v.i]))
 			v.i++;
 		re_init_split_unquoted(&v);
-		while (s[v.i] && ((v.in_single || v.in_double) || s[v.i] != ' '))
+		while (s[v.i] && ((v.in_single || v.in_double) || !is_space(s[v.i])))
 		{
 			if (s[v.i] == '\'' && !v.in_double)
 				v.in_single = !v.in_single;

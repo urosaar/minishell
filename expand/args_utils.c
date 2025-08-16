@@ -6,7 +6,7 @@
 /*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:07:24 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/16 06:25:08 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/16 07:59:47 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@ char	**split_selected_args(char **args, bool *no_split)
 	i = 0;
 	while (args[i])
 	{
-		if (!no_split[i] && ft_strchr(args[i], ' '))
+		if (!no_split[i] && contains_whitespace(args[i]))
 		{
+			normalize_tabs_to_spaces(args[i]);
 			pieces = ft_split(args[i], ' ');
 			free(args[i]);
 			args = splice_tokens(args, i, pieces);
