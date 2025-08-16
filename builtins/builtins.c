@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:14:14 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/11 12:42:51 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:47:56 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	builtins(t_env **env, char **args, char *prev_pwd, int flag)
+int	builtins(t_exec *ctx, t_env **env, char **args, int flag)
 {
 	int	last_status;
 
@@ -22,9 +22,9 @@ int	builtins(t_env **env, char **args, char *prev_pwd, int flag)
 	else if (*args && !ft_strcmp(*args, "pwd"))
 		last_status = ft_pwd(*env);
 	else if (*args && !ft_strcmp(*args, "cd"))
-		last_status = ft_cd(env, args, prev_pwd);
+		last_status = ft_cd(env, args, ctx->prev_pwd);
 	else if (*args && !ft_strcmp(*args, "exit"))
-		last_status = ft_exit(*env, args, flag);
+		last_status = ft_exit(ctx, *env, args, flag);
 	else if (*args && !ft_strcmp(*args, "env"))
 		last_status = ft_env(env, args);
 	else if (*args && !ft_strcmp(*args, "unset"))

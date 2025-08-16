@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:10:22 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/16 07:54:33 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:51:12 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,14 +177,14 @@ void		free_tokens(char **tokens);
 void		free_commands(t_command *cmd);
 void		execution(t_command *cmds, t_env **env, t_exec *exec);
 void		handler(int signal);
-int			ft_exit(t_env *env, char **arg, int flag);
+int			ft_exit(t_exec *ctx,t_env *env, char **arg, int flag);
 int			ft_echo(char **arg);
 int			ft_pwd(t_env *env);
 int			ft_cd(t_env **env, char **arg, char *prev_pwd);
 int			ft_env(t_env **env, char **arg);
 int			ft_unset(t_env **env, char **arg);
 int			ft_export(t_env **env, char **arg);
-int			builtins(t_env **env, char **args, char *prev_pwd, int flag);
+int			builtins(t_exec *ctx, t_env **env, char **args, int flag);
 int			is_builtins(char **args);
 void		copy_env(char **envp, t_env **env);
 t_env		*copy_for_expo(t_env *env);
@@ -296,5 +296,6 @@ bool		is_simple_dollar_var_str(const char *s);
 char		*strip_empty_quotes(const char *s);
 bool		contains_whitespace(const char *s);
 void		normalize_tabs_to_spaces(char *s);
+
 
 #endif

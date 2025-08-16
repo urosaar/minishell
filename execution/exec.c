@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 17:15:34 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/16 15:03:55 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:49:24 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static int	exec_builtin(t_command *curr, t_env **env, t_exec *ctx)
 		if (!apply_redirection(curr, env))
 			ctx->last_status = 1;
 		else
-			ctx->last_status = builtins(env, curr->args, ctx->prev_pwd, ctx->f);
+			ctx->last_status = builtins(ctx, env, curr->args, ctx->f);
 		restore_std_fds(saved_in, saved_out);
 	}
 	close_heredoc_fds(curr->redirections);

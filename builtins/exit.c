@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:13:06 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/12 21:13:08 by oukhanfa         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:34:53 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,14 +76,14 @@ void	ft_check_arg(t_env *env, char *arg, int flag)
 	exit(r);
 }
 
-int	ft_exit(t_env *env, char **arg, int flag)
+int	ft_exit(t_exec *ctx,t_env *env, char **arg, int flag)
 {
 	if (!arg[1])
 	{
 		if (flag)
 			printf("exit\n");
 		free_env(env);
-		exit(0);
+		exit(ctx->last_status);
 	}
 	if (arg[1] && arg[2] && (ft_atoi(env, arg[1], flag)
 			|| !ft_atoi(env, arg[1], flag)))

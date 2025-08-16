@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:08:52 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/16 17:52:23 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:31:46 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,6 @@ int		check_pipe(char **token);
 void	ft_errno(char **args, char **envp);
 void	*ft_memmove(void *dst, const void *src, size_t n);
 void	there_is_redir(t_command *curr);
+char    **path_check(t_env *tmp);
 
 #endif

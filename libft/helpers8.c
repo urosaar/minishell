@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers8.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:29:54 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/16 17:54:30 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:31:08 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,15 @@ void	there_is_redir(t_command *curr)
 			exit(127);
 		}
 	}
+}
+
+char **path_check(t_env *tmp)
+{
+	char	**path;
+
+	if (tmp->value[0])
+		path = ft_split(tmp->value, ':');
+	else
+		path = NULL;
+	return (path);
 }

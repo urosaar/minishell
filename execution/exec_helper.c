@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_helper.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: jesse <jesse@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:53:07 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/16 17:12:48 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/17 00:30:31 by jesse            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ char	*check_if_exist(t_env *env, t_command *cmds, t_exec *ctx)
 	{
 		if (!ft_strcmp(tmp->key, "PATH"))
 		{
-			path = ft_split(tmp->value, ':');
+			path = path_check(tmp);
 			break ;
 		}
 		tmp = tmp->next;
