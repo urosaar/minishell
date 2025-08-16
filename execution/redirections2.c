@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:06:53 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/15 19:48:55 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 05:48:11 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,19 @@ int	count_words_isspace(const char *s)
 		}
 	}
 	return (words);
+}
+
+void	close_heredoc_fds(t_redirection *r)
+{
+	while (r)
+	{
+		if (r->type == TOKEN_HEREDOC && r->heredoc_fd != -1)
+		{
+			close(r->heredoc_fd);
+			r->heredoc_fd = -1;
+		}
+		r = r->next;
+	}
 }
 
 static int	heredoc(t_redirection *tmp)
@@ -84,10 +97,10 @@ int	handle_single_redirection(t_redirection *tmp, t_env **env)
 	if (clean == NULL)
 		return (0);
 	if (tmp->type != TOKEN_HEREDOC && ft_strchr(tmp->filename, '$'))
-    {
-        if (!tmp->quoted && !check_clean(clean, tmp->filename))
-            return (0);
-    }
+	{
+		if (!tmp->quoted && !check_clean(clean, tmp->filename))
+			return (0);
+	}
 	ok = apply_redirect(tmp, clean);
 	free(clean);
 	return (ok);

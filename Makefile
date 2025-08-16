@@ -14,14 +14,14 @@ SRC = builtins/builtins_utils.c builtins/echo.c builtins/env.c \
       builtins/export.c builtins/export_helpers1.c builtins/export_helpers2.c \
       builtins/ft_malloc.c builtins/ft_malloc_utils.c builtins/builtins.c \
       execution/exec.c execution/exec1.c execution/exec2.c \
-      execution/exec_helper.c execution/heredoc1.c execution/heredoc2.c \
+      execution/exec_helper.c execution/heredoc1.c execution/heredoc2.c execution/heredoc3.c \
       execution/redirections.c execution/redirections2.c parsing/lexer1.c parsing/lexer2.c parsing/parser_utils1.c\
 	  parsing/parser_utils2.c parsing/parser_utils3.c parsing/parser_utils4.c\
       parsing/shell_utils.c parsing/syntax.c parsing/syntax2.c main/shell_cleanup.c\
 	  main/shell_execution.c main/shell_init_input.c\
-      expand/args_split_utils.c expand/expand_buffer_utils.c \
+      expand/args_utils.c expand/expand_buffer_utils.c \
 	  expand/expand_command_utils.c expand/expand_command_utils2.c expand/expand_command_vars.c expand/expand_variable_handler.c \
-	  expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c 
+	  expand/empty_vars/empty_list.c expand/empty_vars/empty_system.c expand/quote_utils.c
 
 OBJ = $(SRC:.c=.o)
 

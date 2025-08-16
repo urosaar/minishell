@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:10:22 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/15 19:51:55 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 06:27:51 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,12 @@ typedef struct s_locals
 	char	**raw_tokens;
 }	t_locals;
 
+typedef struct s_expand_ctx
+{
+	int		last_status;
+	t_env	**env;
+}	t_expand_ctx;
+
 char		**lexer(const char *input);
 int			count_tokens(const char *input);
 char		*extract_operator(const char *input, int *i);
@@ -219,7 +225,6 @@ void		close_heredoc_fds(t_redirection *r);
 void		handler_heredoc(int sig);
 int			heredoc_iteration(t_heredoc_child *data, int *line_count);
 int			apply_redirection(t_command *curr, t_env **env);
-void		expand_wildcards(t_command *cmd, bool *no_expand);
 bool		*create_no_split_map(char **args);
 char		*expand_variables(const char *input, int last_status, t_env **env);
 void		expand_tokens(char **tokens, int last_status, t_env **env);
@@ -282,5 +287,12 @@ int			has_expandable(const char *str);
 int			count_unquoted_tokens(const char *s);
 char		**split_unquoted_tokens(const char *s);
 void		check_args_and_exit(char **args, t_exec *ctx);
+char		*append_str(char *buf, const char *s);
+char		*apend_char(char *buf, char c);
+char		*handle_dollar(char *out, const char *line, size_t *i,
+				t_expand_ctx *ctx);
+bool		is_assignment(char *str);
+bool		is_simple_dollar_var_str(const char *s);
+char		*strip_empty_quotes(const char *s);
 
 #endif

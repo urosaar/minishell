@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   helpers8.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/15 16:29:54 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 16:37:53 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 06:30:50 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,28 @@ void	ft_errno(char **args, char **envp)
 		perror("minishell: execve");
 		exit(1);
 	}
+}
+
+void	*ft_memmove(void *dst, const void *src, size_t n)
+{
+	unsigned char		*d;
+	const unsigned char	*s;
+
+	d = (unsigned char *)dst;
+	s = (const unsigned char *)src;
+	if (d == s || n == 0)
+		return (dst);
+	if (d < s)
+	{
+		while (n--)
+			*d++ = *s++;
+	}
+	else
+	{
+		d += n;
+		s += n;
+		while (n--)
+			*--d = *--s;
+	}
+	return (dst);
 }

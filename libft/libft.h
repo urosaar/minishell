@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 21:08:52 by oukhanfa          #+#    #+#             */
-/*   Updated: 2025/08/15 16:34:49 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 06:11:36 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ void	ft_bzero(void *s, size_t n);
 void	free_envp(char **envp);
 int		check_pipe(char **token);
 void	ft_errno(char **args, char **envp);
+void	*ft_memmove(void *dst, const void *src, size_t n);
 
 #endif

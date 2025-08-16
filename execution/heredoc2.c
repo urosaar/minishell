@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: skhallou <skhallou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: oukhanfa <oukhanfa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/01 19:59:46 by skhallou          #+#    #+#             */
-/*   Updated: 2025/08/15 19:49:36 by skhallou         ###   ########.fr       */
+/*   Updated: 2025/08/16 05:46:43 by oukhanfa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,112 +19,59 @@ void	handler_heredoc(int sig)
 	exit(1);
 }
 
-static char *apend_char(char *buf, char c)
+static char	*process_char(char *out, const char *line, size_t *i,
+	t_expand_ctx *ctx)
 {
-	size_t len = buf ? ft_strlen(buf) : 0;
-	char *new = malloc(len + 2);
-	if (!new)
+	char	*tmp;
+
+	if (line[*i] == '$')
 	{
-		free(buf);
-		return NULL;
+		tmp = handle_dollar(out, line, i, ctx);
+		if (!tmp)
+		{
+			free(out);
+			return (NULL);
+		}
+		out = tmp;
 	}
-	if (buf)
+	else
 	{
-		ft_memcpy(new, buf, len);
-		free(buf);
+		tmp = apend_char(out, line[*i]);
+		if (!tmp)
+		{
+			free(out);
+			return (NULL);
+		}
+		out = tmp;
+		(*i)++;
 	}
-	new[len] = c;
-	new[len + 1] = '\0';
-	return new;
+	return (out);
 }
 
-static char *append_str(char *buf, const char *s)
+char	*heredoc_expand_line(const char *line, int last_status, t_env **env)
 {
-	if (!s || s[0] == '\0')
-		return buf;
-	if (!buf)
-		return ft_strdup(s);
-	size_t lenb = ft_strlen(buf);
-	size_t lens = ft_strlen(s);
-	char *new = malloc(lenb + lens + 1);
-	if (!new)
+	size_t			i;
+	char			*out;
+	t_expand_ctx	ctx;
+
+	i = 0;
+	out = NULL;
+	ctx.last_status = last_status;
+	ctx.env = env;
+	while (line[i])
 	{
-		free(buf);
-		return NULL;
+		out = process_char(out, line, &i, &ctx);
+		if (!out)
+			return (NULL);
 	}
-	ft_memcpy(new, buf, lenb);
-	ft_memcpy(new + lenb, s, lens + 1);
-	free(buf);
-	return new;
+	if (!out)
+		out = ft_strdup("");
+	return (out);
 }
 
-static char *heredoc_expand_line(const char *line, int last_status, t_env **env)
+static void	process_heredoc_line(t_heredoc_child *data, char *line)
 {
-    size_t i = 0;
-    char *out = NULL;
-
-    while (line[i])
-    {
-        if (line[i] == '$')
-        {
-            if (line[i + 1] == '?')
-            {
-                char *tok = ft_strdup("$?");
-                if (!tok) { free(out); return NULL; }
-                char *exp = expand_variables(tok, last_status, env);
-                free(tok);
-                if (exp)
-                {
-                    out = append_str(out, exp);
-                    free(exp);
-                }
-                i += 2;
-            }
-            else if ((line[i + 1] >= 'A' && line[i + 1] <= 'Z') ||
-                     (line[i + 1] >= 'a' && line[i + 1] <= 'z') ||
-                     line[i + 1] == '_')
-            {
-                size_t j = i + 1;
-                while (line[j] && ((line[j] >= 'A' && line[j] <= 'Z') ||
-                                   (line[j] >= 'a' && line[j] <= 'z') ||
-                                   (line[j] >= '0' && line[j] <= '9') ||
-                                   line[j] == '_'))
-                    j++;
-                size_t toklen = j - i;
-                char *tok = ft_strndup(line + i, toklen);
-                if (!tok) { free(out); return NULL; }
-                char *exp = expand_variables(tok, last_status, env);
-                free(tok);
-                if (exp)
-                {
-                    out = append_str(out, exp);
-                    free(exp);
-                }
-                i = j;
-            }
-            else 
-            {
-                out = apend_char(out, '$');
-                i++;
-            }
-        }
-        else
-        {
-            out = apend_char(out, line[i]);
-            i++;
-        }
-    }
-
-    if (!out)
-        out = ft_strdup("");
-
-    return out;
-}
-
-
-static void process_heredoc_line(t_heredoc_child *data, char *line)
-{
-	char *expanded;
+	char	*expanded;
 
 	if (!data->quoted)
 	{
@@ -148,7 +95,6 @@ static void process_heredoc_line(t_heredoc_child *data, char *line)
 	}
 }
 
-
 int	heredoc_iteration(t_heredoc_child *data, int *line_count)
 {
 	char	*line;
@@ -171,17 +117,4 @@ int	heredoc_iteration(t_heredoc_child *data, int *line_count)
 	free(line);
 	(*line_count)++;
 	return (1);
-}
-
-void	close_heredoc_fds(t_redirection *r)
-{
-	while (r)
-	{
-		if (r->type == TOKEN_HEREDOC && r->heredoc_fd != -1)
-		{
-			close(r->heredoc_fd);
-			r->heredoc_fd = -1;
-		}
-		r = r->next;
-	}
 }
